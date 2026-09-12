@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import "./AllBrands.css"
 
 import viewimg from "../../assets/159078.png";
 import editimg from "../../assets/edit-new-icon-22.png";
 import deleteimg from "../../assets/1214428.png";
 
-// Axios Config
-axios.defaults.baseURL = "http://localhost:8000/api";
-axios.defaults.withCredentials = true;
+import api, { ASSET_BASE_URL } from "../api";
 
 export const BrandsTable = () => {
   const [brands, setBrands] = useState([]);
@@ -16,17 +14,31 @@ export const BrandsTable = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // ✅ Fetch All Brands
+  // ============================================
+  // FETCH ALL BRANDS
+  // ============================================
   const fetchBrands = async () => {
     setLoading(true);
     setError("");
 
     try {
-      const res = await axios.get("/brands");
-      setBrands(Array.isArray(res.data) ? res.data : []);
+      const res = await api.get("/brands");
+
+      setBrands(
+        Array.isArray(res.data)
+          ? res.data
+          : res.data.brands || []
+      );
     } catch (err) {
-      console.error("❌ Error fetching brands:", err);
-      setError("Failed to fetch brands.");
+      console.error(
+        "❌ Error fetching brands:",
+        err
+      );
+
+      setError(
+        err.response?.data?.error ||
+          "Failed to fetch brands."
+      );
     } finally {
       setLoading(false);
     }
@@ -36,48 +48,93 @@ export const BrandsTable = () => {
     fetchBrands();
   }, []);
 
-  // ✅ Delete Brand
+  // ============================================
+  // DELETE BRAND
+  // ============================================
   const deleteBrand = async (id) => {
-    if (!window.confirm("Delete this brand?")) return;
+    if (!window.confirm("Delete this brand?")) {
+      return;
+    }
 
     try {
-      await axios.delete(`/brands/${id}`);
-      setBrands((prev) => prev.filter((b) => b.id !== id));
+      await api.delete(`/brands/${id}`);
+
+      setBrands((prev) =>
+        prev.filter((brand) => brand.id !== id)
+      );
     } catch (err) {
-      console.error("❌ Error deleting brand:", err);
-      alert("Failed to delete brand.");
+      console.error(
+        "❌ Error deleting brand:",
+        err
+      );
+
+      alert(
+        err.response?.data?.error ||
+          "Failed to delete brand."
+      );
     }
   };
 
-  // ✅ Search Filter
-  const filteredBrands = brands.filter((b) =>
-    (b.brand_name || "").toLowerCase().includes(search.toLowerCase())
+  // ============================================
+  // SEARCH
+  // ============================================
+  const searchQuery = search.toLowerCase();
+
+  const filteredBrands = brands.filter((brand) =>
+    brand.brand_name
+      ?.toLowerCase()
+      .includes(searchQuery)
   );
 
+  // ============================================
+  // RENDER
+  // ============================================
   return (
-    <div className="user-details-page">
+    <main className="user-details-page">
+
+      {/* HEADER */}
       <div className="adminproduct-head">
         <h2>All Brands</h2>
 
         <Link to="/brands/add">
-          <button className="upload-btn">+ Add Brand</button>
+          <button className="upload-btn">
+            + Add Brand
+          </button>
         </Link>
       </div>
 
-      {/* ✅ Search */}
-      <div style={{ marginBottom: "15px" }}>
+      {/* SEARCH */}
+      <div
+        style={{
+          marginBottom: "15px",
+        }}
+      >
         <input
           type="text"
           placeholder="Search brand name..."
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          style={{ marginLeft: "10px", padding: "5px", width: "300px" }}
+          onChange={(e) =>
+            setSearch(e.target.value)
+          }
+          style={{
+            marginLeft: "10px",
+            padding: "5px",
+            width: "300px",
+          }}
         />
       </div>
 
+      {/* LOADING */}
       {loading && <p>Loading...</p>}
-      {error && <p style={{ color: "red" }}>{error}</p>}
 
+      {/* ERROR */}
+      {error && (
+        <p style={{ color: "red" }}>
+          {error}
+        </p>
+      )}
+
+      {/* BRANDS TABLE */}
       <table className="table-customer">
         <thead>
           <tr>
@@ -92,53 +149,81 @@ export const BrandsTable = () => {
           {filteredBrands.length > 0 ? (
             filteredBrands.map((brand) => (
               <tr key={brand.id}>
-                <td>{brand.id}</td>
 
+                {/* ID */}
                 <td>
-                  {brand.image ? (
-                    <img
-                      src={`http://localhost:8000${brand.image}`}
-                      alt={brand.brand_name}
-                      className="img-card"
-                      style={{ width: 50, height: 50, objectFit: "cover" }}
-                    />
-                  ) : (
-                    "No Image"
-                  )}
+                  {brand.id}
                 </td>
 
-                <td>{brand.brand_name}</td>
-
+                {/* IMAGE */}
                 <td>
-                  {/* ✅ VIEW */}
-                  <Link to={`/brands/${brand.id}`}>
-                    <span className="preview-icon">
-                      <img src={viewimg} alt="view" />
-                    </span>
-                  </Link>
+                  <img
+                    src={`${ASSET_BASE_URL}${brand.image}`}
+                    alt={brand.brand_name}
+                    className="img-card"
+                  />
+                </td>
 
-                  {/* ✅ EDIT */}
-                  <Link to={`/brands/edit/${brand.id}`}>
-                    <span className="preview-icon">
-                      <img src={editimg} alt="edit" />
-                    </span>
-                  </Link>
+                {/* BRAND NAME */}
+                <td>
+                  {brand.brand_name}
+                </td>
 
-                  {/* ✅ DELETE */}
-                  <span
-                    onClick={() => deleteBrand(brand.id)}
-                    className="preview-icon"
-                    style={{ cursor: "pointer" }}
+                {/* ACTIONS */}
+                <td>
+
+                  {/* VIEW */}
+                  <Link
+                    to={`/brands/${brand.id}`}
                   >
-                    <img src={deleteimg} alt="delete" />
+                    <span className="preview-icon">
+                      <img
+                        src={viewimg}
+                        alt="view"
+                      />
+                    </span>
+                  </Link>
+
+                  {/* EDIT */}
+                  <Link
+                    to={`/brands/edit/${brand.id}`}
+                  >
+                    <span className="preview-icon">
+                      <img
+                        src={editimg}
+                        alt="edit"
+                      />
+                    </span>
+                  </Link>
+
+                  {/* DELETE */}
+                  <span
+                    onClick={() =>
+                      deleteBrand(brand.id)
+                    }
+                    className="preview-icon"
+                    style={{
+                      cursor: "pointer",
+                    }}
+                  >
+                    <img
+                      src={deleteimg}
+                      alt="delete"
+                    />
                   </span>
+
                 </td>
               </tr>
             ))
           ) : (
             !loading && (
               <tr>
-                <td colSpan="4" style={{ textAlign: "center" }}>
+                <td
+                  colSpan="4"
+                  style={{
+                    textAlign: "center",
+                  }}
+                >
                   No brands found
                 </td>
               </tr>
@@ -146,6 +231,6 @@ export const BrandsTable = () => {
           )}
         </tbody>
       </table>
-    </div>
+    </main>
   );
 };

@@ -276,7 +276,7 @@ tbody tr:hover {
 }
 .admin-panel main {
   margin-top: 20px; /* height of navbar */
-  margin-left: 160px; /* width of sidebar */
+  margin-left: 100px; /* width of sidebar */
   padding: 20px;
   transition: margin-left 0.3s ease;
 }

@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import "./ProductCategory.css"
+import { useEffect, useState } from "react";
+import "./ProductCategory.css";
 import { Link } from "react-router-dom";
+import { Reveal } from "../../Reveal";
+import api, { ASSET_BASE_URL } from "../../api.js";
 
 export const ProductCategory = () => {
   const [categories, setCategories] = useState([]);
@@ -9,47 +10,80 @@ export const ProductCategory = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        // Using backend API that returns categories
-        const res = await axios.get("http://localhost:8000/api/categories");
-        // Ensure images are prefixed properly
-        const formattedCategories = res.data.map((cat) => ({
+        const { data } = await api.get("/categories");
+
+        const formattedCategories = (
+          Array.isArray(data) ? data : []
+        ).map((cat) => ({
           ...cat,
-          image: cat.image.startsWith("http")
-            ? cat.image
-            : `http://localhost:8000${cat.image}`,
+          image: cat.image
+            ? /^https?:\/\//i.test(cat.image)
+              ? cat.image
+              : `${ASSET_BASE_URL}${
+                  cat.image.startsWith("/") ? "" : "/"
+                }${cat.image}`
+            : "",
         }));
+
         setCategories(formattedCategories);
       } catch (error) {
         console.error("Error fetching categories:", error);
+        setCategories([]);
       }
     };
+
     fetchCategories();
   }, []);
 
   return (
-    <div className="category-section">
-      <div className="categories-title">
-        <h2 className="">Our Categories</h2>
-        <div className="line-mf"></div>
+    <section className="category-section">
+      <Reveal className="categories-title">
+        <span className="categories-eyebrow">
+          Fresh &amp; Local
+        </span>
 
-      </div>
+        <h2>Shop by Category</h2>
+
+        <div className="line-mf"></div>
+      </Reveal>
 
       <div className="categories-wrapper">
         {categories.length > 0 ? (
           categories.map((cat) => (
-            <div className="products-category-card" key={cat.id}>
-              <Link to={`/products-categories/${cat.name}`}>
-                <div className="category-image">
-                  <img src={cat.image} alt={cat.name} />
-                  <p className="category-name">{cat.name}</p>
-                </div>
-              </Link>
-            </div>
+            <Link
+              to={`/products-categories/${encodeURIComponent(cat.name)}`}
+              className="products-category-card"
+              key={cat.id}
+            >
+              <div className="category-image">
+                <span className="category-ring"></span>
+
+                {cat.image ? (
+                  <img
+                    src={cat.image}
+                    alt={cat.name}
+                    loading="lazy"
+                  />
+                ) : (
+                  <div className="category-placeholder">
+                    No Image
+                  </div>
+                )}
+              </div>
+
+              <span className="category-seed"></span>
+
+              <p className="category-name">
+                {cat.name}
+              </p>
+            </Link>
           ))
         ) : (
-          <p>No categories available</p>
+          <p className="no-categories">
+            No categories available
+          </p>
         )}
       </div>
-    </div>
+    </section>
   );
 };

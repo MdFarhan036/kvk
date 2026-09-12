@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
-
-axios.defaults.baseURL = "http://localhost:8000/api";
-axios.defaults.withCredentials = true;
+import api from "../api";
 
 export const AddOrder = () => {
   const navigate = useNavigate();
   const location = useLocation();
+
   const queryParams = new URLSearchParams(location.search);
   const prefillCustomerId = queryParams.get("customerId");
 
@@ -22,142 +20,214 @@ export const AddOrder = () => {
     paymentStatus: "Pending",
     remarks: "",
     items: [
-      { productId: "", quantity: 1, description: "", amount: 0 },
+      {
+        productId: "",
+        quantity: 1,
+        description: "",
+        amount: 0,
+      },
     ],
   });
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // ✅ FETCH CUSTOMERS & PRODUCTS
+  // ============================================
+  // FETCH CUSTOMERS & PRODUCTS
+  // ============================================
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [customerRes, productRes] = await Promise.all([
-          axios.get("/admin/customers"),
-          axios.get("/products"),
-        ]);
+        const [customerRes, productRes] =
+          await Promise.all([
+            api.get("/admin/customers"),
+            api.get("/products"),
+          ]);
 
-        const customerData = Array.isArray(customerRes.data)
+        const customerData = Array.isArray(
+          customerRes.data
+        )
           ? customerRes.data
           : customerRes.data.customers || [];
 
         setCustomers(customerData);
         setProducts(productRes.data || []);
       } catch (err) {
-        console.error("❌ Failed to fetch dropdown data:", err);
+        console.error(
+          "❌ Failed to fetch dropdown data:",
+          err
+        );
       }
     };
 
     fetchData();
   }, []);
 
+  // ============================================
+  // COMMON FORM HANDLER
+  // ============================================
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+
+    setForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
-  // ✅ PRODUCT & QUANTITY HANDLER
+  // ============================================
+  // PRODUCT & QUANTITY HANDLER
+  // ============================================
   const handleItemChange = (idx, e) => {
     const { name, value } = e.target;
-    const updatedItems = [...form.items];
 
-    if (name === "productId") {
-      const selectedProduct = products.find(
-        (p) => p.id === parseInt(value, 10)
-      );
+    setForm((prev) => {
+      const updatedItems = [...prev.items];
 
-      const price = Number(selectedProduct?.price || 0);
-      const qty = Number(updatedItems[idx].quantity || 1);
+      if (name === "productId") {
+        const selectedProduct = products.find(
+          (p) => p.id === parseInt(value, 10)
+        );
 
-      updatedItems[idx] = {
-        ...updatedItems[idx],
-        productId: value,
-        description: selectedProduct?.title || "",
-        amount: price * qty,
+        const price = Number(
+          selectedProduct?.price || 0
+        );
+
+        const qty = Number(
+          updatedItems[idx].quantity || 1
+        );
+
+        updatedItems[idx] = {
+          ...updatedItems[idx],
+          productId: value,
+          description:
+            selectedProduct?.title || "",
+          amount: price * qty,
+        };
+      }
+
+      if (name === "quantity") {
+        const qty = Number(value || 1);
+
+        const currentProductId =
+          updatedItems[idx].productId;
+
+        const selectedProduct = products.find(
+          (p) =>
+            p.id ===
+            parseInt(currentProductId, 10)
+        );
+
+        const price = Number(
+          selectedProduct?.price || 0
+        );
+
+        updatedItems[idx] = {
+          ...updatedItems[idx],
+          quantity: qty,
+          amount: price * qty,
+        };
+      }
+
+      const updatedTotal =
+        updatedItems.reduce(
+          (sum, item) =>
+            sum + Number(item.amount || 0),
+          0
+        );
+
+      return {
+        ...prev,
+        items: updatedItems,
+        totalCost: updatedTotal,
       };
-    }
-
-    if (name === "quantity") {
-      const qty = Number(value || 1);
-      const currentProductId = updatedItems[idx].productId;
-
-      const selectedProduct = products.find(
-        (p) => p.id === parseInt(currentProductId, 10)
-      );
-
-      const price = Number(selectedProduct?.price || 0);
-
-      updatedItems[idx] = {
-        ...updatedItems[idx],
-        quantity: qty,
-        amount: price * qty,
-      };
-    }
-
-    const updatedTotal = updatedItems.reduce(
-      (sum, item) => sum + Number(item.amount || 0),
-      0
-    );
-
-    setForm({
-      ...form,
-      items: updatedItems,
-      totalCost: updatedTotal,
     });
   };
 
+  // ============================================
+  // ADD ITEM
+  // ============================================
   const addItem = () => {
-    setForm({
-      ...form,
+    setForm((prev) => ({
+      ...prev,
       items: [
-        ...form.items,
-        { productId: "", quantity: 1, description: "", amount: 0 },
+        ...prev.items,
+        {
+          productId: "",
+          quantity: 1,
+          description: "",
+          amount: 0,
+        },
       ],
-    });
+    }));
   };
 
+  // ============================================
+  // REMOVE ITEM
+  // ============================================
   const removeItem = (idx) => {
-    const remainingItems = form.items.filter((_, i) => i !== idx);
+    setForm((prev) => {
+      const remainingItems = prev.items.filter(
+        (_, i) => i !== idx
+      );
 
-    const updatedTotal = remainingItems.reduce(
-      (sum, item) => sum + Number(item.amount || 0),
-      0
-    );
+      const updatedTotal =
+        remainingItems.reduce(
+          (sum, item) =>
+            sum + Number(item.amount || 0),
+          0
+        );
 
-    setForm({
-      ...form,
-      items: remainingItems,
-      totalCost: updatedTotal,
+      return {
+        ...prev,
+        items: remainingItems,
+        totalCost: updatedTotal,
+      };
     });
   };
 
-  // ✅ SUBMIT ORDER
+  // ============================================
+  // SUBMIT ORDER
+  // ============================================
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     setLoading(true);
     setError(null);
 
+    // Customer validation
     if (!form.customerId) {
       setError("❌ Please select a customer");
       setLoading(false);
       return;
     }
 
+    // Items validation
     if (!form.items.length) {
-      setError("❌ Please add at least one product");
+      setError(
+        "❌ Please add at least one product"
+      );
       setLoading(false);
       return;
     }
 
+    // Individual item validation
     for (const item of form.items) {
       if (!parseInt(item.productId, 10)) {
-        setError("❌ Invalid product selected");
+        setError(
+          "❌ Invalid product selected"
+        );
         setLoading(false);
         return;
       }
 
-      if (!item.quantity || item.quantity <= 0) {
-        setError("❌ Quantity must be at least 1");
+      if (
+        !item.quantity ||
+        item.quantity <= 0
+      ) {
+        setError(
+          "❌ Quantity must be at least 1"
+        );
         setLoading(false);
         return;
       }
@@ -165,25 +235,55 @@ export const AddOrder = () => {
 
     try {
       const payload = {
-        customerId: Number(form.customerId),
-        totalCost: Number(form.totalCost),
+        customerId: Number(
+          form.customerId
+        ),
+
+        totalCost: Number(
+          form.totalCost
+        ),
+
         status: form.status,
-        paymentMethod: form.paymentMethod || null,
-        paymentStatus: form.paymentStatus || "Pending",
+
+        paymentMethod:
+          form.paymentMethod || null,
+
+        paymentStatus:
+          form.paymentStatus || "Pending",
+
         remarks: form.remarks || "",
+
         items: form.items.map((item) => ({
-          productId: Number(item.productId),
-          quantity: Number(item.quantity || 1),
+          productId: Number(
+            item.productId
+          ),
+
+          quantity: Number(
+            item.quantity || 1
+          ),
+
           description: item.description,
-          amount: Number(item.amount),
+
+          amount: Number(
+            item.amount
+          ),
         })),
       };
 
-      console.log("✅ FINAL PAYLOAD SENDING:", payload);
+      console.log(
+        "✅ FINAL PAYLOAD SENDING:",
+        payload
+      );
 
-      const res = await axios.post("/orders", payload);
+      const res = await api.post(
+        "/orders",
+        payload
+      );
 
-      alert(res.data?.message || "✅ Order created successfully!");
+      alert(
+        res.data?.message ||
+          "✅ Order created successfully!"
+      );
 
       navigate(
         prefillCustomerId
@@ -191,28 +291,40 @@ export const AddOrder = () => {
           : "/allorders"
       );
     } catch (err) {
-      console.error("❌ SUBMIT ERROR FULL:", err);
+      console.error(
+        "❌ SUBMIT ERROR FULL:",
+        err
+      );
 
       setError(
         err.response?.data?.message ||
-        err.response?.data?.error ||
-        "❌ Failed to create order"
+          err.response?.data?.error ||
+          "❌ Failed to create order"
       );
     } finally {
       setLoading(false);
     }
   };
 
+  // ============================================
+  // RENDER
+  // ============================================
   return (
-    <div className="add-order-container">
+    <main  className="add-order-container">
       <h2>Add Order</h2>
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && (
+        <p style={{ color: "red" }}>
+          {error}
+        </p>
+      )}
 
       <form onSubmit={handleSubmit}>
+
         {/* CUSTOMER */}
         <div>
           <label>Customer</label>
+
           <select
             name="customerId"
             value={form.customerId}
@@ -220,72 +332,120 @@ export const AddOrder = () => {
             required
             disabled={!!prefillCustomerId}
           >
-            <option value="">Select Customer</option>
+            <option value="">
+              Select Customer
+            </option>
+
             {customers.map((c) => (
-              <option key={c.id} value={c.id}>
+              <option
+                key={c.id}
+                value={c.id}
+              >
                 {c.customerName} (ID: {c.id})
               </option>
             ))}
           </select>
         </div>
 
+        {/* TOTAL COST */}
         <div>
           <label>Total Cost</label>
-          <input type="number" value={form.totalCost} readOnly />
+
+          <input
+            type="number"
+            value={form.totalCost}
+            readOnly
+          />
         </div>
 
+        {/* STATUS */}
         <div>
           <label>Status</label>
+
           <select
             name="status"
             value={form.status}
             onChange={handleChange}
           >
-            {["Pending",
+            {[
+              "Pending",
               "Processing",
               "Shipped",
               "Delivered",
-              "Cancelled"].map(
-                (s) => (
-                  <option key={s} value={s}>
-                    {s}
-                  </option>
-                )
-              )}
+              "Cancelled",
+            ].map((status) => (
+              <option
+                key={status}
+                value={status}
+              >
+                {status}
+              </option>
+            ))}
           </select>
         </div>
 
+        {/* PAYMENT METHOD */}
         <div>
           <label>Payment Method</label>
+
           <select
             name="paymentMethod"
             value={form.paymentMethod}
             onChange={handleChange}
           >
-            <option value="">Select</option>
-            <option value="Cash">Cash</option>
-            <option value="UPI">UPI</option>
-            <option value="Card">Card</option>
-            <option value="NetBanking">NetBanking</option>
+            <option value="">
+              Select
+            </option>
+
+            <option value="Cash">
+              Cash
+            </option>
+
+            <option value="UPI">
+              UPI
+            </option>
+
+            <option value="Card">
+              Card
+            </option>
+
+            <option value="NetBanking">
+              NetBanking
+            </option>
           </select>
         </div>
 
+        {/* PAYMENT STATUS */}
         <div>
           <label>Payment Status</label>
+
           <select
             name="paymentStatus"
             value={form.paymentStatus}
             onChange={handleChange}
           >
-            <option value="Pending">Pending</option>
-            <option value="Paid">Paid</option>
-            <option value="Failed">Failed</option>
-            <option value="Refunded">Refunded</option>
+            <option value="Pending">
+              Pending
+            </option>
+
+            <option value="Paid">
+              Paid
+            </option>
+
+            <option value="Failed">
+              Failed
+            </option>
+
+            <option value="Refunded">
+              Refunded
+            </option>
           </select>
         </div>
 
+        {/* REMARKS */}
         <div>
           <label>Remarks</label>
+
           <textarea
             name="remarks"
             value={form.remarks}
@@ -293,66 +453,122 @@ export const AddOrder = () => {
           />
         </div>
 
+        {/* ITEMS */}
         <h3>Items</h3>
 
-        {form.items.map((item, idx) => (
-          <div key={idx} style={{ display: "flex", gap: "6px" }}>
-            <select
-              name="productId"
-              value={item.productId}
-              onChange={(e) => handleItemChange(idx, e)}
-              required
+        {form.items.map(
+          (item, idx) => (
+            <div
+              key={idx}
+              style={{
+                display: "flex",
+                gap: "6px",
+              }}
             >
-              <option value="">Select Product</option>
-              {products.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.title} (₹{p.price})
+
+              {/* PRODUCT */}
+              <select
+                name="productId"
+                value={item.productId}
+                onChange={(e) =>
+                  handleItemChange(
+                    idx,
+                    e
+                  )
+                }
+                required
+              >
+                <option value="">
+                  Select Product
                 </option>
-              ))}
-            </select>
 
-            <input
-              type="number"
-              name="quantity"
-              min="1"
-              value={item.quantity}
-              onChange={(e) => handleItemChange(idx, e)}
-              style={{ width: "80px" }}
-            />
+                {products.map((p) => (
+                  <option
+                    key={p.id}
+                    value={p.id}
+                  >
+                    {p.title} (₹
+                    {p.price})
+                  </option>
+                ))}
+              </select>
 
-            <input
-              type="text"
-              value={item.description}
-              readOnly
-              style={{ flex: 1 }}
-            />
+              {/* QUANTITY */}
+              <input
+                type="number"
+                name="quantity"
+                min="1"
+                value={item.quantity}
+                onChange={(e) =>
+                  handleItemChange(
+                    idx,
+                    e
+                  )
+                }
+                style={{
+                  width: "80px",
+                }}
+              />
 
-            <input
-              type="number"
-              value={item.amount}
-              readOnly
-              style={{ width: "120px" }}
-            />
+              {/* DESCRIPTION */}
+              <input
+                type="text"
+                value={
+                  item.description
+                }
+                readOnly
+                style={{
+                  flex: 1,
+                }}
+              />
 
-            {form.items.length > 1 && (
-              <button type="button" onClick={() => removeItem(idx)}>
-                Remove
-              </button>
-            )}
-          </div>
-        ))}
+              {/* AMOUNT */}
+              <input
+                type="number"
+                value={item.amount}
+                readOnly
+                style={{
+                  width: "120px",
+                }}
+              />
 
-        <button type="button" onClick={addItem}>
+              {/* REMOVE */}
+              {form.items.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() =>
+                    removeItem(idx)
+                  }
+                >
+                  Remove
+                </button>
+              )}
+            </div>
+          )
+        )}
+
+        {/* ADD ITEM */}
+        <button
+          type="button"
+          onClick={addItem}
+        >
           + Add Item
         </button>
 
         <br />
         <br />
 
-        <button type="submit" disabled={loading}>
-          {loading ? "Saving..." : "Save Order"}
+        {/* SAVE */}
+        <button
+          type="submit"
+          disabled={loading}
+        >
+          {loading
+            ? "Saving..."
+            : "Save Order"}
         </button>
+
       </form>
-    </div>
+    </main>
   );
 };

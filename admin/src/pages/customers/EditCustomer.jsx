@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
-
-axios.defaults.baseURL = "http://localhost:8000/api";
+import api from "../api";
 
 export const EditCustomer = () => {
   const { id } = useParams();
@@ -20,47 +18,94 @@ export const EditCustomer = () => {
 
   const [loading, setLoading] = useState(true);
 
-  // ✅ Fetch existing customer by ID
+  // ============================================
+  // FETCH CUSTOMER
+  // ============================================
   useEffect(() => {
     const fetchCustomer = async () => {
       try {
-        const response = await axios.get(`/customers/${id}`);
+        const response = await api.get(
+          `/customers/${id}`
+        );
+
         setCustomer(response.data);
       } catch (err) {
-        console.error("Error fetching customer:", err);
-        alert("Failed to load customer data");
+        console.error(
+          "Error fetching customer:",
+          err
+        );
+
+        alert(
+          "Failed to load customer data"
+        );
       } finally {
         setLoading(false);
       }
     };
+
     fetchCustomer();
   }, [id]);
 
-  // ✅ Handle input changes
+  // ============================================
+  // HANDLE INPUT CHANGES
+  // ============================================
   const handleChange = (e) => {
-    setCustomer({ ...customer, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+
+    setCustomer((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
-  // ✅ Submit updated data
+  // ============================================
+  // UPDATE CUSTOMER
+  // ============================================
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      await axios.put(`/customers/${id}`, customer);
-      alert("Customer updated successfully!");
-      navigate("/customers/list"); // back to table
+      await api.put(
+        `/customers/${id}`,
+        customer
+      );
+
+      alert(
+        "Customer updated successfully!"
+      );
+
+      navigate("/customers/list");
     } catch (err) {
-      console.error("Error updating customer:", err);
-      alert(err.response?.data?.error || "Update failed. Check console.");
+      console.error(
+        "Error updating customer:",
+        err
+      );
+
+      alert(
+        err.response?.data?.error ||
+          "Update failed. Check console."
+      );
     }
   };
 
-  if (loading) return <div>Loading...</div>;
+  // ============================================
+  // LOADING
+  // ============================================
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
+  // ============================================
+  // FORM
+  // ============================================
   return (
-    <form onSubmit={handleSubmit} className="customer-form">
+    <form
+      onSubmit={handleSubmit}
+      className="customer-form"
+    >
       <h2>Edit Customer</h2>
 
+      {/* CUSTOMER NAME */}
       <input
         type="text"
         name="customerName"
@@ -69,6 +114,8 @@ export const EditCustomer = () => {
         onChange={handleChange}
         required
       />
+
+      {/* MOBILE */}
       <input
         type="text"
         name="mobile"
@@ -77,6 +124,8 @@ export const EditCustomer = () => {
         onChange={handleChange}
         required
       />
+
+      {/* EMAIL */}
       <input
         type="email"
         name="email"
@@ -85,6 +134,8 @@ export const EditCustomer = () => {
         onChange={handleChange}
         required
       />
+
+      {/* ADDRESS */}
       <input
         type="text"
         name="address"
@@ -93,6 +144,8 @@ export const EditCustomer = () => {
         onChange={handleChange}
         required
       />
+
+      {/* CITY */}
       <input
         type="text"
         name="city"
@@ -101,6 +154,8 @@ export const EditCustomer = () => {
         onChange={handleChange}
         required
       />
+
+      {/* STATE */}
       <input
         type="text"
         name="state"
@@ -109,6 +164,8 @@ export const EditCustomer = () => {
         onChange={handleChange}
         required
       />
+
+      {/* PINCODE */}
       <input
         type="text"
         name="pincode"
@@ -118,7 +175,10 @@ export const EditCustomer = () => {
         required
       />
 
-      <button type="submit">Update</button>
+      {/* UPDATE */}
+      <button type="submit">
+        Update
+      </button>
     </form>
   );
 };

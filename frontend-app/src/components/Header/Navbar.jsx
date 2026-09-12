@@ -1,19 +1,19 @@
 import { useState, useEffect } from "react";
+import "./Navbar.css";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import api from "../api";
 
 const Navbar = () => {
   const [categories, setCategories] = useState([]);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [isDropdownOpen1, setIsDropdownOpen1] = useState(false);
-
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileShopOpen, setMobileShopOpen] = useState(false);
+  const [mobilePagesOpen, setMobilePagesOpen] = useState(false);
 
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await axios.get("http://localhost:8000/api/categories");
-        setCategories(res.data);
+        const res = await api.get("/categories");
+        setCategories(Array.isArray(res.data) ? res.data : []);
       } catch (err) {
         console.error(err);
       }
@@ -27,15 +27,11 @@ const Navbar = () => {
     return acc;
   }, {});
 
-  const handleDropdownClick = (setter) => {
-    if (window.innerWidth <= 768) {
-      setter((prev) => !prev);
-    }
-  };
+  const isMobile = window.innerWidth <= 768;
 
   return (
     <>
-      {/* === MOBILE MENU BUTTON === */}
+      {/* MOBILE TOGGLE */}
       <button
         className="mobile-toggle"
         onClick={() => setMobileMenuOpen((prev) => !prev)}
@@ -46,74 +42,101 @@ const Navbar = () => {
       <nav className={`main-nav ${mobileMenuOpen ? "open" : ""}`}>
         <ul>
           <li className="nav-item">
-            <Link to="/" onClick={() => setMobileMenuOpen(false)}>Home</Link>
+            <Link to="/" onClick={() => setMobileMenuOpen(false)}>
+              Home
+            </Link>
           </li>
 
-          <li className="nav-item">
-            <Link to="/about" onClick={() => setMobileMenuOpen(false)}>About</Link>
-          </li>
 
-          {/* SHOP DROPDOWN */}
+
+          {/* SHOP */}
           <li
-            className="nav-item dropdown"
-            onMouseEnter={() => window.innerWidth > 768 && setIsDropdownOpen(true)}
-            onMouseLeave={() => window.innerWidth > 768 && setIsDropdownOpen(false)}
-            onClick={() => handleDropdownClick(setIsDropdownOpen)}
+            className={`nav-item dropdown ${mobileShopOpen ? "open" : ""
+              }`}
+            onClick={() =>
+              isMobile && setMobileShopOpen((prev) => !prev)
+            }
           >
             <span>Shop</span>
 
-            {isDropdownOpen && (
-              <div className="mega-dropdown single-column">
-                {Object.keys(groupedCategories).map((type) =>
-                  groupedCategories[type].map((cat) => (
-                    <div className="dropdown-item" key={cat.id}>
-                      <Link
-                        to={`/products-categories/${cat.name}`}
-                        onClick={() => setMobileMenuOpen(false)}
-                      >
-                        {cat.name}
-                      </Link>
-                    </div>
-                  ))
-                )}
-              </div>
-            )}
+            <div className="mega-dropdown single-column">
+              {Object.keys(groupedCategories).map((type) =>
+                groupedCategories[type].map((cat) => (
+                  <div className="dropdown-item" key={cat.id}>
+                    <Link
+                      to={`/products-categories/${cat.name}`}
+                      onClick={() => {
+                        setMobileMenuOpen(false);
+                        setMobileShopOpen(false);
+                      }}
+                    >
+                      {cat.name}
+                    </Link>
+                  </div>
+                ))
+              )}
+            </div>
           </li>
 
-          {/* BLOG */}
           <li className="nav-item">
-            <Link to="/blogs" onClick={() => setMobileMenuOpen(false)}>Blog</Link>
+            <Link to="/blogs" onClick={() => setMobileMenuOpen(false)}>
+              Blog
+            </Link>
           </li>
 
-          {/* PAGES DROPDOWN */}
+          {/* PAGES */}
           <li
-            className="nav-item dropdown"
-            onMouseEnter={() => window.innerWidth > 768 && setIsDropdownOpen1(true)}
-            onMouseLeave={() => window.innerWidth > 768 && setIsDropdownOpen1(false)}
-            onClick={() => handleDropdownClick(setIsDropdownOpen1)}
+            className={`nav-item dropdown ${mobilePagesOpen ? "open" : ""
+              }`}
+            onClick={() =>
+              isMobile && setMobilePagesOpen((prev) => !prev)
+            }
           >
             <span>Pages</span>
 
-            {isDropdownOpen1 && (
-              <div className="mega-dropdown single-column">
-                <div className="dropdown-item">
-                  <Link to="/about" onClick={() => setMobileMenuOpen(false)}>About Us</Link>
-                </div>
-                <div className="dropdown-item">
-                  <Link to="/brands" onClick={() => setMobileMenuOpen(false)}>Brands</Link>
-                </div>
-                <div className="dropdown-item">
-                  <Link to="/contact" onClick={() => setMobileMenuOpen(false)}>Contact</Link>
-                </div>
-                <div className="dropdown-item">
-                  <Link to="/profile" onClick={() => setMobileMenuOpen(false)}>My Account</Link>
-                </div>
+            <div className="mega-dropdown single-column">
+              <div className="dropdown-item">
+                <Link
+                  to="/about"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  About Us
+                </Link>
               </div>
-            )}
+              <div className="dropdown-item">
+                <Link
+                  to="/brands"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Brands
+                </Link>
+              </div>
+              <div className="dropdown-item">
+                <Link
+                  to="/contact"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Contact
+                </Link>
+              </div>
+              <div className="dropdown-item">
+                <Link
+                  to="/profile"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  My Account
+                </Link>
+                <Link to="/orders"
+                  onClick={() => setMobileMenuOpen(false)}
+                >My Orders</Link>
+              </div>
+            </div>
           </li>
 
           <li className="nav-item">
-            <Link to="/contact" onClick={() => setMobileMenuOpen(false)}>Contact</Link>
+            <Link to="/contact" onClick={() => setMobileMenuOpen(false)}>
+              Contact
+            </Link>
           </li>
         </ul>
       </nav>

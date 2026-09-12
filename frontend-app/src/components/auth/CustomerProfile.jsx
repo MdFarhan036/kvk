@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useCustomerAuth } from "../../context/CustomerContext";
 import { useNavigate } from "react-router-dom";
 import api from "../api";
+import "./CustomerProfile.css";
 
 // 💡 Use axios instance instead of axios
 

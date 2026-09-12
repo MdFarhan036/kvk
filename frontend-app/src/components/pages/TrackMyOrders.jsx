@@ -1,166 +1,442 @@
-import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import axios from "axios";
+import { useEffect, useState } from "react";
+import {
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
+
+import api from "../api.js";
+
 import "./TrackMyOrder.css";
 
 export const TrackMyOrders = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const initialOrderId = location.state?.orderId || "";
 
-  const [orderId, setOrderId] = useState(initialOrderId);
+  const initialOrderId =
+    location.state?.orderId || "";
+
+  const [orderId, setOrderId] =
+    useState(initialOrderId);
+
   const [order, setOrder] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
 
-  // ✅ FETCH ORDER FROM API
+  const [loading, setLoading] =
+    useState(false);
+
+  const [error, setError] =
+    useState("");
+
+  // =====================================================
+  // FETCH ORDER FROM API
+  // =====================================================
+
   const fetchOrder = async (id) => {
-    if (!id) {
-      setError("Please enter a valid Order ID.");
+    const trimmedId = String(id || "").trim();
+
+    if (!trimmedId) {
+      setOrder(null);
+      setError(
+        "Please enter a valid Order ID."
+      );
       return;
     }
 
     try {
       setError("");
       setLoading(true);
+      setOrder(null);
 
-      const res = await axios.get(
-        `http://localhost:8000/api/orders/public/orders/${id}`
+      const { data } = await api.get(
+        `/orders/public/orders/${encodeURIComponent(
+          trimmedId
+        )}`
       );
 
-      setOrder(res.data);
+      if (!data) {
+        setError(
+          "No order found. Please check your Order ID."
+        );
+        return;
+      }
+
+      setOrder(data);
     } catch (err) {
-      console.error("❌ TRACK ORDER ERROR:", err);
+      console.error(
+        "❌ TRACK ORDER ERROR:",
+        err
+      );
+
       setOrder(null);
-      setError("No order found. Please check your Order ID.");
+
+      setError(
+        err.response?.data?.message ||
+          "No order found. Please check your Order ID."
+      );
     } finally {
       setLoading(false);
     }
   };
 
-  // ✅ AUTO-LOAD IF ORDER ID PASSED FROM NAVIGATION
+  // =====================================================
+  // AUTO-LOAD ORDER
+  // =====================================================
+
   useEffect(() => {
-    if (initialOrderId) fetchOrder(initialOrderId);
+    if (initialOrderId) {
+      fetchOrder(initialOrderId);
+    }
   }, [initialOrderId]);
 
-  // ✅ TRACKING STEPS MUST MATCH BACKEND ENUM
-  const steps = ["Pending",
+  // =====================================================
+  // TRACKING STEPS
+  // =====================================================
+
+  const steps = [
+    "Pending",
     "Processing",
     "Shipped",
     "Delivered",
-    "Cancelled"];
+    "Cancelled",
+  ];
 
-  // ✅ FIND ACTIVE STEP SAFELY
+  // =====================================================
+  // FIND ACTIVE STEP
+  // =====================================================
+
   const currentStep = order?.status
     ? steps.indexOf(order.status)
     : -1;
 
+  // =====================================================
+  // PROGRESS WIDTH
+  // =====================================================
+
+  const progressWidth =
+    currentStep >= 0
+      ? `${(currentStep /
+          (steps.length - 1)) *
+          100}%`
+      : "0%";
+
+  // =====================================================
+  // FORMAT PRICE
+  // =====================================================
+
+  const formatPrice = (value) => {
+    return Number(value || 0).toLocaleString(
+      "en-IN",
+      {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }
+    );
+  };
+
+  // =====================================================
+  // FORMAT DATE
+  // =====================================================
+
+  const formatDate = (date) => {
+    if (!date) return "N/A";
+
+    const parsedDate = new Date(date);
+
+    if (Number.isNaN(parsedDate.getTime())) {
+      return "N/A";
+    }
+
+    return parsedDate.toLocaleString(
+      "en-IN",
+      {
+        dateStyle: "medium",
+        timeStyle: "short",
+      }
+    );
+  };
+
+  // =====================================================
+  // RENDER
+  // =====================================================
+
   return (
     <div className="track-order-container">
+
       <h1>Track Your Order</h1>
 
-      {/* ✅ ORDER ID INPUT */}
+      {/* =================================================
+          ORDER ID INPUT
+      ================================================= */}
+
       <div className="track-input-box">
+
         <input
           type="text"
           placeholder="Enter your Order ID"
           value={orderId}
-          onChange={(e) => setOrderId(e.target.value)}
+          onChange={(e) =>
+            setOrderId(e.target.value)
+          }
+          onKeyDown={(e) => {
+            if (
+              e.key === "Enter" &&
+              !loading
+            ) {
+              fetchOrder(orderId);
+            }
+          }}
+          disabled={loading}
         />
+
         <button
+          type="button"
           className="btn btn-track"
-          onClick={() => fetchOrder(orderId)}
+          onClick={() =>
+            fetchOrder(orderId)
+          }
           disabled={loading}
         >
-          {loading ? "Tracking..." : "Track Order"}
+          {loading
+            ? "Tracking..."
+            : "Track Order"}
         </button>
+
       </div>
 
-      {loading && <p>Loading your order...</p>}
-      {error && <p className="text-danger">{error}</p>}
+      {/* =================================================
+          LOADING
+      ================================================= */}
 
-      {/* ✅ ORDER DETAILS */}
+      {loading && (
+        <p className="track-loading">
+          Loading your order...
+        </p>
+      )}
+
+      {/* =================================================
+          ERROR
+      ================================================= */}
+
+      {!loading && error && (
+        <p className="text-danger">
+          {error}
+        </p>
+      )}
+
+      {/* =================================================
+          ORDER DETAILS
+      ================================================= */}
+
       {order && !loading && (
+
         <div className="order-details">
-          <h3>Order ID: {order.id}</h3>
+
+          <h3>
+            Order ID:{" "}
+            {order.id ||
+              order.orderId}
+          </h3>
 
           <h5>
             Date:{" "}
-            {order.orderDate
-              ? new Date(order.orderDate).toLocaleString()
-              : "N/A"}
+            {formatDate(
+              order.orderDate ||
+                order.date ||
+                order.created_at ||
+                order.createdAt
+            )}
           </h5>
 
-          <h5>Total: ₹{order.totalCost}</h5>
-          <h5>Status: {order.status}</h5>
+          <h5>
+            Total: ₹
+            {formatPrice(
+              order.totalCost ??
+                order.total
+            )}
+          </h5>
 
-          {/* ✅ PROGRESS TRACKER */}
+          <h5>
+            Status:{" "}
+            {order.status ||
+              "Pending"}
+          </h5>
+
+          {/* =================================================
+              PROGRESS TRACKER
+          ================================================= */}
+
           <div className="order-progress">
+
             <div className="progress-line" />
 
             <div
               className="progress-line-fill"
               style={{
-                width:
-                  currentStep >= 0
-                    ? `${(currentStep / (steps.length - 1)) * 100}%`
-                    : "0%",
+                width: progressWidth,
               }}
             />
 
-            {steps.map((step, index) => (
-              <div
-                key={step}
-                className={`progress-step ${index <= currentStep ? "completed" : ""
+            {steps.map(
+              (step, index) => (
+
+                <div
+                  key={step}
+                  className={`progress-step ${
+                    index <= currentStep
+                      ? "completed"
+                      : ""
                   }`}
-              >
-                <div className="circle">{index + 1}</div>
-                <p>{step}</p>
-              </div>
-            ))}
+                >
+
+                  <div className="circle">
+                    {index + 1}
+                  </div>
+
+                  <p>{step}</p>
+
+                </div>
+
+              )
+            )}
+
           </div>
 
-          {/* ✅ CUSTOMER INFO (MATCH BACKEND NAMES) */}
-          <h4 className="mt-30">Customer Info</h4>
-          <p>Name: {order.customerName || "N/A"}</p>
-          <p>Email: {order.email || "N/A"}</p>
-          <p>Mobile: {order.mobile || "N/A"}</p>
+          {/* =================================================
+              CUSTOMER INFO
+          ================================================= */}
 
-          {/* ✅ ORDER ITEMS */}
-          <h4 className="mt-30">Order Items</h4>
+          <h4 className="mt-30">
+            Customer Info
+          </h4>
 
-          <table className="table order-items-table">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Description</th>
-                <th>Qty</th>
-                <th>Amount</th>
-              </tr>
-            </thead>
-            <tbody>
-              {order.items?.length > 0 ? (
-                order.items.map((item, idx) => (
-                  <tr key={item.id || idx}>
-                    <td>{idx + 1}</td>
-                    <td>{item.description}</td>
-                    <td>{item.quantity}</td>
-                    <td>₹{item.amount}</td>
-                  </tr>
-                ))
-              ) : (
+          <p>
+            <strong>Name:</strong>{" "}
+            {order.customerName ||
+              "N/A"}
+          </p>
+
+          <p>
+            <strong>Email:</strong>{" "}
+            {order.email ||
+              "N/A"}
+          </p>
+
+          <p>
+            <strong>Mobile:</strong>{" "}
+            {order.mobile ||
+              "N/A"}
+          </p>
+
+          {/* =================================================
+              ORDER ITEMS
+          ================================================= */}
+
+          <h4 className="mt-30">
+            Order Items
+          </h4>
+
+          <div className="order-items-table-wrapper">
+
+            <table className="table order-items-table">
+
+              <thead>
                 <tr>
-                  <td colSpan="4">No items in this order.</td>
+                  <th>#</th>
+                  <th>Description</th>
+                  <th>Qty</th>
+                  <th>Amount</th>
                 </tr>
-              )}
-            </tbody>
-          </table>
+              </thead>
+
+              <tbody>
+
+                {Array.isArray(
+                  order.items
+                ) &&
+                order.items.length > 0 ? (
+
+                  order.items.map(
+                    (item, idx) => (
+
+                      <tr
+                        key={
+                          item.id ||
+                          idx
+                        }
+                      >
+
+                        <td>
+                          {idx + 1}
+                        </td>
+
+                        <td>
+                          {item.productTitle ||
+                            item.product_title ||
+                            item.title ||
+                            item.name ||
+                            item.description ||
+                            "Product"}
+                        </td>
+
+                        <td>
+                          {item.quantity ||
+                            1}
+                        </td>
+
+                        <td>
+                          ₹
+                          {formatPrice(
+                            item.amount ??
+                              item.productPrice ??
+                              item.product_price ??
+                              item.price
+                          )}
+                        </td>
+
+                      </tr>
+
+                    )
+                  )
+
+                ) : (
+
+                  <tr>
+                    <td
+                      colSpan="4"
+                      style={{
+                        textAlign:
+                          "center",
+                      }}
+                    >
+                      No items in this
+                      order.
+                    </td>
+                  </tr>
+
+                )}
+
+              </tbody>
+
+            </table>
+
+          </div>
+
         </div>
       )}
 
-      <button className="btn btn-back" onClick={() => navigate("/")}>
+      {/* =================================================
+          BACK TO HOME
+      ================================================= */}
+
+      <button
+        type="button"
+        className="btn btn-back"
+        onClick={() =>
+          navigate("/")
+        }
+      >
         Back to Home
       </button>
+
     </div>
   );
 };

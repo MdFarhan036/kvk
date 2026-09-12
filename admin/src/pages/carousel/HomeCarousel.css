@@ -1,0 +1,323 @@
+/* =========================================================
+   EDIT CAROUSEL PAGE
+========================================================= */
+
+.edit-carousel-page {
+  width: 100%;
+  min-height: calc(100vh - 80px);
+  padding: 35px 30px;
+  background: #f6f7f9;
+  box-sizing: border-box;
+}
+
+/* =========================================================
+   CARD
+========================================================= */
+
+.edit-carousel-card {
+  width: 100%;
+  max-width: 850px;
+  margin: 0 auto;
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 30px;
+  box-sizing: border-box;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07);
+}
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.edit-carousel-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  padding-bottom: 25px;
+  margin-bottom: 25px;
+  border-bottom: 1px solid #eeeeee;
+}
+
+.edit-carousel-eyebrow {
+  display: block;
+  margin-bottom: 7px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.edit-carousel-header h2 {
+  margin: 0;
+  font-size: 26px;
+  line-height: 1.3;
+  color: #1f2937;
+  font-weight: 700;
+}
+
+.edit-carousel-header p {
+  margin: 7px 0 0;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+/* =========================================================
+   BACK BUTTON
+========================================================= */
+
+.edit-carousel-back {
+  border: 1px solid #dddddd;
+  background: #ffffff;
+  color: #374151;
+  padding: 9px 16px;
+  border-radius: 7px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+  white-space: nowrap;
+}
+
+.edit-carousel-back:hover {
+  background: #f3f4f6;
+  border-color: #cfcfcf;
+}
+
+/* =========================================================
+   ERROR
+========================================================= */
+
+.edit-carousel-error {
+  margin-bottom: 22px;
+  padding: 12px 15px;
+  border-radius: 7px;
+  background: #fff1f2;
+  border: 1px solid #fecdd3;
+  color: #be123c;
+  font-size: 14px;
+}
+
+/* =========================================================
+   FORM
+========================================================= */
+
+.edit-carousel-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.edit-carousel-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.edit-carousel-field label,
+.edit-carousel-image-section > label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.edit-carousel-field input[type="text"],
+.edit-carousel-field input[type="number"],
+.edit-carousel-field input[type="file"],
+.edit-carousel-field select {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 13px;
+  box-sizing: border-box;
+  border: 1px solid #d7dbe0;
+  border-radius: 7px;
+  background: #ffffff;
+  color: #1f2937;
+  font-size: 14px;
+  outline: none;
+  transition: 0.2s ease;
+}
+
+.edit-carousel-field input[type="text"]:focus,
+.edit-carousel-field input[type="number"]:focus,
+.edit-carousel-field select:focus {
+  border-color: #22c55e;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+}
+
+.edit-carousel-field input::placeholder {
+  color: #9ca3af;
+}
+
+/* =========================================================
+   FILE INPUT
+========================================================= */
+
+.edit-carousel-field input[type="file"] {
+  padding: 8px 10px;
+  cursor: pointer;
+  background: #fafafa;
+}
+
+.selected-image-name {
+  display: block;
+  margin-top: 2px;
+  color: #16a34a;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* =========================================================
+   CURRENT IMAGE
+========================================================= */
+
+.edit-carousel-image-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.edit-carousel-image-preview {
+  width: 100%;
+  max-width: 500px;
+  min-height: 170px;
+  padding: 12px;
+  box-sizing: border-box;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: #f8fafc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.edit-carousel-image-preview img {
+  display: block;
+  width: 100%;
+  max-height: 250px;
+  object-fit: contain;
+  border-radius: 6px;
+}
+
+/* =========================================================
+   ACTIONS
+========================================================= */
+
+.edit-carousel-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+  padding-top: 22px;
+  border-top: 1px solid #eeeeee;
+}
+
+.edit-carousel-cancel,
+.edit-carousel-submit {
+  min-width: 130px;
+  padding: 11px 20px;
+  border-radius: 7px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.edit-carousel-cancel {
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  color: #374151;
+}
+
+.edit-carousel-cancel:hover {
+  background: #f3f4f6;
+}
+
+.edit-carousel-submit {
+  border: 1px solid #16a34a;
+  background: #16a34a;
+  color: #ffffff;
+}
+
+.edit-carousel-submit:hover {
+  background: #15803d;
+  border-color: #15803d;
+}
+
+.edit-carousel-cancel:disabled,
+.edit-carousel-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* =========================================================
+   LOADING
+========================================================= */
+
+.edit-carousel-loading {
+  min-height: 250px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+  font-size: 15px;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 768px) {
+  .edit-carousel-page {
+    padding: 20px 15px;
+  }
+
+  .edit-carousel-card {
+    padding: 22px 18px;
+    border-radius: 10px;
+  }
+
+  .edit-carousel-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .edit-carousel-back {
+    width: fit-content;
+  }
+
+  .edit-carousel-header h2 {
+    font-size: 22px;
+  }
+
+  .edit-carousel-actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .edit-carousel-cancel,
+  .edit-carousel-submit {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .edit-carousel-page {
+    padding: 15px 10px;
+  }
+
+  .edit-carousel-card {
+    padding: 18px 14px;
+  }
+
+  .edit-carousel-header h2 {
+    font-size: 20px;
+  }
+
+  .edit-carousel-image-preview {
+    min-height: 130px;
+  }
+}

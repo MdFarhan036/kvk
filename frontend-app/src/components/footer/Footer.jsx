@@ -1,177 +1,473 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
+
+import api from "../api.js";
+
 import "./Footer.css";
 import footerImg from "../../assets/img/kvklogo1.png";
 
 export const Footer = () => {
   const [categories, setCategories] = useState([]);
+  const footerRef = useRef(null);
 
+  // ============================================
+  // CONTACT
+  // ============================================
   const phoneNumber = "9308270123";
-  const message = "Hello, I would like to Enquire about your services.";
-  const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
 
-  // ✅ Fetch categories from backend
+  const message =
+    "Hello, I would like to Enquire about your services.";
+
+  const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(
+    message
+  )}`;
+
+  // ============================================
+  // FETCH CATEGORIES
+  // ============================================
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await axios.get("http://localhost:8000/api/categories");
-        setCategories(res.data);
+        const { data } = await api.get(
+          "/categories"
+        );
+
+        setCategories(
+          Array.isArray(data) ? data : []
+        );
       } catch (error) {
-        console.error("Failed to load categories", error);
+        console.error(
+          "Failed to load categories:",
+          error
+        );
+
+        setCategories([]);
       }
     };
 
     fetchCategories();
   }, []);
 
-  // ✅ Split categories if needed
-  const peanutCategories = categories.filter(cat =>
-    cat.name.toLowerCase().includes("peanut")
-  );
+  // ============================================
+  // REVEAL ON SCROLL
+  // ============================================
+  useEffect(() => {
+    const observer =
+      new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add(
+                "in-view"
+              );
+            }
+          });
+        },
+        {
+          threshold: 0.15,
+        }
+      );
 
-  const otherCategories = categories.filter(
-    cat => !cat.name.toLowerCase().includes("peanut")
-  );
+    const widgets =
+      footerRef.current?.querySelectorAll(
+        ".footer-widget, .footer-about"
+      );
 
+    widgets?.forEach((element) => {
+      observer.observe(element);
+    });
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
+  // ============================================
+  // FILTER CATEGORIES
+  // ============================================
+  const otherCategories =
+    categories.filter(
+      (category) =>
+        !String(category.name || "")
+          .toLowerCase()
+          .includes("peanut")
+    );
+
+  // ============================================
+  // RENDER
+  // ============================================
   return (
     <>
-      <footer className="footer">
+      {/* ========================================
+          FOOTER
+      ======================================== */}
+      <footer
+        className="footer"
+        ref={footerRef}
+      >
         <div className="container">
           <div className="footer-area">
+
             <div className="footer-main">
+
               <div className="grid">
 
-                {/* ✅ LOGO */}
-                <div className="footer-about">
+                {/* ==================================
+                    ABOUT / LOGO
+                ================================== */}
+                <div
+                  className="footer-about reveal"
+                  style={{
+                    "--delay": "0s",
+                  }}
+                >
                   <div className="footer-logo">
                     <div className="footer-img">
                       <Link to="/">
-                        <img src={footerImg} alt="footer-logo" />
+                        <img
+                          src={footerImg}
+                          alt="Krishi Vikash Kendra"
+                        />
                       </Link>
                     </div>
                   </div>
                 </div>
 
-                {/* ✅ QUICK LINKS */}
-                <div className="footer-widget">
-                  <h3>Quick Links</h3>
-                  <ul>
-                    <li><Link to="/">Home</Link></li>
-                    <li><Link to="/about">About</Link></li>
-                    <li><Link to="/brands">Brands</Link></li>
+                {/* ==================================
+                    QUICK LINKS
+                ================================== */}
+                <div
+                  className="footer-widget reveal"
+                  style={{
+                    "--delay": "0.1s",
+                  }}
+                >
+                  <h3>
+                    Quick Links
+                  </h3>
 
-                    <li><Link to="/contact">Contact</Link></li>
+                  <ul>
+                    <li>
+                      <Link to="/">
+                        Home
+                      </Link>
+                    </li>
+
+                    <li>
+                      <Link to="/about">
+                        About
+                      </Link>
+                    </li>
+
+                    <li>
+                      <Link to="/brands">
+                        Brands
+                      </Link>
+                    </li>
+
+                    <li>
+                      <Link to="/contact">
+                        Contact
+                      </Link>
+                    </li>
                   </ul>
                 </div>
-                <div className="footer-widget">
-                  <h3>Other Links</h3>
+
+                {/* ==================================
+                    OTHER LINKS
+                ================================== */}
+                <div
+                  className="footer-widget reveal"
+                  style={{
+                    "--delay": "0.2s",
+                  }}
+                >
+                  <h3>
+                    Other Links
+                  </h3>
+
                   <ul>
-                    <li><Link to="/profile">My Account</Link></li>
-                    <li><Link to="/login">Login</Link></li>
-                    <li><Link to="/signup">Sign Up</Link></li>
-                    <li><Link to="/trackmyorder">Track Order</Link></li>
+                    <li>
+                      <Link to="/profile">
+                        My Account
+                      </Link>
+                    </li>
+
+                    <li>
+                      <Link to="/login">
+                        Login
+                      </Link>
+                    </li>
+
+                    <li>
+                      <Link to="/signup">
+                        Sign Up
+                      </Link>
+                    </li>
+
+                    <li>
+                      <Link to="/trackmyorder">
+                        Track Order
+                      </Link>
+                    </li>
+
+                    <li>
+                      <Link to="/orders">
+                        All Order
+                      </Link>
+                    </li>
                   </ul>
                 </div>
 
-                {/* ✅ PEANUT PRODUCTS (DYNAMIC) */}
+                {/* ==================================
+                    PRODUCTS / CATEGORIES
+                ================================== */}
+                <div
+                  className="footer-widget reveal"
+                  style={{
+                    "--delay": "0.3s",
+                  }}
+                >
+                  <h3>
+                    Our Products
+                  </h3>
 
-
-                {/* ✅ OUR PRODUCTS (DYNAMIC) */}
-                <div className="footer-widget">
-                  <h3>Our Products</h3>
                   <ul>
-                    {otherCategories.length > 0 ? (
-                      otherCategories.map((cat) => (
-                        <li key={cat.id}>
-                          <Link to={`/products-categories/${cat.name}`}>
-                            {cat.name}
-                          </Link>
-                        </li>
-                      ))
+                    {otherCategories.length >
+                    0 ? (
+                      otherCategories.map(
+                        (category) => (
+                          <li
+                            key={category.id}
+                          >
+                            <Link
+                              to={`/products-categories/${encodeURIComponent(
+                                category.name
+                              )}`}
+                            >
+                              {
+                                category.name
+                              }
+                            </Link>
+                          </li>
+                        )
+                      )
                     ) : (
-                      <li>No Products Available</li>
+                      <li>
+                        No Products Available
+                      </li>
                     )}
                   </ul>
                 </div>
 
-                {/* ✅ CONTACT */}
-                <div className="footer-widget">
-                  <h3>Contact Us</h3>
+                {/* ==================================
+                    CONTACT
+                ================================== */}
+                <div
+                  className="footer-widget reveal"
+                  style={{
+                    "--delay": "0.4s",
+                  }}
+                >
+                  <h3>
+                    Contact Us
+                  </h3>
+
                   <ul>
+
+                    {/* WHATSAPP */}
                     <li>
-                      <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">
-                        <i className="fa-brands fa-square-whatsapp"></i> +91 930 -827-0123
+                      <a
+                        href={whatsappUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <i className="fa-brands fa-square-whatsapp"></i>
+
+                        <span>
+                          +91 930-827-0123
+                        </span>
                       </a>
                     </li>
 
+                    {/* EMAIL */}
                     <li>
                       <a href="mailto:krishivikashkendra@gmail.com">
                         <i className="fa fa-envelope"></i>
-                        krishivikashkendra@gmail.com
+
+                        <span>
+                          krishivikashkendra@gmail.com
+                        </span>
                       </a>
                     </li>
 
+                    {/* LOCATION */}
                     <li>
-                      <a href="https://www.google.com/maps?q=Jaipur">
+                      <a
+                        href="https://www.google.com/maps?q=Chandwa,+Latehar,+Jharkhand"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
                         <i className="fa fa-map-marker-alt"></i>
-                        Chandwa, Latehar, Jharkhand
+
+                        <span>
+                          Chandwa, Latehar,
+                          Jharkhand
+                        </span>
                       </a>
                     </li>
+
                   </ul>
 
-                  {/* ✅ SOCIAL ICONS */}
+                  {/* SOCIAL ICONS */}
                   <div className="footer-icon">
-                    <a className="footer-item" href="#"><i className="fa-brands fa-facebook-f"></i></a>
-                    <a className="footer-item" href="#"><i className="fa-brands fa-instagram"></i></a>
-                    <a className="footer-item" href="#"><i className="fa-brands fa-x-twitter"></i></a>
+
+                    <a
+                      className="footer-item"
+                      href="#"
+                      aria-label="Facebook"
+                    >
+                      <i className="fa-brands fa-facebook-f"></i>
+                    </a>
+
+                    <a
+                      className="footer-item"
+                      href="#"
+                      aria-label="Instagram"
+                    >
+                      <i className="fa-brands fa-instagram"></i>
+                    </a>
+
+                    <a
+                      className="footer-item"
+                      href="#"
+                      aria-label="X"
+                    >
+                      <i className="fa-brands fa-x-twitter"></i>
+                    </a>
+
                   </div>
                 </div>
 
               </div>
             </div>
+
           </div>
         </div>
       </footer>
 
-      <div class="footer-bottom-wrapper">
-        <div class="container">
-          <div class="footer-row">
-            <div class="footer-col-left">
-              <p class="footer-copy">
-                © 2026 <strong class="brand-text">KRISHI VIKASH KENDRA</strong> — All rights reserved.
+      {/* ========================================
+          FOOTER BOTTOM
+      ======================================== */}
+      <div className="footer-bottom-wrapper">
+
+        <div className="container">
+
+          <div className="footer-row">
+
+            {/* ==================================
+                COPYRIGHT
+            ================================== */}
+            <div className="footer-col-left">
+
+              <p className="footer-copy">
+                © 2026{" "}
+
+                <strong className="brand-text">
+                  KRISHI VIKASH KENDRA
+                </strong>
+
+                {" "}— All rights reserved.
               </p>
+
             </div>
 
-            <div class="footer-col-center">
-              <div class="hotline-item">
-                <img src="assets/imgs/theme/icons/phone-call.svg" alt="hotline" />
-                <p>+91 93082 70123 <span>8:00 AM – 10:00 PM</span></p>
+            {/* ==================================
+                HOTLINE
+            ================================== */}
+            <div className="footer-col-center">
+
+              <div className="hotline-item">
+
+                <i className="fa-solid fa-phone-volume"></i>
+
+                <p>
+                  +91 93082 70123{" "}
+                  <span>
+                    8:00 AM – 10:00 PM
+                  </span>
+                </p>
+
               </div>
 
-              <div class="hotline-item">
-                <img src="assets/imgs/theme/icons/phone-call.svg" alt="hotline" />
-                <p>+91 93082 70123 <span>24/7 Support</span></p>
+              <div className="hotline-item">
+
+                <i className="fa-solid fa-headset"></i>
+
+                <p>
+                  +91 93082 70123{" "}
+                  <span>
+                    24/7 Support
+                  </span>
+                </p>
+
               </div>
+
             </div>
 
-            <div class="footer-col-right">
-              <h6 class="footer-title">Follow Us</h6>
-              <div class="footer-social">
-                <a href="#"><img src="assets/imgs/theme/icons/icon-facebook-white.svg" alt="" /></a>
-                <a href="#"><img src="assets/imgs/theme/icons/icon-twitter-white.svg" alt="" /></a>
-                <a href="#"><img src="assets/imgs/theme/icons/icon-instagram-white.svg" alt="" /></a>
-                <a href="#"><img src="assets/imgs/theme/icons/icon-pinterest-white.svg" alt="" /></a>
-                <a href="#"><img src="assets/imgs/theme/icons/icon-youtube-white.svg" alt="" /></a>
+            {/* ==================================
+                SOCIAL
+            ================================== */}
+            <div className="footer-col-right">
+
+              <h6 className="footer-title">
+                Follow Us
+              </h6>
+
+              <div className="footer-social">
+
+                <a
+                  href="#"
+                  aria-label="Facebook"
+                >
+                  <i className="fa-brands fa-facebook-f"></i>
+                </a>
+
+                <a
+                  href="#"
+                  aria-label="Twitter"
+                >
+                  <i className="fa-brands fa-x-twitter"></i>
+                </a>
+
+                <a
+                  href="#"
+                  aria-label="Instagram"
+                >
+                  <i className="fa-brands fa-instagram"></i>
+                </a>
+
+                <a
+                  href="#"
+                  aria-label="Pinterest"
+                >
+                  <i className="fa-brands fa-pinterest-p"></i>
+                </a>
+
+                <a
+                  href="#"
+                  aria-label="YouTube"
+                >
+                  <i className="fa-brands fa-youtube"></i>
+                </a>
+
               </div>
-              {/* <p class="footer-subtext">Get 15% off on your first subscription</p> */}
+
             </div>
 
           </div>
         </div>
       </div>
-
-
     </>
   );
 };

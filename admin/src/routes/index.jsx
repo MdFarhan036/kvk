@@ -43,6 +43,15 @@ import { BrandManagement } from '../pages/brands/BrandManagement';
 import AdminProtectedRoute from './PrivateRoute';
 import { Transactions } from '../pages/invoice/Transactions';
 import { Invoice } from '../pages/invoice/Invoice';
+import { CarouselManagement } from '../pages/carousel/CarouselManagement';
+import { CarouselTable } from '../pages/carousel/CarouselTable';
+import { AddCarousel } from '../pages/carousel/AddCarousel';
+import { EditCarousel } from '../pages/carousel/EditCarousel';
+import BlogAdmin from '../pages/BlogAdmin';
+import BlogDetails from '../pages/BlogDetails';
+import BlogList from '../pages/BlogList';
+import CreateBlog from '../pages/CreateBlog';
+import EditBlog from '../pages/EditBlog';
 
 const router = createBrowserRouter([
   {
@@ -107,7 +116,7 @@ const router = createBrowserRouter([
               { path: "uploadProduct", element: <UploadProduct /> },
               { path: "productTable", element: <ProductTable /> },
               { path: "productDetails/:id", element: <ProductDetails /> },
-              { path: "editProduct/:id", element: <EditProduct /> },
+              { path: "edit/:id", element: <EditProduct /> },
             ],
           },
           {
@@ -120,9 +129,35 @@ const router = createBrowserRouter([
             ],
           },
           {
+            path: "carousels",
+            element: <CarouselManagement />,
+            children: [
+              { path: "carouselsTable", element: <CarouselTable /> },
+              { path: "add", element: <AddCarousel /> },
+              { path: "edit/:id", element: <EditCarousel /> },
+            ],
+          },
+          {
             path: "popularProductsTable",
             element: <PopularProductsTable />,
           },
+          {
+            path: "blogs",
+            element: <BlogList />,
+          },
+          {
+            path: "blogs/create",
+            element: <CreateBlog />
+          },
+          {
+            path: "/blogs/edit/:id",
+            element: <EditBlog />,
+          },
+          {
+            path: "blogs/:slug",
+            element: <BlogDetails />,
+          },
+
           {
             path: "invoices/:id",
             element: <Invoice />,
@@ -154,7 +189,7 @@ const router = createBrowserRouter([
         path: "/account",
         element:
           <AdminProtectedRoute roles={["customer", "admin"]}>
-           <MyAccount />
+            <MyAccount />
           </AdminProtectedRoute>
         ,
       },

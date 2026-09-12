@@ -921,3 +921,325 @@ td select {
     padding: 3px 6px;
   }
 }
+/* =========================================================
+   ADD ORDER PAGE
+   ========================================================= */
+
+.add-order-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 35px;
+  box-sizing: border-box;
+  font-family: "Inter", sans-serif;
+  background: #f8fafc;
+  min-height: 100%;
+}
+
+/* =========================================================
+   PAGE TITLE
+   ========================================================= */
+
+.add-order-container h2 {
+  margin: 0 0 28px;
+  font-size: 30px;
+  font-weight: 700;
+  color: #111827;
+}
+
+/* =========================================================
+   ERROR
+   ========================================================= */
+
+.add-order-container p[style*="color"] {
+  margin: 0 0 20px;
+  padding: 12px 15px;
+  border-radius: 7px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #dc2626 !important;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* =========================================================
+   FORM
+   ========================================================= */
+
+.add-order-container form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* =========================================================
+   FORM GROUPS
+   ========================================================= */
+
+.add-order-container form > div {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.add-order-container label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+}
+
+/* =========================================================
+   INPUTS / SELECT / TEXTAREA
+   ========================================================= */
+
+.add-order-container input,
+.add-order-container select,
+.add-order-container textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 11px 13px;
+  border: 1px solid #d1d5db;
+  border-radius: 7px;
+  background: #ffffff;
+  color: #111827;
+  font-family: inherit;
+  font-size: 14px;
+  outline: none;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.add-order-container input:focus,
+.add-order-container select:focus,
+.add-order-container textarea:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.add-order-container input[readonly] {
+  background: #f8fafc;
+  color: #475569;
+}
+
+.add-order-container select:disabled {
+  background: #f1f5f9;
+  color: #64748b;
+  cursor: not-allowed;
+}
+
+.add-order-container textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+/* =========================================================
+   ITEMS HEADING
+   ========================================================= */
+
+.add-order-container h3 {
+  margin: 15px 0 0;
+  padding-bottom: 10px;
+  font-size: 20px;
+  font-weight: 700;
+  color: #111827;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+/* =========================================================
+   ITEM ROW
+   ========================================================= */
+
+.add-order-container form > div:has(select[name="productId"]) {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.add-order-container select[name="productId"] {
+  flex: 1.4;
+  min-width: 220px;
+}
+
+.add-order-container input[name="quantity"] {
+  width: 90px !important;
+  flex: 0 0 90px;
+}
+
+.add-order-container input[readonly][type="text"] {
+  flex: 1;
+  min-width: 180px;
+}
+
+.add-order-container input[readonly][type="number"] {
+  width: 120px !important;
+  flex: 0 0 120px;
+}
+
+/* =========================================================
+   BUTTONS
+   ========================================================= */
+
+.add-order-container button {
+  width: fit-content;
+  padding: 10px 18px;
+  border: 1px solid #d1d5db;
+  border-radius: 7px;
+  background: #ffffff;
+  color: #374151;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.1s ease;
+}
+
+.add-order-container button:hover {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+}
+
+.add-order-container button:active {
+  transform: translateY(1px);
+}
+
+/* =========================================================
+   ADD ITEM BUTTON
+   ========================================================= */
+
+.add-order-container form > button[type="button"] {
+  align-self: flex-start;
+  margin-top: 2px;
+  background: #eff6ff;
+  border-color: #bfdbfe;
+  color: #2563eb;
+}
+
+.add-order-container form > button[type="button"]:hover {
+  background: #dbeafe;
+  border-color: #93c5fd;
+}
+
+/* =========================================================
+   REMOVE BUTTON
+   ========================================================= */
+
+.add-order-container form
+  > div:has(select[name="productId"])
+  > button {
+  flex: 0 0 auto;
+  padding: 9px 14px;
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #dc2626;
+}
+
+.add-order-container form
+  > div:has(select[name="productId"])
+  > button:hover {
+  background: #fee2e2;
+  border-color: #fca5a5;
+}
+
+/* =========================================================
+   SAVE ORDER BUTTON
+   ========================================================= */
+
+.add-order-container form > button[type="submit"] {
+  align-self: flex-start;
+  min-width: 130px;
+  margin-top: 5px;
+  padding: 12px 22px;
+  border: 1px solid #2563eb;
+  background: #2563eb;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.add-order-container form > button[type="submit"]:hover {
+  background: #1d4ed8;
+  border-color: #1d4ed8;
+}
+
+.add-order-container form > button[type="submit"]:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* =========================================================
+   TOTAL COST
+   ========================================================= */
+
+.add-order-container input[value="0"] {
+  font-weight: 600;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 900px) {
+  .add-order-container {
+    padding: 25px;
+  }
+
+  .add-order-container form
+    > div:has(select[name="productId"]) {
+    flex-wrap: wrap;
+  }
+
+  .add-order-container select[name="productId"] {
+    width: 100%;
+    flex: 1 1 100%;
+    min-width: 0;
+  }
+
+  .add-order-container input[readonly][type="text"] {
+    flex: 1 1 100%;
+    min-width: 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .add-order-container {
+    padding: 20px 15px;
+  }
+
+  .add-order-container h2 {
+    font-size: 25px;
+    margin-bottom: 22px;
+  }
+
+  .add-order-container h3 {
+    font-size: 18px;
+  }
+
+  .add-order-container form
+    > div:has(select[name="productId"]) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .add-order-container select[name="productId"],
+  .add-order-container input[name="quantity"],
+  .add-order-container input[readonly][type="text"],
+  .add-order-container input[readonly][type="number"] {
+    width: 100% !important;
+    flex: none;
+  }
+
+  .add-order-container form
+    > div:has(select[name="productId"])
+    > button {
+    width: 100%;
+  }
+}

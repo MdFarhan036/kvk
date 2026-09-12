@@ -1,5 +1,5 @@
 // src/context/CartContext.jsx
-import React, { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 import api from "../components/api"; // ✅ centralized axios with cookies
 import { useCustomerAuth } from "./CustomerContext";
 

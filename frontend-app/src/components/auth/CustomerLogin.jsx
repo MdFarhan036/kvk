@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import "./Login.css";
 
 import { Link, useNavigate } from "react-router-dom";
@@ -57,7 +57,7 @@ export const CustomerLogin = () => {
           <img src={loginIcons} alt="login icon" />
         </div>
 
-        {error && <p style={{ color: "red" }}>{error}</p>}
+        {error && <p className="form-error">{error}</p>}
         <div className="txtb">
           <label>Email</label>
           <input
@@ -65,7 +65,6 @@ export const CustomerLogin = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            style={{ width: "100%", padding: "8px" }}
           />
         </div>
 
@@ -77,7 +76,6 @@ export const CustomerLogin = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              style={{ width: "100%", padding: "8px" }}
             />
             <span
               className="toggle-pass"

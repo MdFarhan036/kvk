@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../api";
 
 export const AdminTrackOrders = () => {
   const [orders, setOrders] = useState([]);
@@ -13,7 +13,7 @@ export const AdminTrackOrders = () => {
     try {
       setLoading(true);
       setError("");
-      const res = await axios.get("http://localhost:8000/api/orders");
+      const res = await api.get("/orders");
       setOrders(res.data);
     } catch (err) {
       console.error(err);
@@ -26,7 +26,7 @@ export const AdminTrackOrders = () => {
   // Update order status
   const updateOrderStatus = async (orderId, newStatus) => {
     try {
-      await axios.put(`http://localhost:8000/api/orders/${orderId}/status`, {
+      await api.put(`/orders/${orderId}/status`, {
         status: newStatus,
       });
       fetchOrders(); // refresh after update

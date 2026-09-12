@@ -1,50 +1,117 @@
-// src/components/dailydeals/DailyDealsAll.jsx
-import { useState, useEffect } from "react";
-import axios from "axios";
+import { useEffect, useState } from "react";
+import api from "../../api.js";
 import { DailyDealsCard } from "./DailyDealsCard";
 import "./DailyDeals.css";
+
+const SkeletonGrid = ({ count = 8 }) => (
+  <div className="dd-skeleton-grid">
+    {Array.from({ length: count }).map((_, i) => (
+      <div className="dd-skeleton-card" key={i}>
+        <div className="dd-skeleton-img" />
+        <div className="dd-skeleton-line" />
+        <div className="dd-skeleton-line short" />
+      </div>
+    ))}
+  </div>
+);
 
 export const DailyDealsCategory = () => {
   const [ddproducts, setDdProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [toast, setToast] = useState(null);
+
+  const showToast = (msg) => {
+    setToast(msg);
+
+    window.clearTimeout(showToast._t);
+
+    showToast._t = window.setTimeout(() => {
+      setToast(null);
+    }, 2500);
+  };
 
   useEffect(() => {
+    let isMounted = true;
+
     const fetchAllDailyDeals = async () => {
       try {
-        const res = await axios.get("http://localhost:8000/api/daily-deals");
-        // ✅ Ensure only valid daily deal products are shown
-        const validDeals = res.data.filter(
+        const { data } = await api.get("/daily-deals");
+
+        const validDeals = (Array.isArray(data) ? data : []).filter(
           (p) => p.is_daily_deal === 1 && p.daily_deal_price
         );
-        setDdProducts(validDeals);
+
+        if (isMounted) {
+          setDdProducts(validDeals);
+        }
       } catch (err) {
         console.error("Error fetching daily deals:", err);
+
+        if (isMounted) {
+          setError("We couldn't load daily deals right now.");
+        }
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
-    fetchAllDailyDeals();
-  }, []);
 
-  if (loading) return <p>Loading daily deals...</p>;
+    fetchAllDailyDeals();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   return (
     <div className="daily-deals">
-      <div className="section-title">
-        <h2>All Daily Deals</h2>
-      </div>
-
       <div className="dailydeals-container">
-        {ddproducts.length > 0 ? (
+        <div className="dd-section-title">
+          <div>
+            <span className="dd-eyebrow">Browsing</span>
+
+            <h2>All daily deals</h2>
+
+            <p>
+              {loading
+                ? "Loading the full lineup..."
+                : `${ddproducts.length} deals live today`}
+            </p>
+          </div>
+        </div>
+
+        {loading ? (
+          <SkeletonGrid />
+        ) : error ? (
+          <div className="dd-empty-state">
+            <strong>Something went wrong</strong>
+            {error}
+          </div>
+        ) : ddproducts.length > 0 ? (
           <div className="dailydeals-grid">
             {ddproducts.map((ddproduct) => (
-              <DailyDealsCard key={ddproduct.id} ddproduct={ddproduct} />
+              <DailyDealsCard
+                key={ddproduct.id}
+                ddproduct={ddproduct}
+                onToast={showToast}
+              />
             ))}
           </div>
         ) : (
-          <p>No daily deals available right now.</p>
+          <div className="dd-empty-state">
+            <strong>No daily deals right now</strong>
+            Check back soon — new deals drop daily.
+          </div>
         )}
       </div>
+
+      {toast && (
+        <div className="dd-toast" role="status">
+          {toast}
+        </div>
+      )}
     </div>
   );
 };

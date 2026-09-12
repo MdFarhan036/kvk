@@ -1,20 +1,35 @@
 import express from "express";
-import upload from "../middleware/upload.js";
+
 import {
-  createBrand,
   getAllBrands,
-  getBrandById,
+  createBrand,
   updateBrand,
   deleteBrand,
+  getBrandById,
   getBrandsByCategory,
+  getPublicBrands,
 } from "../controllers/brandController.js";
 
 const router = express.Router();
 
-router.post("/", upload.single("image"), createBrand); // ✅ IMAGE UPLOAD
+// PUBLIC / STATIC ROUTES FIRST
+
 router.get("/", getAllBrands);
+
+router.get("/public", getPublicBrands);
+
+router.get("/category/:categoryName", getBrandsByCategory);
+
+// CREATE
+
+router.post("/", createBrand);
+
+// DYNAMIC ID ROUTES LAST
+
 router.get("/:id", getBrandById);
-router.put("/:id", upload.single("image"), updateBrand);
+
+router.put("/:id", updateBrand);
+
 router.delete("/:id", deleteBrand);
 
 export default router;

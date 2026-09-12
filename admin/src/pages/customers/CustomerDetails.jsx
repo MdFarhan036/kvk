@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
-
-axios.defaults.baseURL = "http://localhost:8000/api/admin/customers/";
-axios.defaults.withCredentials = true;
+import api from "../api";
 
 export const CustomerDetails = () => {
   const { id } = useParams();
@@ -12,104 +9,177 @@ export const CustomerDetails = () => {
   const [customer, setCustomer] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // ============================================
+  // FETCH CUSTOMER DETAILS
+  // ============================================
   useEffect(() => {
     const fetchCustomer = async () => {
       try {
-        // Fetch Single Customer
-        const res = await axios.get(`/admin/customers/${id}`);
+        const res = await api.get(
+          `/admin/customers/${id}`
+        );
+
         setCustomer(res.data);
       } catch (err) {
-        console.error("Error fetching customer details", err);
+        console.error(
+          "Error fetching customer details:",
+          err
+        );
       } finally {
         setLoading(false);
       }
     };
+
     fetchCustomer();
   }, [id]);
 
+  // ============================================
+  // DELETE CUSTOMER
+  // ============================================
   const deleteCustomer = async () => {
-    if (!window.confirm("Are you sure you want to delete this customer?")) return;
+    if (
+      !window.confirm(
+        "Are you sure you want to delete this customer?"
+      )
+    ) {
+      return;
+    }
 
     try {
-      await axios.delete(`/admin/customers/${id}`);
+      await api.delete(
+        `/admin/customers/${id}`
+      );
+
       navigate("/customers");
     } catch (err) {
-      console.error("Error deleting customer:", err);
+      console.error(
+        "Error deleting customer:",
+        err
+      );
     }
   };
 
-  if (loading) return <div>Loading...</div>;
-  if (!customer) return <div>Customer not found</div>;
+  // ============================================
+  // LOADING / EMPTY STATE
+  // ============================================
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
+  if (!customer) {
+    return <div>Customer not found</div>;
+  }
+
+  // ============================================
+  // RENDER
+  // ============================================
   return (
     <div className="user-details-container">
-      {/* Header Section */}
+
+      {/* HEADER */}
       <div className="user-header">
-        <h2>{customer.customerName}</h2>
+        <h2>
+          {customer.customerName}
+        </h2>
+
         <p>{customer.email}</p>
-        <small>Customer ID: {customer.id}</small>
+
+        <small>
+          Customer ID: {customer.id}
+        </small>
       </div>
 
-      {/* Main Body */}
+      {/* MAIN BODY */}
       <div className="details-grid">
-        {/* Left Card */}
+
+        {/* BASIC DETAILS */}
         <div className="user-details-card-left">
           <h3>Basic Details</h3>
 
           <p>
-            <b>Phone:</b> {customer.mobile}
+            <b>Phone:</b>{" "}
+            {customer.mobile}
           </p>
+
           <p>
-            <b>Email:</b> {customer.email}
+            <b>Email:</b>{" "}
+            {customer.email}
           </p>
+
           <p>
-            <b>State:</b> {customer.state}
+            <b>State:</b>{" "}
+            {customer.state}
           </p>
+
           <p>
-            <b>City:</b> {customer.city}
+            <b>City:</b>{" "}
+            {customer.city}
           </p>
+
           <p>
-            <b>Address:</b> {customer.address}
+            <b>Address:</b>{" "}
+            {customer.address}
           </p>
+
           <p>
-            <b>Pincode:</b> {customer.pincode}
+            <b>Pincode:</b>{" "}
+            {customer.pincode}
           </p>
+
           <p>
             <b>Created At:</b>{" "}
-            {new Date(customer.createdAt).toLocaleDateString()}
+            {customer.createdAt
+              ? new Date(
+                  customer.createdAt
+                ).toLocaleDateString()
+              : "-"}
           </p>
         </div>
 
-        {/* Right Cards */}
+        {/* RIGHT CARDS */}
         <div className="user-details-card-right-container">
 
-          {/* Orders / Payments */}
+          {/* ORDER SUMMARY */}
           <div className="user-details-card-right">
             <h3>Order Summary</h3>
 
             <p>
-              <b>Total Orders:</b> {customer.totalOrders ?? 0}
+              <b>Total Orders:</b>{" "}
+              {customer.totalOrders ?? 0}
             </p>
 
             <p>
-              <b>Total Spent:</b> ₹{customer.totalSpent ?? 0}
+              <b>Total Spent:</b>{" "}
+              ₹
+              {Number(
+                customer.totalSpent ?? 0
+              ).toFixed(2)}
             </p>
 
             <button
-              onClick={() => navigate(`/orders/${customer.id}`)}
+              onClick={() =>
+                navigate(
+                  `/orders/${customer.id}`
+                )
+              }
               className="view-orders-btn"
             >
               View Orders
             </button>
           </div>
 
-          {/* Data Management */}
+          {/* DATA MANAGEMENT */}
           <div className="user-details-card-right">
             <h3>Data Management</h3>
-            <button className="delete-btn" onClick={deleteCustomer}>
+
+            <button
+              className="delete-btn"
+              onClick={deleteCustomer}
+            >
               Delete Account
             </button>
           </div>
+
         </div>
       </div>
     </div>

@@ -1,77 +1,125 @@
-import axios from "axios";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import api from "../api";
 
-export const SelectCategories = ({ onSelect }) => {
-  const [isOpen, setIsOpen] = useState(false);
+export const SelectCategories = ({ onSelect, open, setOpen }) => {
   const [categories, setCategories] = useState([]);
   const [filtered, setFiltered] = useState([]);
-  const [selected, setSelected] = useState({ id: "", name: "All Categories" });
+  const [search, setSearch] = useState("");
+  const wrapperRef = useRef(null);
 
-  // ✅ Fetch categories from backend
+  const [selected, setSelected] = useState({
+    id: "",
+    name: "All Categories",
+  });
+
+  // ✅ FETCH CATEGORIES
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const { data } = await axios.get("/categories");
-        const allCats = [{ id: "", name: "All Categories" }, ...data];
+        const { data } = await api.get("/categories");
+
+        const safeData = Array.isArray(data) ? data : [];
+        const allCats = [{ id: "", name: "All Categories" }, ...safeData];
+
         setCategories(allCats);
         setFiltered(allCats);
       } catch (err) {
         console.error("Error fetching categories:", err);
+        const fallback = [{ id: "", name: "All Categories" }];
+        setCategories(fallback);
+        setFiltered(fallback);
       }
     };
+
     fetchCategories();
   }, []);
 
-  const toggleSelect = () => setIsOpen(!isOpen);
+  // ✅ OUTSIDE CLICK CLOSE
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
+        setOpen(false);
+      }
+    };
 
+    document.addEventListener("mousedown", handleClickOutside);
+    return () =>
+      document.removeEventListener("mousedown", handleClickOutside);
+  }, [setOpen]);
+
+  // ✅ SELECT CATEGORY
   const handleSelect = (cat) => {
-    setSelected(cat);
-    setIsOpen(false);
+    setSelected(cat || { id: "", name: "All Categories" });
+    setOpen(false);
     if (onSelect) onSelect(cat);
   };
 
+  // ✅ FILTER
   const handleFilter = (e) => {
-    const keyword = e.target.value.toLowerCase();
+    const value = e.target.value;
+    setSearch(value);
+
     const list = categories.filter((cat) =>
-      cat.name.toLowerCase().includes(keyword)
+      cat?.name?.toLowerCase().includes(value.toLowerCase())
     );
+
     setFiltered(list);
   };
 
+  const safeName = selected?.name || "All Categories";
+
   return (
-    <div className="selectDropWrapper">
-      {/* Selected Category */}
-      <span className="openselect" onClick={toggleSelect}>
-        {selected.name.length > 14
-          ? selected.name.substring(0, 14) + "..."
-          : selected.name}
+    <div
+      className="selectDropWrapper"
+      ref={wrapperRef}
+      onClick={(e) => e.stopPropagation()} // ✅ FIX 1 (VERY IMPORTANT)
+    >
+      {/* BUTTON */}
+      <span
+        className="openselect"
+        onClick={(e) => {
+          e.stopPropagation(); // ✅ FIX 2
+          setOpen(!open);
+        }}
+      >
+        {safeName.length > 14
+          ? safeName.substring(0, 14) + "..."
+          : safeName}
       </span>
 
-      {isOpen && (
-        <div className="selectDrop">
-          {/* Search Box */}
-          <div className="searchField">
-            <input
-              type="text"
-              placeholder="Search Categories..."
-              onChange={handleFilter}
-            />
-          </div>
+      {/* DROPDOWN */}
+      <div className={`selectDrop ${open ? "open" : ""}`}>
+        {/* SEARCH */}
+        <div className="searchField">
+          <input
+            type="text"
+            placeholder="Search Categories..."
+            value={search}
+            onChange={handleFilter}
+            onClick={(e) => e.stopPropagation()} // ✅ FIX 3
+          />
+        </div>
 
-          {/* List */}
-          <ul className="searchResults">
-            {filtered.map((cat) => (
+        {/* LIST */}
+        <ul className="searchResults">
+          {filtered?.length > 0 ? (
+            filtered.map((cat) => (
               <li
                 key={cat.id || cat.name}
-                onClick={() => handleSelect(cat)}
-                className={selected.id === cat.id ? "active" : ""}
+                onClick={(e) => {
+                  e.stopPropagation(); // ✅ FIX 4 (CRITICAL)
+                  handleSelect(cat);
+                }}
+                className={selected?.id === cat.id ? "active" : ""}
               >
                 {cat.name}
               </li>
-            ))}
-          </ul>
-        </div>
-      )}
+            ))
+          ) : (
+            <li>No Categories Found</li>
+          )}
+        </ul>
+      </div>
     </div>
   );
 };

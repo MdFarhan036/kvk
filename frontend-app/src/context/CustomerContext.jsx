@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 import api from "../components/api.js";
 
 const CustomerContext = createContext();
@@ -36,17 +36,13 @@ export const CustomerProvider = ({ children }) => {
 
   // ✅ COOKIE BASED LOGIN
   const login = async (email, password) => {
-    try {
-      await api.post(
-        "/auth/customer/login",
-        { email, password },
-        { withCredentials: true }
-      );
+    await api.post(
+      "/auth/customer/login",
+      { email, password },
+      { withCredentials: true }
+    );
 
-      return await checkAuth(); // ✅ refresh user via cookie
-    } catch (err) {
-      throw err;
-    }
+    return await checkAuth(); // ✅ refresh user via cookie
   };
 
   // ✅ COOKIE BASED LOGOUT

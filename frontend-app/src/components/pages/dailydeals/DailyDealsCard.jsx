@@ -1,135 +1,375 @@
-import React from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+
+import api, { ASSET_BASE_URL } from "../../api.js";
+
 import wishlistimg from "../../../assets/img/wishlist.png";
 import previewimg from "../../../assets/img/eyeicon.jpg";
+
 import { useCart } from "../../../context/CartContext";
 import { useWishlist } from "../../../context/WishlistContext";
+
 import "./DailyDeals.css";
+
+/* =========================================================
+   HELPERS
+========================================================= */
+
+const getImageUrl = (url) => {
+  if (!url) return null;
+
+  // Already a complete URL
+  if (/^https?:\/\//i.test(url)) {
+    return url;
+  }
+
+  return `${ASSET_BASE_URL}${
+    url.startsWith("/") ? "" : "/"
+  }${url}`;
+};
+
+const formatRupees = (value) =>
+  Number(value || 0).toLocaleString("en-IN");
+
+/* =========================================================
+   DAILY DEALS CARD
+========================================================= */
 
 export const DailyDealsCard = ({
   ddproduct,
   isAdmin,
   openDailyDealModal,
+  onToast,
 }) => {
   const { addToCart } = useCart();
   const { addToWishlist } = useWishlist();
 
-  // ✅ Same behavior as FeaturedCategories
-  const showToast = (msg) => alert(msg);
+  const [imgError, setImgError] = useState(false);
 
-  if (!ddproduct) return null;
+  const notify =
+    onToast ||
+    ((msg) => window.alert(msg));
 
-  const productLink = `/products-categories/${ddproduct.category_name || "unknown"
-    }/${ddproduct.id}`;
+  /* =======================================================
+     PRODUCT DATA
+  ======================================================= */
+
+  const {
+    id,
+    title,
+    name,
+    images,
+    category_name,
+    brand,
+    stock,
+    orgprice,
+    price,
+    daily_deal_price,
+  } = ddproduct || {};
+
+  const displayName =
+    title ||
+    name ||
+    "Untitled product";
+
+  const inStock =
+    Number(stock) > 0;
+
+  const productLink = `/products-categories/${
+    encodeURIComponent(
+      category_name || "unknown"
+    )
+  }/${id}`;
+
+  const finalPrice =
+    daily_deal_price || price;
+
+  /* =======================================================
+     DISCOUNT PERCENTAGE
+  ======================================================= */
+
+  const discountPercent = useMemo(() => {
+    const original = Number(orgprice);
+    const current = Number(finalPrice);
+
+    if (
+      !original ||
+      !current ||
+      original <= current
+    ) {
+      return null;
+    }
+
+    return Math.round(
+      ((original - current) /
+        original) *
+        100
+    );
+  }, [orgprice, finalPrice]);
+
+  /* =======================================================
+     SAFETY
+  ======================================================= */
+
+  if (!ddproduct) {
+    return null;
+  }
+
+  /* =======================================================
+     IMAGE
+  ======================================================= */
+
+  const imageSrc =
+    images && images[0]
+      ? getImageUrl(images[0])
+      : null;
+
+  /* =======================================================
+     ADD TO CART
+  ======================================================= */
+
+  const handleAddToCart = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    addToCart({
+      ...ddproduct,
+      quantity: 1,
+    });
+
+    notify(
+      `${displayName} added to cart!`
+    );
+  };
+
+  /* =======================================================
+     ADD TO WISHLIST
+  ======================================================= */
+
+  const handleAddToWishlist = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    addToWishlist({
+      ...ddproduct,
+      quantity: 1,
+    });
+
+    notify(
+      `${displayName} added to wishlist!`
+    );
+  };
+
+  /* =======================================================
+     RENDER
+  ======================================================= */
 
   return (
     <div className="product-card">
-      <span className="product-badge">Hot</span>
 
-      {/* ✅ PRODUCT IMAGE */}
+      {/* =================================================
+          IMAGE
+      ================================================= */}
+
       <div className="product-imgcard">
-        {ddproduct.images && ddproduct.images[0] ? (
-          <img
-            className="product-image"
-            src={`http://localhost:8000${ddproduct.images}`}
-            alt={ddproduct.title || ddproduct.name}
-          />
-        ) : (
-          <span>No Image</span>
+
+        {discountPercent && (
+          <span className="deal-ribbon">
+            -{discountPercent}%
+          </span>
         )}
 
-        {/* ✅ PREVIEW */}
+        {imageSrc && !imgError ? (
+          <img
+            className="product-image"
+            src={imageSrc}
+            alt={displayName}
+            loading="lazy"
+            onError={() =>
+              setImgError(true)
+            }
+          />
+        ) : (
+          <span className="no-image">
+            No image
+          </span>
+        )}
+
+        {/* =================================================
+            QUICK PREVIEW
+        ================================================= */}
+
         <div className="img_overlay">
+
           <ul className="list-product-overlay">
-            <Link to={productLink}>
+
+            <Link
+              to={productLink}
+              aria-label={`Preview ${displayName}`}
+            >
               <li className="list-item-overlay">
-                <img src={previewimg} alt="Preview" />
+
+                <img
+                  src={previewimg}
+                  alt=""
+                />
+
               </li>
             </Link>
+
           </ul>
+
         </div>
 
-        {/* ✅ WISHLIST (MATCHED WITH FEATURED) */}
-        <div
+        {/* =================================================
+            WISHLIST
+        ================================================= */}
+
+        <button
+          type="button"
           className="wishlist-icon"
-          onClick={() => {
-            addToWishlist({ ...ddproduct, quantity: 1 });
-            showToast(
-              `${ddproduct.title || ddproduct.name} added to wishlist!`
-            );
-          }}
+          onClick={handleAddToWishlist}
+          aria-label={`Add ${displayName} to wishlist`}
         >
-          <img src={wishlistimg} alt="Wishlist" />
-        </div>
+          <img
+            src={wishlistimg}
+            alt=""
+          />
+        </button>
+
       </div>
 
-      {/* ✅ PRODUCT DETAILS */}
+      {/* =================================================
+          PRODUCT DETAILS
+      ================================================= */}
+
       <div className="ddproduct-contentcard">
-        <span className="catName">{ddproduct.category_name}</span>
+
+        {/* CATEGORY */}
+
+        {category_name && (
+          <span className="catName">
+            {category_name}
+          </span>
+        )}
+
+        {/* PRODUCT NAME */}
 
         <Link to={productLink}>
           <h2 className="ddproducts-name">
-            {ddproduct.title || ddproduct.name}
+            {displayName}
           </h2>
         </Link>
 
-        <h4>{ddproduct.brand}</h4>
+        {/* BRAND */}
+
+        {brand && (
+          <h4>
+            {brand}
+          </h4>
+        )}
+
+        {/* STOCK */}
 
         <h5>
-          Stock:{" "}
-          {ddproduct.stock > 0
-            ? `In Stock (${ddproduct.stock})`
-            : "Out of Stock"}
+          <span
+            className={`stock-dot ${
+              inStock ? "" : "out"
+            }`}
+          />
+
+          {inStock
+            ? `In stock (${stock})`
+            : "Out of stock"}
         </h5>
 
-        {/* ✅ RATINGS */}
-        <div className="product-ratings">
-          <span className="fa fa-star checked"></span>
-          <span className="fa fa-star checked"></span>
-          <span className="fa fa-star checked"></span>
-          <span className="fa fa-star"></span>
-          <span className="fa fa-star"></span>
-        </div>
+        {/* =================================================
+            RATINGS
+        ================================================= */}
 
-        {/* ✅ PRICE */}
-        <div className="price">
-          {ddproduct.orgprice && (
-            <span className="original-price">₹{ddproduct.orgprice}</span>
+        <div
+          className="product-ratings"
+          aria-hidden="true"
+        >
+          {[1, 2, 3, 4, 5].map(
+            (star) => (
+              <span
+                key={star}
+                className={`fa fa-star${
+                  star <=
+                  (ddproduct.rating || 3)
+                    ? " checked"
+                    : ""
+                }`}
+              />
+            )
           )}
-          <span className="discount-price">
-            ₹{ddproduct.daily_deal_price || ddproduct.price}
-          </span>
         </div>
 
-        {/* ✅ ADD TO CART (MATCHED WITH FEATURED) */}
+        {/* =================================================
+            PRICE
+        ================================================= */}
+
+        <div className="price">
+
+          {orgprice && (
+            <span className="original-price">
+              ₹{formatRupees(orgprice)}
+            </span>
+          )}
+
+          <span className="discount-price">
+            ₹{formatRupees(finalPrice)}
+          </span>
+
+        </div>
+
+        {/* =================================================
+            ADD TO CART
+        ================================================= */}
+
         <button
           className="addtocart"
-          disabled={ddproduct.stock <= 0}
-          onClick={() => {
-            addToCart({ ...ddproduct, quantity: 1 });
-            showToast(
-              `${ddproduct.title || ddproduct.name} added to cart!`
-            );
-          }}
+          disabled={!inStock}
+          onClick={handleAddToCart}
         >
-          <i className="fa-solid fa-cart-shopping"></i>{" "}
-          {ddproduct.stock > 0 ? "Add to Cart" : "Out of Stock"}
+          <i
+            className="fa-solid fa-cart-shopping"
+            aria-hidden="true"
+          />
+
+          {inStock
+            ? "Add to cart"
+            : "Out of stock"}
         </button>
 
-        {/* ✅ ADMIN DAILY DEAL CONTROL */}
+        {/* =================================================
+            ADMIN DAILY DEAL
+        ================================================= */}
+
         {isAdmin && (
-          <div style={{ marginTop: "10px" }}>
+          <label className="dd-admin-row">
+
             <input
               type="checkbox"
-              checked={ddproduct.is_daily_deal === 1}
-              onChange={() =>
-                openDailyDealModal && openDailyDealModal(ddproduct)
+              checked={
+                ddproduct.is_daily_deal === 1
               }
-            />{" "}
-            Daily Deal
-          </div>
+              onChange={() =>
+                openDailyDealModal &&
+                openDailyDealModal(
+                  ddproduct
+                )
+              }
+            />
+
+            Daily deal
+
+          </label>
         )}
+
       </div>
+
     </div>
   );
 };

@@ -1,5 +1,5 @@
 // src/components/auth/CustomerSignup.jsx
-import React, { useState } from "react";
+import { useState } from "react";
 import "./Login.css";
 import loginIcons from "../../assets/img/signin.gif";
 import iconpass from "../../assets/img/eyeicon.jpg";
@@ -39,7 +39,7 @@ export const CustomerSignup = () => {
     setSuccess("");
 
     try {
-      const res = await api.post("/customers/signup", form);
+      const res = await api.post("/auth/customer/signup", form);
 
       if (res.data.success) {
         setSuccess("Signup successful! Redirecting to login...");
@@ -62,7 +62,7 @@ export const CustomerSignup = () => {
           <img src={loginIcons} alt="login icon" />
         </div>
 
-        {error && <p style={{ color: "red" }}>{error}</p>}
+        {error && <p className="form-error">{error}</p>}
 
         <div className="txtb">
           <input

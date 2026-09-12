@@ -1,4 +1,4 @@
-import React from 'react'
+import "./HomeCarousel2.css";
 import subbannerimg1 from "../../assets/img/banner.jpg"
 import subbannerimg2 from "../../assets/img/banner2.jpg"
 import subbannerimg3 from "../../assets/img/banner3.jpg"

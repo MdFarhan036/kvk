@@ -213,3 +213,243 @@
 .pagination span {
   font-weight: 500;
 }
+/* =========================================================
+   CUSTOMER DETAILS PAGE
+   ========================================================= */
+
+.user-details-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 35px;
+  box-sizing: border-box;
+  font-family: "Inter", sans-serif;
+  background: #f8fafc;
+  min-height: 100%;
+}
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.user-header {
+  margin-bottom: 25px;
+  padding: 25px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+}
+
+.user-header h2 {
+  margin: 0 0 7px;
+  font-size: 28px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.user-header p {
+  margin: 0 0 6px;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.user-header small {
+  color: #94a3b8;
+  font-size: 12px;
+}
+
+/* =========================================================
+   MAIN GRID
+   ========================================================= */
+
+.details-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(300px, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+/* =========================================================
+   LEFT DETAILS CARD
+   ========================================================= */
+
+.user-details-card-left {
+  padding: 25px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  box-sizing: border-box;
+}
+
+.user-details-card-left h3,
+.user-details-card-right h3 {
+  margin: 0 0 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.user-details-card-left p {
+  display: flex;
+  gap: 8px;
+  margin: 0;
+  padding: 13px 0;
+  border-bottom: 1px solid #f1f5f9;
+  color: #475569;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.user-details-card-left p:last-child {
+  border-bottom: none;
+}
+
+.user-details-card-left p b {
+  min-width: 100px;
+  color: #1e293b;
+  font-weight: 600;
+}
+
+/* =========================================================
+   RIGHT COLUMN
+   ========================================================= */
+
+.user-details-card-right-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.user-details-card-right {
+  padding: 25px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  box-sizing: border-box;
+}
+
+.user-details-card-right p {
+  margin: 0;
+  padding: 12px 0;
+  color: #475569;
+  font-size: 14px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.user-details-card-right p:last-of-type {
+  border-bottom: none;
+}
+
+/* =========================================================
+   VIEW ORDERS BUTTON
+   ========================================================= */
+
+.view-orders-btn {
+  width: 100%;
+  margin-top: 18px;
+  padding: 11px 18px;
+  border: 1px solid #2563eb;
+  border-radius: 7px;
+  background: #2563eb;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.view-orders-btn:hover {
+  background: #1d4ed8;
+  border-color: #1d4ed8;
+}
+
+/* =========================================================
+   DELETE BUTTON
+   ========================================================= */
+
+.delete-btn {
+  width: 100%;
+  padding: 11px 18px;
+  border: 1px solid #fecaca;
+  border-radius: 7px;
+  background: #fef2f2;
+  color: #dc2626;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.delete-btn:hover {
+  background: #fee2e2;
+  border-color: #fca5a5;
+  color: #b91c1c;
+}
+
+/* =========================================================
+   LOADING / EMPTY STATE
+   ========================================================= */
+
+.user-details-container > div:first-child {
+  color: #475569;
+  font-size: 14px;
+}
+
+.user-details-container > div:not(.user-header):not(.details-grid) {
+  color: #64748b;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 850px) {
+  .user-details-container {
+    padding: 25px;
+  }
+
+  .details-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .user-details-card-right-container {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .user-details-container {
+    padding: 18px 15px;
+  }
+
+  .user-header {
+    padding: 20px;
+  }
+
+  .user-header h2 {
+    font-size: 23px;
+  }
+
+  .user-details-card-left,
+  .user-details-card-right {
+    padding: 20px;
+  }
+
+  .user-details-card-right-container {
+    grid-template-columns: 1fr;
+  }
+
+  .user-details-card-left p {
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .user-details-card-left p b {
+    min-width: auto;
+  }
+}

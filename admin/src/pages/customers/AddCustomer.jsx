@@ -1,8 +1,6 @@
 import React, { useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
-axios.defaults.baseURL = "http://localhost:8000/api";
-
+import api from "../api";
 
 export const AddCustomer = () => {
   const navigate = useNavigate();
@@ -17,13 +15,24 @@ export const AddCustomer = () => {
     email: "",
   });
 
+  // ============================================
+  // HANDLE INPUT CHANGES
+  // ============================================
   const handleChange = (e) => {
-    setCustomer({ ...customer, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+
+    setCustomer((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
+
+  // ============================================
+  // SUBMIT CUSTOMER
+  // ============================================
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Basic validation
     const requiredFields = [
       "customerName",
       "address",
@@ -34,19 +43,22 @@ export const AddCustomer = () => {
       "email",
     ];
 
-    for (let field of requiredFields) {
+    for (const field of requiredFields) {
       if (!customer[field]) {
         return alert(`Please fill ${field}`);
       }
     }
 
     try {
-      const response = await axios.post("/customers", customer);
+      const response = await api.post(
+        "/customers",
+        customer
+      );
 
-      // Show the generated password and the assigned customer ID
       alert(
         `Customer created successfully!\nCustomer ID: ${response.data.id}\nGenerated Password: ${response.data.password}`
       );
+
       // Reset form
       setCustomer({
         customerName: "",
@@ -58,19 +70,31 @@ export const AddCustomer = () => {
         email: "",
       });
 
-      navigate("/customers"); // redirect to customer table
+      navigate("/customers");
     } catch (err) {
-      console.error(err);
+      console.error(
+        "Error creating customer:",
+        err
+      );
+
       alert(
-        err.response?.data?.error || "Failed to create customer. Check console."
+        err.response?.data?.error ||
+          "Failed to create customer. Check console."
       );
     }
   };
+
+  // ============================================
+  // FORM
+  // ============================================
   return (
-    <form onSubmit={handleSubmit} className="customer-form">
-      <h2>Add Vendor / customer</h2>
+    <form
+      onSubmit={handleSubmit}
+      className="customer-form"
+    >
+      <h2>Add Vendor / Customer</h2>
 
-
+      {/* CONTACT PERSON */}
       <input
         type="text"
         name="customerName"
@@ -79,6 +103,8 @@ export const AddCustomer = () => {
         onChange={handleChange}
         required
       />
+
+      {/* MOBILE */}
       <input
         type="text"
         name="mobile"
@@ -88,6 +114,7 @@ export const AddCustomer = () => {
         required
       />
 
+      {/* EMAIL */}
       <input
         type="email"
         name="email"
@@ -97,6 +124,7 @@ export const AddCustomer = () => {
         required
       />
 
+      {/* ADDRESS */}
       <input
         type="text"
         name="address"
@@ -106,6 +134,7 @@ export const AddCustomer = () => {
         required
       />
 
+      {/* CITY */}
       <input
         type="text"
         name="city"
@@ -115,6 +144,7 @@ export const AddCustomer = () => {
         required
       />
 
+      {/* STATE */}
       <input
         type="text"
         name="state"
@@ -124,6 +154,7 @@ export const AddCustomer = () => {
         required
       />
 
+      {/* PINCODE */}
       <input
         type="text"
         name="pincode"
@@ -133,7 +164,10 @@ export const AddCustomer = () => {
         required
       />
 
-      <button type="submit">Save</button>
+      {/* SAVE */}
+      <button type="submit">
+        Save
+      </button>
     </form>
   );
 };

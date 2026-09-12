@@ -1,5 +1,5 @@
 // src/context/WishlistContext.jsx
-import React, { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 import api from "../components/api"; // ✅ use centralized axios
 import { useCustomerAuth } from "./CustomerContext";
 

@@ -1,15 +1,22 @@
-/* Container adjustments for full width */
+/* ========================================================= */
+/* ================= CATEGORY CONTAINERS =================== */
+/* ========================================================= */
+
 .upload-category,
 .category-table,
 .all-admincategories {
   width: 100%;
-  max-width: 1200px; /* optional max-width for very large screens */
-  margin: 0 auto; /* center on screen */
+  max-width: 1200px;
+  margin: 0 auto;
   padding: 20px;
   box-sizing: border-box;
 }
 
-/* Category Details Form */
+
+/* ========================================================= */
+/* ================= CATEGORY DETAILS ====================== */
+/* ========================================================= */
+
 .category-details {
   width: 100%;
   border-radius: 10px;
@@ -26,6 +33,11 @@
   font-weight: 500;
   padding: 20px 0;
 }
+
+
+/* ========================================================= */
+/* ================= CATEGORY NAME ========================= */
+/* ========================================================= */
 
 .category-name {
   padding: 10px 0;
@@ -50,6 +62,11 @@
   box-sizing: border-box;
 }
 
+
+/* ========================================================= */
+/* ================= CATEGORY IMAGE ======================== */
+/* ========================================================= */
+
 .category-image {
   margin: 20px 0;
   display: flex;
@@ -72,6 +89,11 @@
   font-size: 16px;
   flex: 1 1 400px;
 }
+
+
+/* ========================================================= */
+/* ================= CATEGORY SUBMIT ======================= */
+/* ========================================================= */
 
 .category-submit {
   display: flex;
@@ -99,15 +121,20 @@
   margin: 10px 0;
 }
 
-/* Category Table */
+
+/* ========================================================= */
+/* ================= CATEGORY TABLE ======================== */
+/* ========================================================= */
+
 .category-table {
   width: 100%;
+  max-width: 1200px;
   background: #ffffff;
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
   padding: 20px;
-
-  margin: 20px;
+  margin: 20px auto;
   border-radius: 10px;
+  box-sizing: border-box;
 }
 
 .all-admincategories {
@@ -127,7 +154,7 @@
 .category-table table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 600px; /* table minimum width for readability */
+  min-width: 600px;
 }
 
 .category-table th,
@@ -140,7 +167,7 @@
 .category-table th {
   background: #f7f8f9;
   font-size: 18px;
-  cursor: pointer; /* indicate sortable columns */
+  cursor: pointer;
 }
 
 .category-table img {
@@ -149,7 +176,11 @@
   border-radius: 6px;
 }
 
-/* Buttons same as product */
+
+/* ========================================================= */
+/* ================= CATEGORY BUTTONS ===================== */
+/* ========================================================= */
+
 .category-table button {
   padding: 6px 12px;
   border: none;
@@ -180,6 +211,11 @@
   transform: scale(1.05);
 }
 
+
+/* ========================================================= */
+/* ================= SEARCH ================================ */
+/* ========================================================= */
+
 .search-input {
   padding: 8px;
   width: 300px;
@@ -193,7 +229,377 @@
   height: 50px;
 }
 
-/* Responsive Design */
+
+/* ========================================================= */
+/* ================= EDIT CATEGORY LAYOUT ================== */
+/* ========================================================= */
+
+/*
+   IMPORTANT:
+   The Admin application already has the main sidebar.
+   EditCategory must NOT create another sidebar.
+
+   Therefore .cms-layout is now a simple full-width page
+   container instead of a flex layout containing a sidebar.
+*/
+
+.cms-layout {
+  width: 100%;
+  min-height: 100%;
+  box-sizing: border-box;
+  font-family: "Inter", sans-serif;
+  background: #f1f5f9;
+}
+
+
+/* ========================================================= */
+/* ================= EDIT CATEGORY CONTENT ================= */
+/* ========================================================= */
+
+.cms-content {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 35px;
+  box-sizing: border-box;
+  background: #f8fafc;
+}
+
+.cms-content > h1 {
+  margin: 0 0 25px;
+  font-size: 34px;
+  font-weight: 700;
+  color: #111827;
+}
+
+
+/* ========================================================= */
+/* ================= BASIC / SEO / ADVANCED TABS =========== */
+/* ========================================================= */
+
+.cms-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 10px;
+}
+
+.cms-tabs button {
+  background: #ffffff;
+  color: #475569;
+  border: 1px solid #d1d5db;
+  padding: 10px 20px;
+  border-radius: 7px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.cms-tabs button:hover {
+  background: #f1f5f9;
+  color: #2563eb;
+}
+
+.cms-tabs button.active {
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #2563eb;
+}
+
+
+/* ========================================================= */
+/* ================= EDIT CATEGORY FORM ==================== */
+/* ========================================================= */
+
+.cms-content form {
+  width: 100%;
+  max-width: 900px;
+  background: #ffffff;
+  padding: 25px;
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  box-sizing: border-box;
+}
+
+
+/* ========================================================= */
+/* ================= FORM SECTION =========================== */
+/* ========================================================= */
+
+.cms-content section {
+  width: 100%;
+  border: 1px solid #e2e8f0;
+  padding: 20px;
+  border-radius: 10px;
+  background: #ffffff;
+  box-sizing: border-box;
+}
+
+.cms-content h3 {
+  margin: 0 0 15px;
+  font-size: 16px;
+  color: #334155;
+}
+
+
+/* ========================================================= */
+/* ================= FIELD WRAPPER ========================== */
+/* ========================================================= */
+
+.cms-field {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  margin-bottom: 18px;
+}
+
+
+/* ========================================================= */
+/* ================= LABEL ================================== */
+/* ========================================================= */
+
+.cms-field label {
+  font-size: 13px;
+  color: #64748b;
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+
+/* ========================================================= */
+/* ================= INPUT + TEXTAREA ====================== */
+/* ========================================================= */
+
+.cms-content .cms-field input,
+.cms-content .cms-field textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  font-size: 14px;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+}
+
+
+/* ========================================================= */
+/* ================= INPUT FOCUS =========================== */
+/* ========================================================= */
+
+.cms-content .cms-field input:focus,
+.cms-content .cms-field textarea:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+  outline: none;
+}
+
+
+/* ========================================================= */
+/* ================= TEXTAREA =============================== */
+/* ========================================================= */
+
+.cms-content .cms-field textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+
+/* ========================================================= */
+/* ================= FILE INPUT ============================= */
+/* ========================================================= */
+
+.cms-content input[type="file"] {
+  border: 1px dashed #cbd5f5;
+  background: #f8fafc;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.cms-content input[type="file"]:hover {
+  border-color: #2563eb;
+  background: #eef2ff;
+}
+
+
+/* ========================================================= */
+/* ================= IMAGE PREVIEW ========================== */
+/* ========================================================= */
+
+.cms-content img {
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+
+/* ========================================================= */
+/* ================= UPDATE BUTTON ========================== */
+/* ========================================================= */
+
+.cms-content form > button[type="submit"] {
+  width: 100%;
+  background: #111827;
+  color: #ffffff;
+  padding: 13px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: 0.3s;
+}
+
+.cms-content form > button[type="submit"]:hover {
+  background: #2563eb;
+}
+
+
+/* ========================================================= */
+/* ================= SEO PREVIEW ============================ */
+/* ========================================================= */
+
+.seo-preview {
+  border: 1px solid #e5e7eb;
+  padding: 12px;
+  border-radius: 8px;
+  background: #fafafa;
+}
+
+.seo-preview p:first-child {
+  color: #1a0dab;
+  font-size: 18px;
+}
+
+.seo-preview p:nth-child(2) {
+  color: #006621;
+  font-size: 13px;
+}
+
+.seo-preview p:last-child {
+  color: #545454;
+  font-size: 14px;
+}
+
+
+/* ========================================================= */
+/* ================= HELPER TEXT ============================ */
+/* ========================================================= */
+
+.cms-field .helper-text {
+  font-size: 12px;
+  color: #64748b;
+  margin-top: 4px;
+}
+
+
+/* ========================================================= */
+/* ================= SIMPLE FORM ============================ */
+/* ========================================================= */
+
+.simple-form {
+  max-width: 600px;
+  margin: 40px auto;
+  background: #ffffff;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  box-sizing: border-box;
+}
+
+.simple-form h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+
+/* FIELD */
+
+.simple-form .field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+}
+
+.simple-form label {
+  font-size: 13px;
+  color: #64748b;
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+
+/* INPUTS */
+
+.simple-form input,
+.simple-form textarea {
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  font-size: 14px;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+}
+
+.simple-form input:focus,
+.simple-form textarea:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+  outline: none;
+}
+
+
+/* FILE INPUT */
+
+.simple-form input[type="file"] {
+  border: 1px dashed #cbd5f5;
+  background: #f8fafc;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.simple-form input[type="file"]:hover {
+  border-color: #2563eb;
+  background: #eef2ff;
+}
+
+
+/* IMAGE PREVIEW */
+
+.simple-form img {
+  margin-top: 10px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+
+/* BUTTON */
+
+.simple-form button {
+  width: 100%;
+  background: #111827;
+  color: #ffffff;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  transition: 0.3s;
+}
+
+.simple-form button:hover {
+  background: #2563eb;
+}
+
+
+/* ========================================================= */
+/* ================= RESPONSIVE ============================ */
+/* ========================================================= */
+
 @media (max-width: 1024px) {
   .category-name input,
   .category-image input {
@@ -210,9 +616,20 @@
   .category-submit .submit-btn {
     width: 100%;
   }
+
+  .cms-content {
+    padding: 25px;
+  }
 }
 
+
 @media (max-width: 768px) {
+  .category-table {
+    margin: 10px;
+    width: calc(100% - 20px);
+    padding: 15px;
+  }
+
   .category-table table,
   .category-table th,
   .category-table td {
@@ -222,70 +639,45 @@
   .category-table h2 {
     font-size: 22px;
   }
-}
-.upload-category {
-  max-width: 400px;
-  margin: 40px auto;
-  padding: 25px;
-  background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  text-align: center;
+
+  .cms-content {
+    padding: 20px 15px;
+  }
+
+  .cms-content > h1 {
+    font-size: 28px;
+  }
+
+  .cms-content form {
+    padding: 18px;
+  }
+
+  .cms-tabs {
+    overflow-x: auto;
+  }
+
+  .cms-tabs button {
+    flex-shrink: 0;
+    padding: 9px 15px;
+  }
 }
 
-.upload-category h2 {
-  margin-bottom: 20px;
-  color: #333;
-  font-size: 22px;
-  font-weight: 600;
-}
 
-.upload-category p {
-  margin-bottom: 15px;
-  font-size: 14px;
-  color: #4caf50;
-  font-weight: 500;
-}
+@media (max-width: 480px) {
+  .cms-content > h1 {
+    font-size: 24px;
+  }
 
-.upload-category form {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
+  .cms-content section {
+    padding: 15px;
+  }
 
-.upload-category input[type="text"],
-.upload-category input[type="file"] {
-  padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  font-size: 14px;
-  transition: border 0.3s ease;
-}
+  .cms-content form {
+    padding: 12px;
+  }
 
-.upload-category input[type="text"]:focus,
-.upload-category input[type="file"]:focus {
-  border-color: #4caf50;
-  outline: none;
-}
-
-.upload-category button {
-  background: #000000;
-  color: #fff;
-  padding: 12px;
-  border: none;
-  border-radius: 8px;
-  font-size: 15px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 0.3s ease, transform 0.2s ease;
-}
-
-.upload-category button:hover {
-  background: #43a047;
-  transform: translateY(-2px);
-}
-
-.upload-category button:active {
-  transform: scale(0.97);
+  .cms-tabs button {
+    font-size: 12px;
+    padding: 8px 12px;
+  }
 }

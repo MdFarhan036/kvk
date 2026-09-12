@@ -1,354 +1,449 @@
-.upload-product {
-}
-.product-upload {
-  margin: 20px;
-}
-.basic-details {
-  border-radius: 10px;
-  background: #ffffff;
-  color: #000;
-  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
-  padding: 20px;
-  height: auto;
+/* =========================================================
+   UPLOAD PRODUCT WRAPPER
+   ========================================================= */
+
+.ep-wrapper {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 30px;
+  box-sizing: border-box;
+  background: #f8fafc;
 }
 
-.basic-details h1 {
-  text-align: center;
-  font-size: 36px;
-  font-weight: 500;
-  padding: 20px 0;
-}
+/* =========================================================
+   HEADER
+   ========================================================= */
 
-.image-upload {
-  margin: 20px 0;
-}
-
-.upload-img {
-  border: 2px dashed #bbb;
-  padding: 25px;
+.ep-header {
   display: flex;
-  justify-content: center;
   align-items: center;
-  cursor: pointer;
-  border-radius: 10px;
-  background: #fafafa;
-  transition: 0.3s ease;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 25px;
 }
 
-.upload-img:hover {
-  border-color: #333;
-  background: #f3f3f3;
+.ep-header h2 {
+  margin: 0;
+  color: #111827;
+  font-size: 30px;
+  font-weight: 700;
 }
 
-.upload-imgcont {
+/* =========================================================
+   FORM
+   ========================================================= */
+
+.ep-form {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  color: #444;
+  gap: 20px;
+}
+
+/* =========================================================
+   CARD
+   ========================================================= */
+
+.ep-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 25px;
+  box-sizing: border-box;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+}
+
+.ep-card h3 {
+  margin: 0 0 20px;
+  color: #334155;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+/* =========================================================
+   INPUTS
+   ========================================================= */
+
+.ep-input,
+.ep-textarea,
+.ep-select {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #111827;
+  font-size: 14px;
+  font-family: inherit;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.ep-textarea {
+  min-height: 120px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.ep-input:focus,
+.ep-textarea:focus,
+.ep-select:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.ep-input::placeholder,
+.ep-textarea::placeholder {
+  color: #94a3b8;
+}
+
+/* =========================================================
+   HTML PREVIEW
+   ========================================================= */
+
+.ep-html-preview {
+  width: 100%;
+  min-height: 100px;
+  box-sizing: border-box;
+  margin-bottom: 15px;
+  padding: 15px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #f8fafc;
+  color: #334155;
+  font-size: 14px;
+  line-height: 1.6;
+  overflow-x: auto;
+}
+
+.ep-html-preview p {
+  margin: 0;
+}
+
+/* =========================================================
+   SLUG
+   ========================================================= */
+
+.ep-slug {
+  margin: 5px 0 0;
+  padding: 10px 12px;
+  border-radius: 7px;
+  background: #f1f5f9;
+  color: #64748b;
+  font-size: 13px;
+  word-break: break-word;
+}
+
+/* =========================================================
+   IMAGE UPLOAD
+   ========================================================= */
+
+.ep-card input[type="file"] {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px;
+  border: 2px dashed #cbd5e1;
+  border-radius: 8px;
+  background: #f8fafc;
+  cursor: pointer;
   font-size: 14px;
 }
 
-.upload-imgcont svg {
-  font-size: 32px;
-  color: #555;
+.ep-card input[type="file"]:hover {
+  border-color: #2563eb;
+  background: #eff6ff;
 }
 
-.image-preview {
-  margin-top: 15px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
+/* =========================================================
+   IMAGE GRID
+   ========================================================= */
+
+.ep-img-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 15px;
+  margin-top: 18px;
 }
 
-.preview-image {
-  width: 100px;
-  height: 100px;
-  border-radius: 10px;
+.ep-img-box {
+  width: 100%;
+  height: 110px;
   overflow: hidden;
-  position: relative;
-  border: 1px solid #ddd;
-  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #f8fafc;
 }
 
-.preview-image img {
+.ep-img-box img {
   width: 100%;
   height: 100%;
+  display: block;
   object-fit: cover;
 }
 
-.preview-image svg {
-  position: absolute;
-  top: 5px;
-  right: 5px;
-  background: #fff;
-  border-radius: 50%;
-  padding: 3px;
-  cursor: pointer;
-  color: crimson;
-  font-size: 18px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+/* =========================================================
+   PRODUCT TAB BOX
+   ========================================================= */
+
+.ep-tab-box {
+  position: relative;
+  margin-bottom: 18px;
+  padding: 18px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #f8fafc;
 }
 
-/* ============================= */
-/* EXTRA PRODUCT DETAILS (MFG, SIZE, WEIGHT, TYPE ETC) */
-/* ============================= */
-
-.product-extra {
-  margin-top: 20px;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 15px;
+.ep-tab-box .ep-input {
+  margin-bottom: 12px;
 }
 
-.product-extra label {
+.ep-tab-box .ep-textarea {
+  margin-bottom: 10px;
+}
+
+/* =========================================================
+   DELETE TAB BUTTON
+   ========================================================= */
+
+.ep-tab-box button {
+  padding: 9px 15px;
+  border: none;
+  border-radius: 7px;
+  background: #dc2626;
+  color: #ffffff;
   font-size: 13px;
   font-weight: 600;
-  margin-bottom: 3px;
-  color: #333;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    transform 0.15s ease;
 }
 
-.product-extra input {
-  width: 100%;
-  padding: 10px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  font-size: 14px;
-  transition: 0.2s;
+.ep-tab-box button:hover {
+  background: #b91c1c;
+  transform: translateY(-1px);
 }
 
-.product-extra input:focus {
-  border-color: #000;
-  outline: none;
-}
-.product-description {
-  padding: 10px 0;
-  display: flex;
-  border-radius: 10px;
-  justify-content: space-between;
-}
-.product-description label {
-  font-size: 22px;
-  font-weight: 700;
-}
-.product-name {
-  padding: 10px 0;
-  display: flex;
-  border-radius: 10px;
-  justify-content: space-between;
+.ep-tab-box button:active {
+  transform: translateY(0);
 }
 
-.product-name label {
-  font-size: 22px;
-  font-weight: 700;
-}
+/* =========================================================
+   ADD TAB BUTTON
+   ========================================================= */
 
-.product-name input,
-.product-name select,
-.product-name textarea,
-.product-description textarea,
-.product-pricing input,
-.product-category select,
-.product-status select {
-  font-size: 16px; /* Corrected from font-style */
-  padding: 10px;
-  width: 800px;
-  border-radius: 10px;
-  border: 1px solid;
-  box-sizing: border-box; /* To ensure padding doesn't break layout */
-}
-
-.product-name textarea {
-  height: 100px;
-}
-
-.product-name input,
-.product-name select {
-  width: 800px;
-}
-
-.image-upload-cont {
-  display: flex;
-  justify-content: space-around;
-}
-
-.image-upload {
-  margin: 20px 0;
-  display: flex;
-  justify-content: space-between;
-  border-radius: 10px;
-  background: #ffffff;
-  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
-  padding: 20px;
-  color: #000;
-}
-
-.image-upload label {
-  font-size: 22px;
-  font-weight: 700;
-}
-
-.image-upload input {
-  font-size: 16px; /* Corrected from font-style */
-
-  box-sizing: border-box;
-}
-
-.product-pricing {
-  margin: 20px 0;
-  border-radius: 10px;
-  background: #ffffff;
-  color: #000;
-  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
-  padding: 20px;
-  height: auto;
-}
-
-.span-price,
-.span-stock {
-  margin: 20px 0;
-  display: flex;
-  justify-content: space-between;
-}
-
-.product-pricing label {
-  font-size: 22px;
-  font-weight: 700;
-}
-
-.product-pricing input {
-  font-size: 16px; /* Corrected */
-  padding: 10px;
-  width: 800px;
-  border-radius: 10px;
-  border: 1px solid;
-}
-
-.product-status {
-  display: flex;
-  justify-content: space-between;
-  margin: 20px 0;
-  border-radius: 10px;
-  background: #ffffff;
-  color: #000;
-  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
-  padding: 20px;
-  height: auto;
-}
-
-.product-category {
-  display: flex;
-  justify-content: space-between;
-  margin: 20px 0;
-  border-radius: 10px;
-  background: #ffffff;
-  color: #000;
-  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
-  padding: 20px;
-  height: auto;
-}
-
-.product-category label {
-  font-size: 22px;
-  font-weight: 700;
-}
-
-.product-category select {
-  font-size: 16px;
-  padding: 10px;
-  width: 800px;
-  border-radius: 10px;
-  border: 1px solid;
-}
-
-.product-status label {
-  font-size: 22px;
-  font-weight: 700;
-}
-
-.product-status select {
-  font-size: 16px;
-  padding: 10px;
-  width: 800px;
-  border-radius: 10px;
-  border: 1px solid;
-}
-
-.product-submit {
-  display: flex;
-  margin: 20px 0;
-  color: #000;
-  padding: 20px;
-  height: auto;
-  justify-content: space-around;
-}
-
-.submit-btn {
-  padding: 20px;
-  background: #11111f;
-  font-size: 18px;
+.ep-card > button[type="button"] {
+  padding: 10px 16px;
   border: none;
-  color: #fff;
-  border-radius: 10px;
+  border-radius: 7px;
+  background: #2563eb;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
   cursor: pointer;
-  transition: background 0.3s;
+  transition:
+    background 0.2s ease,
+    transform 0.15s ease;
 }
 
-.submit-btn:hover {
-  background: #ccc; /* Hover effect */
-  color: #11111f;
+.ep-card > button[type="button"]:hover {
+  background: #1d4ed8;
+  transform: translateY(-1px);
 }
 
-.upload-img {
+.ep-card > button[type="button"]:active {
+  transform: translateY(0);
+}
+
+/* =========================================================
+   COMMON BUTTON
+   ========================================================= */
+
+.ep-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 11px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  transition:
+    background 0.2s ease,
+    transform 0.15s ease,
+    box-shadow 0.2s ease;
+}
+
+.ep-btn:hover {
+  transform: translateY(-1px);
+}
+
+.ep-btn:active {
+  transform: translateY(0);
+}
+
+/* =========================================================
+   PRIMARY BUTTON
+   ========================================================= */
+
+.ep-btn-primary {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.ep-btn-primary:hover {
+  background: #1d4ed8;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+}
+
+/* =========================================================
+   FINAL CREATE PRODUCT BUTTON
+   ========================================================= */
+
+.ep-form > .ep-btn-primary {
+  align-self: flex-start;
+  min-width: 150px;
+}
+
+/* =========================================================
+   MODAL OVERLAY
+   ========================================================= */
+
+.ep-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  box-sizing: border-box;
+  background: rgba(15, 23, 42, 0.5);
+}
+
+/* =========================================================
+   MODAL
+   ========================================================= */
+
+.ep-modal {
   width: 100%;
-  display: flex;
+  max-width: 380px;
+  padding: 25px;
+  box-sizing: border-box;
+  border-radius: 12px;
+  background: #ffffff;
   text-align: center;
-  justify-content: center;
-  cursor: pointer;
-  align-items: center;
+  box-shadow: 0 15px 40px rgba(15, 23, 42, 0.2);
 }
 
-.upload-imgcont {
-  text-align: center;
-  padding: 50px 10px;
-  width: 800px;
-
- 
-  border-radius: 10px;
-  border: 1px solid;
-  display: flex;
-  justify-content: center;
-  cursor: pointer;
-  align-items: center;
-  flex-direction: column;
-  gap: 2px;
+.ep-modal p {
+  margin: 0;
+  color: #334155;
+  font-size: 15px;
+  font-weight: 600;
 }
+
+/* =========================================================
+   RESPONSIVE - TABLET
+   ========================================================= */
 
 @media (max-width: 768px) {
-  .basic-details,
-  .image-upload,
-  .product-pricing,
-  .product-category,
-  .product-status,
-  .product-submit {
-    width: 100%;
-    padding: 10px;
+  .ep-wrapper {
+    padding: 20px 15px;
   }
 
-  .product-name input,
-  .product-name select,
-  .product-name textarea,
-  .product-pricing input,
-  .product-category select,
-  .product-status select {
-    width: 100%;
+  .ep-header {
+    align-items: flex-start;
+    flex-direction: column;
   }
 
-  .product-submit .submit-btn {
+  .ep-header h2 {
+    font-size: 25px;
+  }
+
+  .ep-card {
+    padding: 18px;
+  }
+
+  .ep-img-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .ep-form > .ep-btn-primary {
     width: 100%;
-    font-size: 16px;
   }
 }
-.image-preview {
-  margin: 10px 0;
+
+/* =========================================================
+   RESPONSIVE - MOBILE
+   ========================================================= */
+
+@media (max-width: 480px) {
+  .ep-wrapper {
+    padding: 15px 10px;
+  }
+
+  .ep-card {
+    padding: 15px;
+    border-radius: 9px;
+  }
+
+  .ep-img-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .ep-img-box {
+    height: 100px;
+  }
+
+  .ep-header h2 {
+    font-size: 22px;
+  }
+
+  .ep-input,
+  .ep-textarea,
+  .ep-select {
+    font-size: 13px;
+  }
+}.ep-img-box {
+  position: relative;
+  width: 100%;
+  height: 140px;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #f8fafc;
+}
+
+.ep-img-box img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.ep-image-delete {
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  bottom: 6px;
+  padding: 6px 8px;
+  border: none;
+  border-radius: 5px;
+  background: #dc2626;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ep-image-delete:hover {
+  background: #b91c1c;
 }

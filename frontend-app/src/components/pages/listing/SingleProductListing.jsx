@@ -1,15 +1,21 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import axios from "axios";
+import DOMPurify from "dompurify";
+
+import api, { ASSET_BASE_URL } from "../../api.js";
 
 import "./DetailsPage.css";
 import { useCart } from "../../../context/CartContext";
 import { useWishlist } from "../../../context/WishlistContext";
+
 import CategoriesFilter from "../filters/CategoriesPage";
+import RelatedProductCard from "../listing/RelatedProductCard";
+
 import { useFilters } from "../../../context/FilterContext";
 
 export const SingleProductListing = () => {
   const { categoryName, productId } = useParams();
+
   const { addToCart } = useCart();
   const { addToWishlist } = useWishlist();
 
@@ -19,336 +25,1044 @@ export const SingleProductListing = () => {
     selectedBrands,
     selectedStock,
     sortOption,
-    itemsPerPage,
-    clearFilters,
   } = useFilters();
 
   const [products, setProducts] = useState([]);
-  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [, setFilteredProducts] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [brands, setBrands] = useState([]);
-  const [stockSummary, setStockSummary] = useState({ inStock: 0, outStock: 0 });
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [isFilterVisible, setIsFilterVisible] = useState(false);
 
   const [inputValue, setInputValue] = useState(1);
   const [activeImage, setActiveImage] = useState(null);
-  const [zoomPosition, setZoomPosition] = useState({ x: 0, y: 0, visible: false });
 
-  // Quantity handlers
-  const plus = () => setInputValue((prev) => prev + 1);
-  const minus = () => setInputValue((prev) => (prev > 1 ? prev - 1 : 1));
-  const handleInputChange = (e) => setInputValue(Math.max(parseInt(e.target.value) || 1, 1));
+  const [zoomPosition, setZoomPosition] = useState({
+    x: 0,
+    y: 0,
+    visible: false,
+  });
 
-  // Zoom handlers
-  const handleMouseMove = (e) => {
-    const { left, top, width, height } = e.target.getBoundingClientRect();
-    const x = ((e.pageX - left) / width) * 100;
-    const y = ((e.pageY - top) / height) * 100;
-    setZoomPosition({ x, y, visible: true });
+  // =====================================================
+  // TOAST
+  // =====================================================
+
+  const [toast, setToast] = useState({
+    visible: false,
+    message: "",
+  });
+
+  const showToast = (message) => {
+    setToast({
+      visible: true,
+      message,
+    });
+
+    setTimeout(() => {
+      setToast({
+        visible: false,
+        message: "",
+      });
+    }, 2500);
   };
-  const handleMouseLeave = () => setZoomPosition({ ...zoomPosition, visible: false });
 
-  // Fetch product, categories, all products, brands, stock
+  // =====================================================
+  // IMAGE URL HELPER
+  // =====================================================
+
+  const getImageUrl = (url) => {
+    if (!url) return "";
+
+    if (typeof url !== "string") {
+      return "";
+    }
+
+    if (/^https?:\/\//i.test(url)) {
+      return url;
+    }
+
+    return `${ASSET_BASE_URL}${
+      url.startsWith("/") ? "" : "/"
+    }${url}`;
+  };
+
+  // =====================================================
+  // SANITIZE HTML
+  // =====================================================
+
+  const getSafeHtml = (html) => {
+    if (!html) return "";
+
+    return DOMPurify.sanitize(html, {
+      USE_PROFILES: {
+        html: true,
+      },
+    });
+  };
+
+  // =====================================================
+  // QUANTITY
+  // =====================================================
+
+  const plus = () => {
+    const stock = Number(product?.stock || 0);
+
+    setInputValue((prev) => {
+      if (stock > 0 && prev >= stock) {
+        return stock;
+      }
+
+      return prev + 1;
+    });
+  };
+
+  const minus = () => {
+    setInputValue((prev) =>
+      prev > 1 ? prev - 1 : 1
+    );
+  };
+
+  const handleInputChange = (e) => {
+    const value = parseInt(e.target.value, 10);
+    const stock = Number(product?.stock || 0);
+
+    if (Number.isNaN(value) || value < 1) {
+      setInputValue(1);
+      return;
+    }
+
+    if (stock > 0 && value > stock) {
+      setInputValue(stock);
+      return;
+    }
+
+    setInputValue(value);
+  };
+
+  // =====================================================
+  // IMAGE ZOOM
+  // =====================================================
+
+  const handleMouseMove = (e) => {
+    const {
+      left,
+      top,
+      width,
+      height,
+    } = e.currentTarget.getBoundingClientRect();
+
+    const x =
+      ((e.clientX - left) / width) * 100;
+
+    const y =
+      ((e.clientY - top) / height) * 100;
+
+    setZoomPosition({
+      x,
+      y,
+      visible: true,
+    });
+  };
+
+  const handleMouseLeave = () => {
+    setZoomPosition((prev) => ({
+      ...prev,
+      visible: false,
+    }));
+  };
+
+  // =====================================================
+  // FETCH PRODUCT + CATEGORIES + PRODUCTS
+  // =====================================================
+
   useEffect(() => {
+    let isMounted = true;
+
     const fetchData = async () => {
+      setLoading(true);
+
       try {
-        const productRes = await axios.get(`http://localhost:8000/api/products/${productId}`);
-        setProduct(productRes.data);
-        if (productRes.data.images?.length)
-          setActiveImage(`http://localhost:8000${productRes.data.images[0]}`);
+        const [
+          productRes,
+          categoriesRes,
+          productsRes,
+        ] = await Promise.all([
+          api.get(`/products/${productId}`),
+          api.get("/categories"),
+          api.get("/products"),
+        ]);
 
-        const categoriesRes = await axios.get("http://localhost:8000/api/categories");
-        setCategories(categoriesRes.data);
+        if (!isMounted) return;
 
-        const productsRes = await axios.get("http://localhost:8000/api/products");
-        setProducts(productsRes.data);
+        const productData =
+          productRes?.data || null;
 
-        const brandsRes = await axios.get(`http://localhost:8000/api/brands/${categoryName}`);
-        setBrands(brandsRes.data);
+        const categoryData =
+          Array.isArray(categoriesRes?.data)
+            ? categoriesRes.data
+            : [];
 
-        const stockRes = await axios.get(`http://localhost:8000/api/stock/${categoryName}`);
-        setStockSummary(stockRes.data);
+        const productsData =
+          Array.isArray(productsRes?.data)
+            ? productsRes.data
+            : [];
+
+        setProduct(productData);
+        setCategories(categoryData);
+        setProducts(productsData);
+
+        // =================================================
+        // INITIAL IMAGE
+        // =================================================
+
+        if (
+          Array.isArray(productData?.images) &&
+          productData.images.length > 0
+        ) {
+          setActiveImage(
+            getImageUrl(
+              productData.images[0]
+            )
+          );
+        } else if (productData?.image) {
+          setActiveImage(
+            getImageUrl(
+              productData.image
+            )
+          );
+        } else {
+          setActiveImage(null);
+        }
+
       } catch (err) {
-        console.error(err);
+        console.error(
+          "Error fetching product details:",
+          err.response?.data ||
+            err.message ||
+            err
+        );
+
+        if (isMounted) {
+          setProduct(null);
+        }
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
-    fetchData();
-  }, [categoryName, productId]);
 
-  // Filter products
+    if (productId) {
+      fetchData();
+    } else {
+      setLoading(false);
+    }
+
+    return () => {
+      isMounted = false;
+    };
+  }, [productId]);
+
+  // =====================================================
+  // FILTER PRODUCTS
+  // =====================================================
+
   useEffect(() => {
-    if (!products.length) return;
+    if (!products.length) {
+      setFilteredProducts([]);
+      return;
+    }
+
+    const normalizedCategory =
+      categoryName?.toLowerCase().trim();
 
     let categoryProducts = products.filter(
-      (p) => p.category_name?.toLowerCase() === categoryName?.toLowerCase()
+      (p) => {
+        const currentCategory =
+          p.category_name ||
+          p.category?.name ||
+          "";
+
+        return (
+          currentCategory
+            .toLowerCase()
+            .trim() === normalizedCategory
+        );
+      }
     );
 
-    let updatedProducts = categoryProducts.filter(
-      (p) => p.price >= minPrice && p.price <= maxPrice
+    let updatedProducts =
+      categoryProducts.filter((p) => {
+        const price = Number(
+          p.price || 0
+        );
+
+        return (
+          price >= minPrice &&
+          price <= maxPrice
+        );
+      });
+
+    // =================================================
+    // BRAND FILTER
+    // =================================================
+
+    if (selectedBrands.length > 0) {
+      updatedProducts =
+        updatedProducts.filter((p) => {
+          let productBrand = null;
+
+          if (
+            typeof p.brand === "string"
+          ) {
+            productBrand = p.brand;
+          } else if (
+            p.brand &&
+            typeof p.brand === "object"
+          ) {
+            productBrand =
+              p.brand.name ||
+              p.brand.brand_name ||
+              null;
+          } else {
+            productBrand =
+              p.brand_name ||
+              p.brandName ||
+              null;
+          }
+
+          return selectedBrands.includes(
+            productBrand
+          );
+        });
+    }
+
+    // =================================================
+    // STOCK FILTER
+    // =================================================
+
+    if (selectedStock === "in") {
+      updatedProducts =
+        updatedProducts.filter(
+          (p) => Number(p.stock) > 0
+        );
+    } else if (
+      selectedStock === "out"
+    ) {
+      updatedProducts =
+        updatedProducts.filter(
+          (p) => Number(p.stock) === 0
+        );
+    }
+
+    // =================================================
+    // SORT
+    // =================================================
+
+    if (
+      sortOption ===
+      "PriceLowToHigh"
+    ) {
+      updatedProducts.sort(
+        (a, b) =>
+          Number(a.price || 0) -
+          Number(b.price || 0)
+      );
+    }
+
+    if (
+      sortOption ===
+      "PriceHighToLow"
+    ) {
+      updatedProducts.sort(
+        (a, b) =>
+          Number(b.price || 0) -
+          Number(a.price || 0)
+      );
+    }
+
+    if (sortOption === "Release") {
+      updatedProducts.sort(
+        (a, b) =>
+          new Date(
+            b.createdAt ||
+              b.created_at ||
+              0
+          ) -
+          new Date(
+            a.createdAt ||
+              a.created_at ||
+              0
+          )
+      );
+    }
+
+    setFilteredProducts(
+      updatedProducts
+    );
+  }, [
+    products,
+    categoryName,
+    minPrice,
+    maxPrice,
+    selectedBrands,
+    selectedStock,
+    sortOption,
+  ]);
+
+  // =====================================================
+  // LOADING
+  // =====================================================
+
+  if (loading) {
+    return (
+      <section className="details-home">
+        <div className="skeleton-wrapper">
+
+          <div className="skeleton skeleton-image" />
+
+          <div className="skeleton-info">
+
+            <div className="skeleton skeleton-line w-70" />
+
+            <div className="skeleton skeleton-line w-40" />
+
+            <div className="skeleton skeleton-line w-50" />
+
+            <div className="skeleton skeleton-line w-90" />
+
+          </div>
+
+        </div>
+      </section>
+    );
+  }
+
+  // =====================================================
+  // NOT FOUND
+  // =====================================================
+
+  if (!product) {
+    return (
+      <section className="details-home">
+        <h2 className="not-found">
+          Product not found!
+        </h2>
+      </section>
+    );
+  }
+
+  // =====================================================
+  // PRODUCT VALUES
+  // =====================================================
+
+  const productTitle =
+    product.title ||
+    product.name ||
+    "Product";
+
+  const productBrand =
+    typeof product.brand === "string"
+      ? product.brand
+      : product.brand?.name ||
+        product.brand?.brand_name ||
+        product.brand_name ||
+        "—";
+
+  const productCategory =
+    product.category_name ||
+    product.category?.name ||
+    categoryName ||
+    "—";
+
+  const productPrice =
+    product.discount_price ??
+    product.price ??
+    0;
+
+  const productOldPrice =
+    product.oldPrice ??
+    product.old_price ??
+    product.orgprice ??
+    "";
+
+  const productStock =
+    Number(product.stock || 0);
+
+  const productImages =
+    Array.isArray(product.images)
+      ? product.images
+      : product.image
+      ? [product.image]
+      : [];
+
+  const safeDescription =
+    getSafeHtml(
+      product.description
     );
 
-    if (selectedBrands.length > 0)
-      updatedProducts = updatedProducts.filter((p) => selectedBrands.includes(p.brand));
+  // =====================================================
+  // MATCHED CATEGORY
+  // =====================================================
 
-    if (selectedStock === "in") updatedProducts = updatedProducts.filter((p) => p.stock > 0);
-    else if (selectedStock === "out") updatedProducts = updatedProducts.filter((p) => p.stock === 0);
+  const matchedCategory =
+    categories.find((cat) => {
+      const catName =
+        cat.name || "";
 
-    if (sortOption === "PriceLowToHigh") updatedProducts.sort((a, b) => a.price - b.price);
-    if (sortOption === "PriceHighToLow") updatedProducts.sort((a, b) => b.price - a.price);
-    if (sortOption === "Release")
-      updatedProducts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      return (
+        catName
+          .toLowerCase()
+          .trim() ===
+        productCategory
+          .toLowerCase()
+          .trim()
+      );
+    });
 
-    setFilteredProducts(updatedProducts);
-  }, [products, categoryName, minPrice, maxPrice, selectedBrands, selectedStock, sortOption]);
+  // =====================================================
+  // RELATED PRODUCTS
+  // =====================================================
+  // Same category, excluding current product.
+  // Maximum 6 products for the sidebar.
+  // =====================================================
 
-  if (loading) return <h2>Loading product details...</h2>;
-  if (!product) return <h2>Product not found!</h2>;
+  const relatedProducts = products
+    .filter((p) => {
+      if (
+        String(p.id) ===
+        String(productId)
+      ) {
+        return false;
+      }
+
+      const currentCategory =
+        p.category_name ||
+        p.category?.name ||
+        "";
+
+      return (
+        currentCategory
+          .toLowerCase()
+          .trim() ===
+        productCategory
+          .toLowerCase()
+          .trim()
+      );
+    })
+    .slice(0, 6);
+
+  // =====================================================
+  // RENDER
+  // =====================================================
 
   return (
     <section className="details-home">
-      {/* Breadcrumb */}
-      <div className="breadcrumb-wrapper">
-        <div className="container-fluid">
-          <ul className="breadcrumb-content">
-            <li><Link to="/">Home</Link></li>
-            {categories
-              .filter((cat) => cat.name.toLowerCase() === categoryName?.toLowerCase())
-              .map((cat) => (
-                <li key={cat.id}>
-                  <Link to={`/products-categories/${cat.name}`}>
-                    {cat.name.charAt(0).toUpperCase() + cat.name.slice(1)}
-                  </Link>
-                </li>
-              ))}
-            <li><span>{product.title || product.name}</span></li>
-          </ul>
-        </div>
+
+      {/* =================================================
+          TOAST
+      ================================================= */}
+
+      <div
+        className={`toast ${
+          toast.visible
+            ? "toast-show"
+            : ""
+        }`}
+      >
+        {toast.message}
       </div>
 
+      {/* =================================================
+          BREADCRUMB
+      ================================================= */}
+
+      <div className="breadcrumb-wrapper">
+
+        <div className="container-fluid">
+
+          <ul className="breadcrumb-content">
+
+            <li>
+              <Link to="/">
+                Home
+              </Link>
+            </li>
+
+            {matchedCategory && (
+              <li>
+                <Link
+                  to={`/products-categories/${encodeURIComponent(
+                    matchedCategory.name
+                  )}`}
+                >
+                  {matchedCategory.name}
+                </Link>
+              </li>
+            )}
+
+            <li>
+              <span>
+                {productTitle}
+              </span>
+            </li>
+
+          </ul>
+
+        </div>
+
+      </div>
+
+      {/* =================================================
+          MAIN PRODUCT AREA
+      ================================================= */}
+
       <div className="detailspage-row">
+
         <div className="products-container">
+
           <div className="details-left">
+
+            {/* =================================================
+                PRODUCT IMAGES
+            ================================================= */}
+
             <div className="producat_wrapper">
+
               <div
                 className="detailshome-zoom-container"
-                onMouseMove={handleMouseMove}
-                onMouseLeave={handleMouseLeave}
+                onMouseMove={
+                  handleMouseMove
+                }
+                onMouseLeave={
+                  handleMouseLeave
+                }
               >
-                {activeImage && (
+
+                {activeImage ? (
                   <img
+                    key={activeImage}
                     src={activeImage}
-                    alt={product.name}
-                    className="detailshome-main-image"
+                    alt={productTitle}
+                    className="detailshome-main-image fade-in-image"
                   />
+                ) : (
+                  <div className="no-image">
+                    No image available
+                  </div>
                 )}
-                {zoomPosition.visible && (
-                  <div
-                    className="detailshome-image-zoom-lens"
-                    style={{
-                      backgroundImage: `url(${activeImage})`,
-                      backgroundPosition: `${zoomPosition.x}% ${zoomPosition.y}%`,
-                    }}
-                  />
-                )}
+
+                {zoomPosition.visible &&
+                  activeImage && (
+                    <div
+                      className="detailshome-image-zoom-lens"
+                      style={{
+                        backgroundImage: `url("${activeImage}")`,
+                        backgroundPosition: `${zoomPosition.x}% ${zoomPosition.y}%`,
+                      }}
+                    />
+                  )}
+
               </div>
-              <div className="detailshome-image-gallery">
-                {product.images?.map((img, idx) => (
-                  <img
-                    key={idx}
-                    src={`http://localhost:8000${img}`}
-                    alt={`Product ${idx + 1}`}
-                    onClick={() => setActiveImage(`http://localhost:8000${img}`)}
-                    className={activeImage === `http://localhost:8000${img}` ? "detailshome-gallery-image" : ""}
-                  />
-                ))}
-              </div>
+
+              {/* IMAGE GALLERY */}
+
+              {productImages.length > 0 && (
+                <div className="detailshome-image-gallery">
+
+                  {productImages.map(
+                    (img, idx) => {
+                      const fullUrl =
+                        getImageUrl(img);
+
+                      if (!fullUrl) {
+                        return null;
+                      }
+
+                      return (
+                        <img
+                          key={idx}
+                          src={fullUrl}
+                          alt={`${productTitle} ${
+                            idx + 1
+                          }`}
+                          onClick={() =>
+                            setActiveImage(
+                              fullUrl
+                            )
+                          }
+                          style={{
+                            "--delay": `${
+                              idx * 0.08
+                            }s`,
+                          }}
+                          className={`gallery-thumb ${
+                            activeImage ===
+                            fullUrl
+                              ? "detailshome-gallery-image"
+                              : ""
+                          }`}
+                        />
+                      );
+                    }
+                  )}
+
+                </div>
+              )}
+
             </div>
 
+            {/* =================================================
+                PRODUCT DETAILS
+            ================================================= */}
+
             <div className="product-details">
-              <h1 className="product-title">{product.title}</h1>
-              <h2><b>Brand: </b>{product.brand}</h2>
+
+              <h1 className="product-title">
+                {productTitle}
+              </h1>
+
+              <h2>
+                <b>Brand: </b>
+                {productBrand}
+              </h2>
+
+              {/* RATING */}
+
               <div className="product-rating">
+
                 <span>
-                  <i className="fas fa-star"></i>
+                  <i className="fas fa-star" />
                 </span>
+
                 <span>
-                  <i className="fas fa-star"></i>
+                  <i className="fas fa-star" />
                 </span>
+
                 <span>
-                  <i className="fas fa-star"></i>
+                  <i className="fas fa-star" />
                 </span>
+
                 <span>
-                  <i className="fas fa-star"></i>
+                  <i className="fas fa-star" />
                 </span>
+
                 <span>
-                  <i className="fas fa-star-half-alt"></i>
+                  <i className="fas fa-star-half-alt" />
                 </span>
-                <span>(350 ratings)</span>
+
+                <span>
+                  (350 ratings)
+                </span>
+
               </div>
+
+              {/* PRICING */}
 
               <div className="products-pricing">
-                <b>Price: </b>
-                <span className="original-price">₹{product.oldPrice}</span>
 
-                {product.price && <span className="discount-price">₹{product.discount_price || product.price}</span>}
+                <b>Price: </b>
+
+                {productOldPrice !== "" && (
+                  <span className="original-price">
+                    ₹{productOldPrice}
+                  </span>
+                )}
+
+                <span className="discount-price">
+                  ₹{productPrice}
+                </span>
+
               </div>
 
+              {/* ACTIONS */}
+
               <div className="product-actions">
+
+                {/* QUANTITY */}
+
                 <div className="product-quantity">
-                  <span className="qty-down" onClick={minus}>
-                    <i className="fi-rs-angle-small-down"></i>
+
+                  <span
+                    className="qty-down"
+                    onClick={minus}
+                  >
+                    <i className="fa-solid fa-chevron-down" />
                   </span>
+
                   <input
                     type="number"
                     value={inputValue}
-                    onChange={handleInputChange}
-                    min="1" // Optional: prevent negative values
+                    onChange={
+                      handleInputChange
+                    }
+                    min="1"
+                    max={
+                      productStock > 0
+                        ? productStock
+                        : undefined
+                    }
                   />
-                  <span className="qty-up" onClick={plus}>
-                    <i className="fi-rs-angle-small-up"></i>
+
+                  <span
+                    className="qty-up"
+                    onClick={plus}
+                  >
+                    <i className="fa-solid fa-chevron-up" />
                   </span>
+
                 </div>
 
+                {/* SHORT DESCRIPTION */}
 
-                {product.description && <p><b>Description:</b> {product.description}</p>}
-                <p><b>Stock:</b> {product.stock > 0 ? `${product.stock} Items In Stock` : "Out of Stock"}</p>
+                {product.subdescription && (
+                  <p>
+                    <b>
+                      {product.subdescription}
+                    </b>
+                  </p>
+                )}
+
+                {/* STOCK */}
+
+                <p>
+                  <b>Stock:</b>{" "}
+                  {productStock > 0
+                    ? `${productStock} Items In Stock`
+                    : "Out of Stock"}
+                </p>
+
+                {/* BUTTONS */}
 
                 <div className="product-details-button">
-                  {/* ✅ ADD TO CART */}
+
                   <button
+                    type="button"
                     className="addtocart"
+                    disabled={
+                      productStock <= 0
+                    }
                     onClick={() => {
-                      addToCart({ ...product, quantity: 1 });
-                      showToast(`${product.name || product.title} added to cart!`);
+                      addToCart({
+                        ...product,
+                        quantity:
+                          inputValue,
+                      });
+
+                      showToast(
+                        `${productTitle} added to cart!`
+                      );
                     }}
                   >
-                    <i className="fa-solid fa-cart-shopping"></i> Add to Cart
+                    <i className="fa-solid fa-cart-shopping" />{" "}
+                    Add to Cart
                   </button>
 
-                  {/* ✅ ADD TO WISHLIST */}
                   <button
-                    className="addtocart"
+                    type="button"
+                    className="addtocart wishlist-btn"
                     onClick={() => {
                       addToWishlist({
                         ...product,
                         quantity: 1,
-                        price: product.discount_price || product.price,
+                        price:
+                          productPrice,
                       });
-                      showToast(`${product.title || product.name} added to wishlist!`);
+
+                      showToast(
+                        `${productTitle} added to wishlist!`
+                      );
                     }}
                   >
                     ❤️ Wishlist
                   </button>
+
                 </div>
 
               </div>
+
             </div>
 
-            {/* Related Products */}
-
           </div>
+
+          {/* =================================================
+              FULL HTML DESCRIPTION / OVERVIEW
+          ================================================= */}
+
           <div className="detailspage-descriptions-container">
+
             <h2>Overview</h2>
+
             <table>
               <tbody>
-                <tr>
-                  <td><b>Product Name</b></td>
-                  <td>{product.title}</td>
-
-                </tr>
-
 
                 <tr>
-                  <td><b>Brand</b></td>
-                  <td>{product.brand}</td>
+                  <td>
+                    <b>Product Name</b>
+                  </td>
 
-                </tr>
-                <tr>
-                  <td><b>Category</b></td>
-                  <td>{product.category_name}</td>
-
+                  <td>
+                    {productTitle}
+                  </td>
                 </tr>
 
                 <tr>
-                  <div className="product-details-summary">
-                    <ul>
-                      {product.description && <li><b>Description:</b> {product.description}</li>}
+                  <td>
+                    <b>Brand</b>
+                  </td>
 
-                      {product.type && <li><b>Type:</b> {product.type}</li>}
-                      {product.mfg && <li><b>MFG:</b> {product.mfg}</li>}
-                      {product.size && <li><b>Size:</b> {product.size}</li>}
-                      {product.weight && <li><b>Weight:</b> {product.weight}</li>}
-                      {product.tags && <li><b>Tags:</b> {product.tags}</li>}
-                      {product.life && <li><b>Life:</b> {product.life}</li>}
-                      <li><b>Stock:</b> {product.stock > 0 ? `${product.stock} Items In Stock` : "Out of Stock"}</li>
-                      {product.sku && <li><b>SKU:</b> {product.sku}</li>}
-                    </ul>
-                  </div>
+                  <td>
+                    {productBrand}
+                  </td>
+                </tr>
 
+                <tr>
+                  <td>
+                    <b>Category</b>
+                  </td>
+
+                  <td>
+                    {productCategory}
+                  </td>
                 </tr>
 
               </tbody>
-
             </table>
-            {/* <div className="detailspage-descriptions">
-              <ul className="detailspage-tab">
-                {[1, 2, 3, 4].map((tab) => (
-                  <li
-                    key={tab}
-                    onClick={() => toggleTab(tab)}
-                    className={
-                      toggleState === tab
-                        ? "detailspage-tab-list active-detailspage-tab-list"
-                        : "detailspage-tab-list"
-                    }
-                  >
-                    {tab === 1
-                      ? "Description"
-                      : tab === 2
-                        ? "Additional info"
-                        : tab === 3
-                          ? "Vendor"
-                          : "Reviews"}
+
+            {/* ADMIN HTML DESCRIPTION */}
+
+            {safeDescription && (
+              <div
+                className="product-html-description"
+                dangerouslySetInnerHTML={{
+                  __html:
+                    safeDescription,
+                }}
+              />
+            )}
+
+            {/* ADDITIONAL PRODUCT INFORMATION */}
+
+            <div className="product-details-summary">
+
+              <ul>
+
+                {product.type && (
+                  <li>
+                    <b>Type:</b>{" "}
+                    {product.type}
                   </li>
-                ))}
+                )}
+
+                {product.mfg && (
+                  <li>
+                    <b>MFG:</b>{" "}
+                    {product.mfg}
+                  </li>
+                )}
+
+                {product.size && (
+                  <li>
+                    <b>Size:</b>{" "}
+                    {product.size}
+                  </li>
+                )}
+
+                {product.weight && (
+                  <li>
+                    <b>Weight:</b>{" "}
+                    {product.weight}
+                  </li>
+                )}
+
+                {product.tags && (
+                  <li>
+                    <b>Tags:</b>{" "}
+                    {product.tags}
+                  </li>
+                )}
+
+                {product.life && (
+                  <li>
+                    <b>Life:</b>{" "}
+                    {product.life}
+                  </li>
+                )}
+
+                <li>
+                  <b>Stock:</b>{" "}
+                  {productStock > 0
+                    ? `${productStock} Items In Stock`
+                    : "Out of Stock"}
+                </li>
+
+                {product.sku && (
+                  <li>
+                    <b>SKU:</b>{" "}
+                    {product.sku}
+                  </li>
+                )}
+
               </ul>
-              <div className="detailspage-para">
-                {toggleState === 1 && (
-                  <div className="detailspage-para-content active-detailspage-para-content">
-                    <p>Description content goes here...</p>
-                  </div>
-                )}
-                {toggleState === 2 && (
-                  <div className="detailspage-para-content active-detailspage-para-content">
-                    <p>Additional info content goes here...</p>
-                  </div>
-                )}
-                {toggleState === 3 && (
-                  <div className="detailspage-para-content active-detailspage-para-content">
-                    <p>Vendor content goes here...</p>
-                  </div>
-                )}
-                {toggleState === 4 && (
-                  <div className="detailspage-para-content active-detailspage-para-content">
-                    <p>Reviews content goes here...</p>
-                  </div>
-                )}
-              </div>
-            </div> */}
+
+            </div>
+
           </div>
+
         </div>
-        {/* Right Column: Filter Sidebar */}
+
+        {/* =================================================
+            RIGHT SIDEBAR
+        ================================================= */}
+
         <div className="categories-sidebar">
+
+          {/* CATEGORIES */}
+
           <CategoriesFilter
             categories={categories}
             products={products}
           />
+
+          {/* =================================================
+              RELATED PRODUCTS
+          ================================================= */}
+
+          <div className="sidebar-category-card related-products-sidebar">
+
+            <div className="related-products-sidebar-header">
+              <h3>
+                Related Products
+              </h3>
+            </div>
+
+            <div className="related-products-sidebar-list">
+
+              {relatedProducts.length > 0 ? (
+                relatedProducts.map(
+                  (relatedProduct) => (
+                    <RelatedProductCard
+                      key={relatedProduct.id}
+                      product={
+                        relatedProduct
+                      }
+                    />
+                  )
+                )
+              ) : (
+                <p className="no-related-products">
+                  No related products
+                  available
+                </p>
+              )}
+
+            </div>
+
+          </div>
+
         </div>
+
       </div>
+
     </section>
   );
 };

@@ -1,321 +1,153 @@
-/* =========================
-   Cart Page Wrapper
-========================= */
 .cart-container {
-  max-width: 1200px;
-  display: flex;
-  height: 300px;
-  gap: 20px;
-  align-items: center;
-  justify-content: space-between;
-  justify-content: center;
-  margin: 0 auto;
-  padding: 80px 16px 40px;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-    sans-serif;
-  background: linear-gradient(135deg, #f9fafb, #eef2ff);
+  max-width: 1240px;
+  width: 92%;
+  margin: var(--space-6) auto var(--space-8);
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: var(--space-6);
+  align-items: start;
 }
 
-/* Empty Cart */
-.cart-container p {
-  text-align: center;
-  margin-top: 100px;
-  font-size: 18px;
-  color: #6b7280;
-}
-
-/* =========================
-   Header
-========================= */
-.cart-container h1 {
-  font-size: 24px;
-  font-weight: 700;
-  color: #111827;
-  margin-bottom: 16px;
-}
-
-/* =========================
-   Buttons
-========================= */
-.cartremove-btn {
-  padding: 10px 16px;
-  background: #ef4444;
-  color: white;
-  border: none;
-  border-radius: 999px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 600;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-  box-shadow: 0 8px 20px rgba(239, 68, 68, 0.35);
-  margin-bottom: 18px;
-}
-
-.cartremove-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 12px 28px rgba(239, 68, 68, 0.45);
-}
-
-.checkout-btn {
-  padding: 12px 18px;
-  background: linear-gradient(135deg, #007b5e);
-  color: white;
-  border: none;
-  border-radius: 999px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 700;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-  box-shadow: 0 10px 25px rgba(79, 70, 229, 0.35);
-  margin-top: 20px;
-}
-
-.checkout-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 14px 30px rgba(79, 70, 229, 0.45);
-}
-
-/* =========================
-   Cart Table Card
-========================= */
-/* =========================
-   Cart Summary Box
-========================= */
 .cart-left {
-  width: 65%;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
 }
+.cart-left h1 { font-size: var(--fs-lg); font-weight: 700; margin-bottom: var(--space-4); }
 
+.cartremove-btn {
+  padding: 7px 16px;
+  border: 1px solid var(--color-danger);
+  background: transparent;
+  color: var(--color-danger);
+  border-radius: var(--radius-md);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: var(--space-4);
+  transition: background 0.15s var(--ease), color 0.15s var(--ease);
+}
+.cartremove-btn:hover { background: var(--color-danger); color: #fff; }
+
+.table.table-wishlist { width: 100%; border-collapse: collapse; }
+.table-wishlist th {
+  text-align: left;
+  font-size: var(--fs-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-ink-muted);
+  padding: var(--space-3);
+  border-bottom: 2px solid var(--color-border);
+}
+.table-wishlist td {
+  padding: var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+  font-size: var(--fs-sm);
+  vertical-align: middle;
+}
+.table-wishlist tr:last-child td { border-bottom: none; }
+
+.img-box {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--color-surface-alt);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.img-box img { width: 100%; height: 100%; object-fit: cover; }
+.img-box span { font-size: 10px; color: var(--color-ink-faint); text-align: center; }
+
+/* ---- Summary sidebar (shared by cart + checkout) ---- */
 .cart-summary {
-  width: 450px;
-  background: #ffffff;
-  padding: 20px;
-  border-radius: 16px;
-  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.12),
-    0 0 0 1px rgba(148, 163, 184, 0.12);
-  height: fit-content;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  position: sticky;
+  top: 90px;
 }
-
 .cart-summary h3 {
-  font-size: 20px;
-  font-weight: 800;
-  margin-bottom: 16px;
-  color: #111827;
+  font-size: var(--fs-md);
+  font-weight: 700;
+  margin-bottom: var(--space-4);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .summary-row {
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  font-size: 14px;
-  color: #374151;
-  margin-bottom: 10px;
+  font-size: var(--fs-sm);
+  color: var(--color-ink-muted);
+  padding: var(--space-2) 0;
+  gap: var(--space-3);
 }
+.summary-row .img-box { width: 40px; height: 40px; }
+.free-text { color: var(--color-success); font-weight: 700; }
 
-.free-text {
-  color: #16a34a;
-  font-weight: 700;
-}
+.divider-2 { height: 1px; background: var(--color-border); margin: var(--space-3) 0; }
 
 .summary-total {
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  font-size: 18px;
-  font-weight: 800;
-  margin-top: 14px;
+  font-size: var(--fs-md);
+  margin-bottom: var(--space-4);
 }
+.summary-total strong:last-child { color: var(--color-primary-dark); font-size: var(--fs-lg); }
 
-/* ✅ Responsive */
-@media (max-width: 900px) {
-  .cart-container {
-    flex-direction: column;
-  }
-
-  .cart-left,
-  .cart-summary {
-    width: 100%;
-  }
+.checkout-btn, .btn-place-order {
+  width: 100%;
+  padding: 13px;
+  border: none;
+  border-radius: var(--radius-md);
+  background: var(--color-primary);
+  color: #fff;
+  font-weight: 700;
+  font-size: var(--fs-sm);
+  cursor: pointer;
+  transition: background 0.15s var(--ease);
 }
-/* =========================
-   Checkout Page Wrapper
-========================= */
+.checkout-btn:hover, .btn-place-order:hover { background: var(--color-primary-dark); }
+
+/* ---- Checkout page ---- */
 .checkout-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 80px 16px 40px;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-    sans-serif;
-  background: linear-gradient(135deg, #f9fafb, #eef2ff);
-  min-height: 100vh;
+  max-width: 1240px;
+  width: 92%;
+  margin: var(--space-6) auto var(--space-8);
 }
+.checkout-container > h1 { font-size: var(--fs-xl); font-weight: 700; margin-bottom: var(--space-6); }
 
-/* Page Title */
-.checkout-container h1 {
-  font-size: 26px;
-  font-weight: 800;
-  color: #111827;
-  margin-bottom: 24px;
-}
-
-/* =========================
-   Checkout Layout
-========================= */
 .checkout-row {
   display: grid;
-  grid-template-columns: 2fr 1.2fr;
-  gap: 24px;
+  grid-template-columns: 1fr 340px;
+  gap: var(--space-6);
   align-items: start;
 }
 
-/* =========================
-   Billing Card
-========================= */
 .col-lg-7 {
-  background: white;
-  padding: 22px;
-  border-radius: 16px;
-  box-shadow: 0 18px 60px rgba(15, 23, 42, 0.12),
-    0 0 0 1px rgba(148, 163, 184, 0.15);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
 }
-
 .col-lg-7 h4 {
-  font-size: 20px;
+  font-size: var(--fs-md);
   font-weight: 700;
-  color: #111827;
-  margin-bottom: 16px;
+  margin-bottom: var(--space-4);
 }
-
-/* Billing Inputs */
 .col-lg-7 input {
-  width: 100%;
-  border-radius: 10px;
-  border: 1px solid #e5e7eb;
-  padding: 11px 12px;
-  font-size: 14px;
-  outline: none;
-  margin-bottom: 14px;
-  background-color: #f9fafb;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  margin-bottom: var(--space-3);
 }
 
-.col-lg-7 input:focus {
-  border-color: #4f46e5;
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.18);
-  background-color: #ffffff;
-}
-
-/* =========================
-   Order Summary Card
-========================= */
-.col-lg-5 {
-  background: white;
-  padding: 20px;
-  border-radius: 16px;
-  box-shadow: 0 18px 60px rgba(15, 23, 42, 0.12),
-    0 0 0 1px rgba(148, 163, 184, 0.15);
-}
-
-.col-lg-5 h4 {
-  font-size: 20px;
-  font-weight: 700;
-  color: #111827;
-  margin-bottom: 14px;
-}
-
-/* Order Items */
-.col-lg-5 p {
-  font-size: 14px;
-  color: #374151;
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 6px;
-}
-
-/* Total */
-.col-lg-5 h3 {
-  margin-top: 14px;
-  font-size: 20px;
-  font-weight: 800;
-  color: #111827;
-  border-top: 1px dashed #e5e7eb;
-  padding-top: 10px;
-}
-
-/* =========================
-   Payment Section
-========================= */
-.col-lg-5 label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 14px;
-  font-weight: 600;
-  color: #374151;
-  margin-top: 10px;
-  cursor: pointer;
-}
-
-/* =========================
-   Place Order Button
-========================= */
-.btn-place-order {
-  margin-top: 16px;
-  width: 100%;
-  padding: 12px 18px;
-  background: linear-gradient(135deg, #22c55e, #16a34a);
-  color: white;
-  border: none;
-  border-radius: 999px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 700;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-  box-shadow: 0 10px 25px rgba(34, 197, 94, 0.35);
-}
-
-.btn-place-order:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 14px 30px rgba(34, 197, 94, 0.45);
-}
-
-.btn-place-order:active {
-  transform: translateY(0);
-}
-
-/* =========================
-   Order Placed Box
-========================= */
-.checkout-container > div:last-child {
-  margin-top: 20px;
-  background: white;
-  padding: 18px;
-  border-radius: 14px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
-}
-
-/* =========================
-   Responsive Design
-========================= */
 @media (max-width: 900px) {
-  .checkout-row {
-    grid-template-columns: 1fr;
-  }
-
-  .col-lg-7,
-  .col-lg-5 {
-    width: 100%;
-  }
-}
-
-@media (max-width: 480px) {
-  .checkout-container {
-    padding: 64px 12px 32px;
-  }
-
-  .checkout-container h1 {
-    font-size: 22px;
-  }
-
-  .col-lg-7 h4,
-  .col-lg-5 h4 {
-    font-size: 18px;
-  }
+  .cart-container, .checkout-row { grid-template-columns: 1fr; }
+  .cart-summary { position: static; }
+  .table-wishlist th:nth-child(2), .table-wishlist td:nth-child(2) { display: none; }
 }

@@ -1,198 +1,139 @@
-/* General Invoice Styles */
 .invoice-container {
-  padding: 20px;
-  font-family: Arial, sans-serif;
-  background-color: #f4f4f4;
+  max-width: 1000px;
+  width: 92%;
+  margin: var(--space-6) auto var(--space-8);
 }
+
+.col-lg-12 { width: 100%; }
 
 .invoice-inner {
-  background-color: #fff;
-  border-radius: 10px;
-  padding: 30px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
 }
 
+.invoice-info { padding: var(--space-6); }
+
+/* ---- Bootstrap-style row/col helpers, scoped to invoice ---- */
+.invoice-info .row { display: flex; flex-wrap: wrap; margin: 0 calc(var(--space-3) * -1); }
+.invoice-info .row > [class*="col-"] { padding: 0 var(--space-3); }
+.col-sm-6 { flex: 1 1 50%; max-width: 50%; }
+.col-lg-9 { flex: 1 1 75%; max-width: 75%; }
+.col-lg-3 { flex: 1 1 25%; max-width: 25%; }
+.col-md-6 { flex: 1 1 50%; max-width: 50%; }
+.col-offsite { display: flex; justify-content: flex-end; }
+
+.text-end, .text-right { text-align: right; }
+.text-center { text-align: center; }
+.mb-10 { margin-bottom: 10px; }
+.mt-20 { margin-top: 20px; }
+.mt-2 { margin-top: 8px; }
+.mt-50 { margin-top: 30px; }
+.text-13 { font-size: 13px; }
+.f-w-600 { font-weight: 700; }
+
+/* ---- Header ---- */
 .invoice-header {
-  border-bottom: 2px solid #eee;
-  padding-bottom: 20px;
+  padding-bottom: var(--space-5);
+  margin-bottom: var(--space-5);
+  border-bottom: 2px solid var(--color-border);
 }
+.invoice-logo img { height: 50px; }
+.invoice-numb h6 { font-size: var(--fs-sm); color: var(--color-ink-muted); }
+.invoice-header-1 { color: var(--color-primary-dark); font-weight: 700 !important; }
 
-
-
-.invoice-header .invoice-numb {
-  text-align: right;
-}
-
-.invoice-header-1 {
-  font-weight: bold;
-  color: #333;
-}
-
-.invoice-top {
-  padding: 20px 0;
-}
-
+/* ---- Top: bill to / invoice to ---- */
+.invoice-top { margin-bottom: var(--space-5); }
 .invoice-title-1 {
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 10px;
+  font-size: var(--fs-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-primary);
+  font-weight: 700 !important;
+}
+.invoice-addr-1, .invoice-from-1 {
+  font-size: var(--fs-sm);
+  color: var(--color-ink-muted);
+  line-height: 1.7;
 }
 
-.invoice-addr-1 {
-  font-size: 14px;
-  color: #555;
-}
-
-.invoice-number .invoice-addr-1,
-.invoice-number .invoice-from-1 {
-  font-size: 14px;
-  color: #555;
-}
-
-.invoice-center {
-  margin-top: 20px;
-}
-
-.invoice-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.invoice-table th, .invoice-table td {
-  padding: 12px;
-  border: 1px solid #eee;
+/* ---- Table ---- */
+.invoice-center { margin-bottom: var(--space-6); }
+.invoice-table { width: 100%; border-collapse: collapse; }
+.invoice-table thead.bg-active th {
+  background: var(--color-primary);
+  color: #fff;
+  padding: var(--space-3);
+  font-size: var(--fs-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
   text-align: left;
 }
+.invoice-table thead.bg-active th:first-child { border-radius: var(--radius-sm) 0 0 var(--radius-sm); }
+.invoice-table thead.bg-active th:last-child { border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
 
-.invoice-table th {
-  background-color: #f9f9f9;
-  font-weight: bold;
+.invoice-table.table-striped tbody tr:nth-child(odd) { background: var(--color-surface-alt); }
+.invoice-table td { padding: var(--space-3); font-size: var(--fs-sm); }
+
+.item-desc-1 { display: flex; flex-direction: column; gap: 2px; }
+.item-desc-1 span { font-weight: 600; color: var(--color-ink); }
+.item-desc-1 small { color: var(--color-ink-faint); font-size: var(--fs-xs); }
+
+/* ---- Bottom ---- */
+.invoice-bottom { padding-top: var(--space-5); border-top: 2px solid var(--color-border); }
+.important-notes-list-1 { display: flex; flex-direction: column; gap: 6px; margin-top: var(--space-2); }
+.important-notes-list-1 li { font-size: var(--fs-xs); color: var(--color-ink-muted); padding-left: var(--space-3); position: relative; }
+.important-notes-list-1 li::before { content: "•"; position: absolute; left: 0; color: var(--color-accent); }
+
+.mobile-social-icon { display: flex; align-items: center; gap: var(--space-2); justify-content: flex-end; flex-wrap: wrap; }
+.mobile-social-icon h6 { width: 100%; text-align: right; font-size: var(--fs-xs); color: var(--color-ink-faint); margin-bottom: 4px; }
+.mobile-social-icon a {
+  width: 30px; height: 30px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-alt);
+  color: var(--color-ink-muted);
+  transition: background 0.15s var(--ease), color 0.15s var(--ease);
 }
+.mobile-social-icon a:hover { background: var(--color-primary); color: #fff; }
 
-.invoice-table td.text-center {
-  text-align: center;
-}
-
-.invoice-table td.text-right {
-  text-align: right;
-}
-
-.invoice-bottom {
-  margin-top: 40px;
-}
-
-.important-notes-list-1 {
-  list-style-type: disc;
-  margin: 0;
-  padding: 0 0 0 20px;
-  font-size: 14px;
-  color: #555;
-}
-
-.important-notes-list-1 li {
-  margin-bottom: 10px;
-}
-
+/* ---- Print / download buttons ---- */
 .invoice-btn-section {
-  margin-top: 30px;
-  text-align: center;
-}
-
-.invoice-btn-section .btn {
-  font-size: 14px;
-  padding: 10px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-  display: inline-block;
-  margin-right: 10px;
-}
-
-.invoice-btn-section .btn-custom {
-  background-color: #2d87f0;
-  color: #fff;
-  border: none;
-}
-
-.invoice-btn-section .btn-custom:hover {
-  background-color: #1c64b2;
-}
-
-.invoice-btn-section .btn-print {
-  background-color: #4CAF50;
-}
-
-.invoice-btn-section .btn-print:hover {
-  background-color: #45a049;
-}
-
-.invoice-btn-section .btn-download {
-  background-color: #f39c12;
-}
-
-.invoice-btn-section .btn-download:hover {
-  background-color: #e67e22;
-}
-
-.mobile-social-icon {
   display: flex;
-  justify-content: center;
-  gap: 15px;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  padding: var(--space-5) var(--space-6);
+  background: var(--color-surface-alt);
+  border-top: 1px solid var(--color-border);
 }
-.invoice-top-row {
-  display: flex;justify-content: space-between;
+.btn.btn-custom {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 24px;
+  border: none;
+  border-radius: var(--radius-md);
+  font-weight: 700;
+  font-size: var(--fs-sm);
+  cursor: pointer;
+  transition: transform 0.15s var(--ease), background 0.15s var(--ease);
+}
+.btn.hover-up:hover { transform: translateY(-2px); }
+.btn-print { background: var(--color-surface); color: var(--color-ink); border: 1px solid var(--color-border-strong) !important; }
+.btn-print:hover { border-color: var(--color-primary) !important; color: var(--color-primary); }
+.btn-download { background: var(--color-primary); color: #fff; }
+.btn-download:hover { background: var(--color-primary-dark); }
+
+@media print {
+  .d-print-none, .print-hide { display: none !important; }
 }
 
-.mobile-social-icon a img {
-  width: 25px;
-  height: 25px;
-}
-
-.print-hide {
-  display: none;
-}
-
-.text-end {
-  text-align: right;
-}
-
-.text-13 {
-  font-size: 13px;
-}
-
-/* Responsive Styles */
 @media (max-width: 768px) {
-  .invoice-header .row {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .invoice-top .row {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .invoice-btn-section {
-    text-align: center;
-  }
-
-  .invoice-btn-section .btn {
-    width: 100%;
-    margin-bottom: 10px;
-  }
-
-  .invoice-row {
-    display: block;
-  }
-
-  .invoice-inner {
-    padding: 20px;
-  }
-}
-.invoice-logo{
-  width: 200px;
-  height: 100px;
-}
-.invoice-logo img{
-  width: 100%;
-  height: 100%;
+  .col-sm-6, .col-lg-9, .col-lg-3, .col-md-6 { flex: 1 1 100%; max-width: 100%; }
+  .col-offsite { justify-content: flex-start; }
+  .text-end, .text-right { text-align: left; }
+  .invoice-info { padding: var(--space-4); }
+  .invoice-btn-section { justify-content: stretch; flex-direction: column; padding: var(--space-4); }
 }

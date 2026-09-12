@@ -1,10 +1,11 @@
 import { Link } from "react-router-dom";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import wishlistimg from "../../../assets/img/wishlist.png";
 import dailydealscarouselbanner from "../../../assets/img/banner-4.png";
 import previewimg from "../../../assets/img/eyeicon.jpg";
 import "./GrowthPromoters.css";
+import { Loader } from "../../Loader";
 
 export const GrowthPromoters = ({ categoryId, categoryName }) => {
   const [category, setCategory] = useState(null);
@@ -44,7 +45,7 @@ export const GrowthPromoters = ({ categoryId, categoryName }) => {
 
     fetchCategory();
   }, [categoryId, categoryName]);
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <Loader label="Loading" inline />;
   if (!category) return <p>{message || "No products available"}</p>;
 
   const displayedProducts = category.products.slice(0, productsPerPage);

@@ -1,21 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import api, { ASSET_BASE_URL } from "../api";
 import "./AllCategories.css";
 
 export const CategoryTable = () => {
   const [categories, setCategories] = useState([]);
   const [message, setMessage] = useState("");
-  const [sortConfig, setSortConfig] = useState({ key: "id", direction: "asc" });
+  const [sortConfig, setSortConfig] = useState({
+    key: "id",
+    direction: "asc",
+  });
 
-  // Fetch categories
+  // ================= FETCH =================
   const fetchCategories = async () => {
     try {
-      const res = await axios.get("http://localhost:8000/api/categories");
-      setCategories(res.data);
+      const res = await api.get("/categories");
+      setCategories(res.data ?? []);
     } catch (err) {
       console.error(err);
-      setMessage("Error fetching categories");
+      setMessage("❌ Failed to load categories");
     }
   };
 
@@ -23,80 +26,157 @@ export const CategoryTable = () => {
     fetchCategories();
   }, []);
 
-  // Delete category
+  // ================= DELETE =================
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this category?")) return;
+    if (!window.confirm("Delete this category?")) return;
+
     try {
-      await axios.delete(`http://localhost:8000/api/categories/${id}`);
-      setMessage("Category deleted successfully!");
+      await api.delete(`/categories/${id}`);
+      setMessage("✅ Deleted successfully");
       fetchCategories();
     } catch (err) {
       console.error(err);
-      setMessage("Error deleting category");
+      setMessage("❌ Delete failed");
     }
   };
 
-  // Sorting function
+  // ================= SORT =================
   const handleSort = (key) => {
     let direction = "asc";
-    if (sortConfig.key === key && sortConfig.direction === "asc") {
+
+    if (
+      sortConfig.key === key &&
+      sortConfig.direction === "asc"
+    ) {
       direction = "desc";
     }
+
     setSortConfig({ key, direction });
   };
 
-  // Apply sorting to categories
-  const sortedCategories = [...categories].sort((a, b) => {
+  const sorted = [...categories].sort((a, b) => {
     if (!a[sortConfig.key] || !b[sortConfig.key]) return 0;
+
     if (typeof a[sortConfig.key] === "string") {
       return sortConfig.direction === "asc"
         ? a[sortConfig.key].localeCompare(b[sortConfig.key])
         : b[sortConfig.key].localeCompare(a[sortConfig.key]);
-    } else {
-      return sortConfig.direction === "asc"
-        ? a[sortConfig.key] - b[sortConfig.key]
-        : b[sortConfig.key] - a[sortConfig.key];
     }
+
+    return sortConfig.direction === "asc"
+      ? a[sortConfig.key] - b[sortConfig.key]
+      : b[sortConfig.key] - a[sortConfig.key];
   });
 
   return (
-    <div className="category-table">
+    <main className="category-table">
+
+      {/* HEADER */}
       <div className="adminproduct-head">
-        <h2>All Categories</h2>
+        <h1>Categories CMS</h1>
+
         {message && <p>{message}</p>}
+
         <Link to="/categories/uploadCategory">
-          <button className="upload-btn">+ Add Category</button>
+          <button className="upload-btn">
+            + Create Category
+          </button>
         </Link>
       </div>
+
+      {/* TABLE */}
       <table className="table-customer">
         <thead>
           <tr>
             <th onClick={() => handleSort("id")}>
-              ID {sortConfig.key === "id" ? (sortConfig.direction === "asc" ? "▲" : "▼") : ""}
+              ID
             </th>
+
             <th onClick={() => handleSort("name")}>
-              Category Name {sortConfig.key === "name" ? (sortConfig.direction === "asc" ? "▲" : "▼") : ""}
+              Name
             </th>
-            <th>Image</th>
-            <th>Actions</th>
+
+            <th>
+              Slug
+            </th>
+
+            <th>
+              SEO
+            </th>
+
+            <th>
+              Image
+            </th>
+
+            <th>
+              Actions
+            </th>
           </tr>
         </thead>
+
         <tbody>
-          {sortedCategories.map((cat) => (
+          {sorted.map((cat) => (
             <tr key={cat.id}>
-              <td>{cat.id}</td>
-              <td>{cat.name}</td>
+
               <td>
-                <img
-                  src={`http://localhost:8000${cat.image}`}
-                  alt={cat.name}
-                  className="img-card"
-                />
+                {cat.id}
               </td>
+
+              {/* NAME */}
+              <td>
+                <strong>
+                  {cat.name}
+                </strong>
+              </td>
+
+              {/* SLUG */}
+              <td>
+                <code>
+                  /{cat.slug || "no-slug"}
+                </code>
+
+                {cat.slug && (
+                  <div>
+                    <Link
+                      to={`/jaipur/${cat.slug}`}
+                      target="_blank"
+                    >
+                      🔗 View Page
+                    </Link>
+                  </div>
+                )}
+              </td>
+
+              {/* SEO INFO */}
+              <td>
+                <small>
+                  {cat.meta_title || "No meta title"}
+                </small>
+              </td>
+
+              {/* IMAGE */}
+              <td>
+                {cat.image && (
+                  <img
+                    src={`${ASSET_BASE_URL}${cat.image}`}
+                    alt={cat.name}
+                    className="img-card"
+                    loading="lazy"
+                    onError={(e) => {
+                      e.target.style.display = "none";
+                    }}
+                  />
+                )}
+              </td>
+
+              {/* ACTIONS */}
               <td>
                 <Link to={`/categories/edit/${cat.id}`}>
-                  <button className="edit-btn">Edit</button>
+                  <button className="edit-btn">
+                    Edit
+                  </button>
                 </Link>
+
                 <button
                   className="delete-btn"
                   onClick={() => handleDelete(cat.id)}
@@ -104,10 +184,23 @@ export const CategoryTable = () => {
                   Delete
                 </button>
               </td>
+
             </tr>
           ))}
+
+          {sorted.length === 0 && (
+            <tr>
+              <td
+                colSpan="6"
+                style={{ textAlign: "center" }}
+              >
+                No categories found
+              </td>
+            </tr>
+          )}
         </tbody>
       </table>
-    </div>
+
+    </main>
   );
 };

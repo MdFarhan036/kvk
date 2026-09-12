@@ -1,57 +1,158 @@
-import React from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
-import partnersimage1 from "../../assets/img/brands/advantaSeedsLogo.webp";
-import partnersimage2 from "../../assets/img/brands/ankurLogo.webp";
-import partnersimage3 from "../../assets/img/brands/bayerLogo.webp";
-import partnersimage4 from "../../assets/img/brands/cortevaLogo.webp";
-import partnersimage5 from "../../assets/img/brands/dupontPioneerLogo.webp";
-import partnersimage6 from "../../assets/img/brands/kaveriSeedsLogo.webp";
-import partnersimage7 from "../../assets/img/brands/mahycoLogo.webp";
-import partnersimage8 from "../../assets/img/brands/nuziveeduSeeds.webp";
-import partnersimage9 from "../../assets/img/brands/pahujaSeedsLogo.webp";
-import partnersimage10 from "../../assets/img/brands/seminisLogo.webp";
-import partnersimage11 from "../../assets/img/brands/syngentaLogo.webp";
-import partnersimage12 from "../../assets/img/brands/uplLogo.webp";
-import partnersimage13 from "../../assets/img/brands/vnrLogo.webp";
+import "./Affiliations.css";
+import { Reveal } from "../Reveal";
+
+import api, { ASSET_BASE_URL } from "../api.js";
 
 export const Affiliations = () => {
-  const partnersData = [
-    { id: 1, partnerImg: partnersimage1 },
-    { id: 2, partnerImg: partnersimage2 },
-    { id: 3, partnerImg: partnersimage3 },
-    { id: 4, partnerImg: partnersimage4 },
-    { id: 5, partnerImg: partnersimage5 },
-    { id: 6, partnerImg: partnersimage6 },
-    { id: 7, partnerImg: partnersimage7 },
-    { id: 8, partnerImg: partnersimage8 },
-    { id: 9, partnerImg: partnersimage9 },
-    { id: 10, partnerImg: partnersimage10 },
-    { id: 11, partnerImg: partnersimage11 },
-    { id: 12, partnerImg: partnersimage12 },
-    { id: 13, partnerImg: partnersimage13 },
-  ];
+  const [brands, setBrands] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // =================================
+  // IMAGE URL HELPER
+  // =================================
+
+  const getImageUrl = (image) => {
+    if (!image) return null;
+
+    if (/^https?:\/\//i.test(image)) {
+      return image;
+    }
+
+    return `${ASSET_BASE_URL}${
+      image.startsWith("/") ? "" : "/"
+    }${image}`;
+  };
+
+  // =================================
+  // FETCH BRANDS
+  // =================================
+
+  useEffect(() => {
+    const fetchBrands = async () => {
+      try {
+        setLoading(true);
+
+        const { data } = await api.get("/brands/public");
+
+        const formattedBrands = Array.isArray(data)
+          ? data
+              .map((brand) => ({
+                ...brand,
+
+                name:
+                  brand.brand_name ||
+                  brand.name ||
+                  brand.brand ||
+                  "",
+
+                image: getImageUrl(brand.image),
+              }))
+              .filter((brand) => brand.image)
+          : [];
+
+        setBrands(formattedBrands);
+      } catch (error) {
+        console.error(
+          "Error fetching affiliation brands:",
+          error
+        );
+
+        setBrands([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBrands();
+  }, []);
 
   return (
-    <div className="partners">
-      <div className="partners-container">
-        <div className="section-title">
-          <h2>Our Brands</h2>
-          <Link to="/brands" className="view-all-btn">
-            View All
-          </Link>
-        </div>
+    <div className="affiliations">
+      <div className="affiliations-container">
 
+        {/* =================================
+            HEADER
+        ================================= */}
 
-        <div className="partners-area">
-          <div className="partners-inner">
-            {partnersData.slice(0, 7).map((partner) => (
-              <div key={partner.id} className="partnerslider-image">
-                <img src={partner.partnerImg} alt={`Brand ${partner.id}`} />
-              </div>
-            ))}
+        <Reveal className="affiliations-header">
+
+          <div className="affiliations-heading">
+            <span className="affiliations-eyebrow">
+              Trusted Partners
+            </span>
+
+            <h2>Our Brands</h2>
           </div>
-        </div>
+
+          <Link
+            to="/brands"
+            className="affiliations-viewall"
+          >
+            View All
+            <span className="affiliations-arrow">
+              →
+            </span>
+          </Link>
+
+        </Reveal>
+
+        {/* =================================
+            LOADING
+        ================================= */}
+
+        {loading ? (
+
+          <div className="affiliations-loading">
+            Loading brands...
+          </div>
+
+        ) : (
+
+          /* =================================
+             BRAND GRID
+          ================================= */
+
+          <div className="affiliations-grid">
+
+            {brands
+              .slice(0, 7)
+              .map((brand) => (
+
+                <Link
+                  key={brand.id}
+                  to={`/products?brand=${encodeURIComponent(
+                    brand.name
+                  )}`}
+                  className="affiliations-card"
+                >
+
+                  <img
+                    src={brand.image}
+                    alt={brand.name || "Brand"}
+                    loading="lazy"
+                  />
+
+                </Link>
+
+              ))}
+
+          </div>
+
+        )}
+
+        {/* =================================
+            EMPTY STATE
+        ================================= */}
+
+        {!loading && brands.length === 0 && (
+          <div className="affiliations-empty">
+            No brands available.
+          </div>
+        )}
+
       </div>
     </div>
   );

@@ -1,0 +1,218 @@
+/* ============================================
+   EDIT BRAND
+============================================ */
+
+.user-details-page {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 35px;
+  box-sizing: border-box;
+  font-family: "Inter", sans-serif;
+  background: #f8fafc;
+  min-height: 100%;
+}
+
+.user-details-page h2 {
+  margin: 0 0 28px;
+  font-size: 30px;
+  font-weight: 700;
+  color: #111827;
+}
+
+/* ============================================
+   FORM
+============================================ */
+
+.admin-form {
+  width: 100%;
+  max-width: 650px;
+  padding: 28px;
+  box-sizing: border-box;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+}
+
+/* ============================================
+   FORM GROUP
+============================================ */
+
+.admin-form > div {
+  margin-bottom: 22px;
+}
+
+.admin-form > div:last-of-type {
+  margin-bottom: 20px;
+}
+
+/* ============================================
+   LABEL
+============================================ */
+
+.admin-form label {
+  display: block;
+  margin-bottom: 8px;
+  color: #374151;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* ============================================
+   TEXT INPUT
+============================================ */
+
+.admin-form input[type="text"] {
+  width: 100%;
+  height: 44px;
+  padding: 0 13px;
+  box-sizing: border-box;
+
+  border: 1px solid #cbd5e1;
+  border-radius: 7px;
+
+  background: #ffffff;
+  color: #111827;
+
+  font-size: 14px;
+  outline: none;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.admin-form input[type="text"]:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* ============================================
+   FILE INPUT
+============================================ */
+
+.admin-form input[type="file"] {
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+
+  border: 1px solid #cbd5e1;
+  border-radius: 7px;
+
+  background: #f8fafc;
+  color: #475569;
+
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.admin-form input[type="file"]:hover {
+  border-color: #94a3b8;
+}
+
+/* ============================================
+   CURRENT BRAND IMAGE
+============================================ */
+
+.brand-current-image {
+  display: block;
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+
+  padding: 8px;
+  box-sizing: border-box;
+
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+
+/* ============================================
+   ERROR
+============================================ */
+
+.admin-form p {
+  margin: 8px 0 15px;
+  font-size: 13px;
+}
+
+/* ============================================
+   UPDATE BUTTON
+============================================ */
+
+.admin-form .upload-btn {
+  min-width: 140px;
+  padding: 11px 20px;
+
+  border: none;
+  border-radius: 7px;
+
+  background: #2563eb;
+  color: #ffffff;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    transform 0.1s ease;
+}
+
+.admin-form .upload-btn:hover {
+  background: #1d4ed8;
+}
+
+.admin-form .upload-btn:active {
+  transform: translateY(1px);
+}
+
+/* ============================================
+   RESPONSIVE
+============================================ */
+
+@media (max-width: 768px) {
+  .user-details-page {
+    padding: 25px 20px;
+  }
+
+  .user-details-page h2 {
+    font-size: 26px;
+    margin-bottom: 22px;
+  }
+
+  .admin-form {
+    max-width: 100%;
+    padding: 22px;
+  }
+}
+
+@media (max-width: 480px) {
+  .user-details-page {
+    padding: 20px 15px;
+  }
+
+  .user-details-page h2 {
+    font-size: 23px;
+  }
+
+  .admin-form {
+    padding: 18px;
+    border-radius: 8px;
+  }
+
+  .admin-form input[type="text"] {
+    height: 42px;
+  }
+
+  .brand-current-image {
+    width: 100px;
+    height: 100px;
+  }
+
+  .admin-form .upload-btn {
+    width: 100%;
+  }
+}

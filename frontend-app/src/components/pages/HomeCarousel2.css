@@ -1,0 +1,30 @@
+.banner2-section {
+  padding: var(--space-6) 0;
+}
+
+.sub-banner {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-5);
+}
+
+.sub-bannerbox {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  aspect-ratio: 16 / 10;
+  transition: box-shadow 0.2s var(--ease), transform 0.2s var(--ease);
+}
+.sub-bannerbox:hover { box-shadow: var(--shadow-md); transform: translateY(-3px); }
+
+.sub-bannerbox img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s var(--ease);
+}
+.sub-bannerbox:hover img { transform: scale(1.04); }
+
+@media (max-width: 768px) {
+  .sub-banner { grid-template-columns: 1fr; }
+}

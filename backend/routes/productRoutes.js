@@ -1,4 +1,6 @@
 import express from "express";
+import { db } from "../db.js"; // ✅ FIX (missing import)
+
 import {
   uploadProduct,
   getProducts,
@@ -8,42 +10,20 @@ import {
   getCategoriesWithProducts,
   togglePopular,
   getPopularProductsByCategory,
-  // getPopularProducts,
   toggleDailyDeal,
   updateDailyDealPrice,
   getDailyDeals,
   updateStatus,
+  getRelatedProducts,
+  saveProductTabs,
+  getProductTabs,
 } from "../controllers/productController.js";
 
 const router = express.Router();
-router.get("/dailydeals", getDailyDeals);
-router.patch("/:id/dailydeal", toggleDailyDeal);
-router.patch("/:id/dailydeal/price", updateDailyDealPrice);
-// POST (create new product)
 
-// GET (all products)
-router.get("/", getProducts);
+// ================= SPECIAL ROUTES (TOP PRIORITY) =================
 
-// GET single product
-router.get("/:id", getProductById);
-router.post("/", uploadProduct);
-
-// PUT (update)
-router.put("/:id", updateProduct);
-
-// DELETE
-router.delete("/:id", deleteProduct);
-
-// Extra routes
-router.get("/categories/with-products", getCategoriesWithProducts);
-router.patch("/:id/popular", togglePopular);
-// router.get("/popular", getPopularProducts);
-router.get("/popular/by-category", getPopularProductsByCategory);
-
-// ✅ Put fixed routes first
-
-router.patch("/:id/status", updateStatus);
-// ✅ GLOBAL SEARCH ROUTE
+// Search
 router.get("/search", async (req, res) => {
   try {
     const { q } = req.query;
@@ -52,11 +32,9 @@ router.get("/search", async (req, res) => {
 
     const [products] = await db.query(
       `SELECT * FROM products
-       WHERE name LIKE ? 
-          OR title LIKE ?
-          OR brand LIKE ?
-          OR category_name LIKE ?`,
-      [`%${q}%`, `%${q}%`, `%${q}%`, `%${q}%`]
+       WHERE title LIKE ? 
+          OR brand LIKE ?`,
+      [`%${q}%`, `%${q}%`]
     );
 
     res.json(products);
@@ -65,5 +43,42 @@ router.get("/search", async (req, res) => {
     res.status(500).json({ message: "Search failed" });
   }
 });
+
+// Daily Deals
+router.get("/deals/daily", getDailyDeals);
+router.patch("/:id/deals/toggle", toggleDailyDeal);
+router.patch("/:id/deals/price", updateDailyDealPrice);
+
+// Popular
+router.patch("/:id/popular", togglePopular);
+router.get("/popular/by-category", getPopularProductsByCategory);
+
+// Related Products
+router.get("/related/:categoryId/:productId", getRelatedProducts);
+
+// Categories with products
+router.get("/categories/with-products", getCategoriesWithProducts);
+
+// Status
+router.patch("/:id/status", updateStatus);
+
+// ================= MAIN CRUD =================
+router.get("/:productId/tabs", getProductTabs);
+router.post("/:productId/tabs", saveProductTabs);
+// Get all
+router.get("/", getProducts);
+
+// Create
+router.post("/", uploadProduct);
+
+// Get single (⚠️ KEEP LAST)
+router.get("/:id", getProductById);
+
+// Update
+router.put("/:id", updateProduct);
+
+// Delete
+router.delete("/:id", deleteProduct);
+// Product Tabs
 
 export default router;

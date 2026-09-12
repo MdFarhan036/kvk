@@ -1,0 +1,39 @@
+  <td>
+                      <button
+                        className={product.is_popular ? "popular-yes" : "popular-no"}
+                        onClick={() => togglePopular(product.id, product.is_popular)}
+                      >
+                        {product.is_popular ? "Yes" : "No"}
+                      </button>
+                    </td>
+                    <td>
+                      <input
+                        type="checkbox"
+                        checked={product.is_daily_deal === 1}
+                        onChange={() => openDailyDealModal(product)}
+                      />
+                    </td>
+                    <td>
+                      {product.is_daily_deal === 1
+                        ? `₹${product.daily_deal_price}`
+                        : "-"}
+                    </td>
+                    <td>
+                      <Link to={`/allproducts/productDetails/${product.id}`}>
+
+                        <span className="preview-icon">
+                          <img src={viewimg} alt="" />
+                        </span>
+                      </Link>
+                      <Link to={`/allproducts/editProduct/${product.id}`}>
+                        <span className="preview-icon">
+                          <img src={editimg} alt="" />
+                        </span>
+                      </Link>
+                      <span
+                        onClick={() => deleteProduct(product.id)}
+                        className="preview-icon"
+                      >
+                        <img src={deleteimg} alt="" />
+                      </span>
+                    </td>

@@ -1,6 +1,325 @@
-*{
+/* ==========================================================================
+   Krishi Vikas Kendra — Design System
+   A working agri-inputs marketplace: deep field green, harvest amber,
+   Fraunces for editorial headline moments, Inter for everything you use.
+   ========================================================================== */
+
+:root {
+  /* Brand */
+  --color-primary: #1F5D3B;
+  --color-primary-dark: #123D26;
+  --color-primary-light: #2F7D4F;
+  --color-primary-tint: #E9F2EC;
+
+  --color-accent: #D98E04;
+  --color-accent-dark: #A96D02;
+  --color-accent-tint: #FBF1DA;
+
+  /* Surfaces & text */
+  --color-bg: #F6F7F2;
+  --color-surface: #FFFFFF;
+  --color-surface-alt: #EFF2EA;
+  --color-ink: #182019;
+  --color-ink-muted: #5B6459;
+  --color-ink-faint: #8A9188;
+  --color-border: #E1E5DB;
+  --color-border-strong: #C9D0C3;
+
+  /* Status */
+  --color-danger: #BC3A2A;
+  --color-danger-tint: #FBEAE7;
+  --color-success: #276B39;
+  --color-success-tint: #E9F3EA;
+  --color-star: #D98E04;
+
+  /* Type */
+  --font-display: "Fraunces", "Georgia", serif;
+  --font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  --fs-xs: 0.75rem;
+  --fs-sm: 0.8125rem;
+  --fs-base: 0.9375rem;
+  --fs-md: 1.0625rem;
+  --fs-lg: 1.25rem;
+  --fs-xl: 1.625rem;
+  --fs-2xl: 2.1rem;
+  --fs-3xl: 2.85rem;
+
+  /* Spacing */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 72px;
+
+  /* Shape & elevation */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-pill: 999px;
+
+  --shadow-sm: 0 1px 2px rgba(18, 30, 22, 0.06), 0 1px 3px rgba(18, 30, 22, 0.05);
+  --shadow-md: 0 4px 12px rgba(18, 30, 22, 0.08), 0 2px 4px rgba(18, 30, 22, 0.05);
+  --shadow-lg: 0 16px 40px rgba(18, 30, 22, 0.14);
+
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+* {
   margin: 0;
   padding: 0;
-  color: #6e6250;
-  font-family: sans-serif, 'poppins';
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-size: var(--fs-base);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-body);
+  font-weight: 700;
+  color: var(--color-ink);
+  line-height: 1.25;
+}
+
+p {
+  color: var(--color-ink-muted);
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+button {
+  font-family: inherit;
+}
+
+/* Focus visibility — never remove outlines without replacing them */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Scrollbar, kept quiet */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--color-surface-alt); }
+::-webkit-scrollbar-thumb { background: var(--color-border-strong); border-radius: var(--radius-pill); }
+::-webkit-scrollbar-thumb:hover { background: var(--color-ink-faint); }
+
+/* --------------------------------------------------------------------------
+   Signature element: "furrow" rule — a plowed-row stripe used sparingly
+   as a section divider / underline. This is the one recurring motif.
+   -------------------------------------------------------------------------- */
+.furrow-rule {
+  height: 4px;
+  width: 56px;
+  border-radius: var(--radius-pill);
+  background: repeating-linear-gradient(
+    90deg,
+    var(--color-primary) 0px,
+    var(--color-primary) 10px,
+    var(--color-accent) 10px,
+    var(--color-accent) 14px
+  );
+}
+
+/* --------------------------------------------------------------------------
+   Buttons
+   -------------------------------------------------------------------------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: 11px 22px;
+  border-radius: var(--radius-md);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: transform 0.15s var(--ease), background 0.15s var(--ease), box-shadow 0.15s var(--ease), border-color 0.15s var(--ease);
+  white-space: nowrap;
+}
+.btn:active { transform: translateY(1px); }
+
+.btn-primary {
+  background: var(--color-primary);
+  color: #fff;
+  box-shadow: var(--shadow-sm);
+}
+.btn-primary:hover { background: var(--color-primary-dark); box-shadow: var(--shadow-md); }
+
+.btn-accent {
+  background: var(--color-accent);
+  color: #241900;
+  box-shadow: var(--shadow-sm);
+}
+.btn-accent:hover { background: var(--color-accent-dark); box-shadow: var(--shadow-md); }
+
+.btn-outline {
+  background: transparent;
+  color: var(--color-primary);
+  border-color: var(--color-border-strong);
+}
+.btn-outline:hover { border-color: var(--color-primary); background: var(--color-primary-tint); }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--color-ink);
+}
+.btn-ghost:hover { background: var(--color-surface-alt); }
+
+.btn-sm { padding: 7px 14px; font-size: var(--fs-xs); }
+.btn-block { width: 100%; }
+.btn:disabled { opacity: 0.55; cursor: not-allowed; box-shadow: none; }
+
+/* --------------------------------------------------------------------------
+   Cards, badges, price
+   -------------------------------------------------------------------------- */
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.2s var(--ease), transform 0.2s var(--ease), border-color 0.2s var(--ease);
+}
+.card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-3px);
+  border-color: var(--color-border-strong);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+.badge-sale { background: var(--color-danger-tint); color: var(--color-danger); }
+.badge-new { background: var(--color-primary-tint); color: var(--color-primary-dark); }
+.badge-stock-in { background: var(--color-success-tint); color: var(--color-success); }
+.badge-stock-out { background: var(--color-border); color: var(--color-ink-muted); }
+
+.price-new {
+  font-family: var(--font-body);
+  font-weight: 800;
+  color: var(--color-ink);
+}
+.price-old {
+  color: var(--color-ink-faint);
+  text-decoration: line-through;
+  font-weight: 500;
+}
+.price-off { color: var(--color-danger); font-weight: 700; }
+
+.rating-stars i, .rating-stars .fa-star, .rating-stars .fa-star-half-stroke {
+  color: var(--color-star);
+}
+
+/* --------------------------------------------------------------------------
+   Forms
+   -------------------------------------------------------------------------- */
+input, select, textarea {
+  font-family: inherit;
+  font-size: var(--fs-base);
+  color: var(--color-ink);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  padding: 11px 14px;
+  transition: border-color 0.15s var(--ease), box-shadow 0.15s var(--ease);
+  width: 100%;
+}
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-tint);
+}
+input::placeholder, textarea::placeholder { color: var(--color-ink-faint); }
+
+/* --------------------------------------------------------------------------
+   Scroll reveal (used by the <Reveal> component)
+   -------------------------------------------------------------------------- */
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s var(--ease), transform 0.6s var(--ease-bounce);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+.reveal-on-scroll.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* --------------------------------------------------------------------------
+   Section scaffolding shared across pages
+   -------------------------------------------------------------------------- */
+.section {
+  padding: var(--space-7) 0;
+}
+
+.section-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
+.section-eyebrow {
+  display: block;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+  margin-bottom: var(--space-2);
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: var(--fs-2xl);
+  font-weight: 600;
+  color: var(--color-ink);
+  margin-bottom: var(--space-3);
+}
+
+.section-sub {
+  color: var(--color-ink-muted);
+  font-size: var(--fs-md);
+  max-width: 46ch;
 }

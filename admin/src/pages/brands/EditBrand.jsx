@@ -1,30 +1,44 @@
 // src/admin/brands/EditBrand.jsx
+
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
-
-axios.defaults.baseURL = "http://localhost:8000/api";
-axios.defaults.withCredentials = true;
+import "./AllBrands.css"
+import api, { ASSET_BASE_URL } from "../api";
 
 export const EditBrand = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
   const [brandName, setBrandName] = useState("");
-  const [brandImage, setBrandImage] = useState(null);
-  const [oldImage, setOldImage] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [currentImage, setCurrentImage] = useState("");
+  const [newImage, setNewImage] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // ✅ Load Brand By ID
+  // ============================================
+  // LOAD BRAND
+  // ============================================
   const loadBrand = async () => {
+    setLoading(true);
+    setError("");
+
     try {
-      const res = await axios.get(`/brands/${id}`);
-      setBrandName(res.data.brand_name);
-      setOldImage(res.data.image);
+      const res = await api.get(`/brands/${id}`);
+
+      setBrandName(res.data.brand_name || "");
+      setCurrentImage(res.data.image || "");
     } catch (err) {
-      console.error("Failed to load brand:", err);
-      setError("Failed to load brand data");
+      console.error(
+        "❌ Failed to load brand:",
+        err
+      );
+
+      setError(
+        err.response?.data?.error ||
+          "Failed to load brand."
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -32,79 +46,151 @@ export const EditBrand = () => {
     loadBrand();
   }, [id]);
 
-  // ✅ Submit Update
+  // ============================================
+  // UPDATE BRAND
+  // ============================================
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    setLoading(true);
 
     if (!brandName.trim()) {
-      setError("Brand name is required");
-      setLoading(false);
+      setError("Brand name is required.");
       return;
     }
 
+    const formData = new FormData();
+
+    formData.append(
+      "brand_name",
+      brandName.trim()
+    );
+
+    if (newImage) {
+      formData.append(
+        "brand_image",
+        newImage
+      );
+    }
+
     try {
-      const formData = new FormData();
-      formData.append("brand_name", brandName);
+      await api.put(
+        `/brands/${id}`,
+        formData,
+        {
+          headers: {
+            "Content-Type":
+              "multipart/form-data",
+          },
+        }
+      );
 
-      if (brandImage) {
-        formData.append("image", brandImage); // ✅ Must match multer
-      }
-
-      await axios.put(`/brands/${id}`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-
-      navigate("/brands");
+      navigate("/brandsTable");
     } catch (err) {
-      console.error("❌ Error updating brand:", err);
-      setError("Failed to update brand");
-    } finally {
-      setLoading(false);
+      console.error(
+        "❌ Update failed:",
+        err
+      );
+
+      setError(
+        err.response?.data?.error ||
+          "Failed to update brand."
+      );
     }
   };
 
+  // ============================================
+  // LOADING
+  // ============================================
+  if (loading) {
+    return (
+      <main className="user-details-page">
+        <p>Loading...</p>
+      </main>
+    );
+  }
+
+  // ============================================
+  // RENDER
+  // ============================================
   return (
-    <div className="user-details-page">
+    <main className="user-details-page">
       <h2>Edit Brand</h2>
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      <form
+        onSubmit={handleSubmit}
+        className="admin-form"
+      >
+        {/* BRAND NAME */}
+        <div>
+          <label htmlFor="brand-name">
+            Brand Name
+          </label>
 
-      <form onSubmit={handleSubmit} className="admin-form">
-        {/* ✅ Brand Name */}
-        <label>Brand Name</label>
-        <input
-          type="text"
-          value={brandName}
-          onChange={(e) => setBrandName(e.target.value)}
-          required
-        />
+          <input
+            id="brand-name"
+            type="text"
+            value={brandName}
+            onChange={(e) =>
+              setBrandName(e.target.value)
+            }
+            placeholder="Enter brand name"
+            required
+          />
+        </div>
 
-        {/* ✅ Current Image Preview */}
-        {oldImage && (
-          <div style={{ margin: "10px 0" }}>
-            <p>Current Image:</p>
+        {/* CURRENT IMAGE */}
+        {currentImage && (
+          <div>
+            <label>
+              Current Image
+            </label>
+
             <img
-              src={`http://localhost:8000${oldImage}`}
-              alt="Old Brand"
-              style={{ width: 80, height: 80, objectFit: "cover" }}
+              src={`${ASSET_BASE_URL}${currentImage}`}
+              alt={brandName || "Brand"}
+              className="brand-current-image"
             />
           </div>
         )}
 
-        {/* ✅ Upload New Image (Optional) */}
-        <label>Change Image (optional)</label>
-        <input
-          type="file"
-          accept="image/*"
-          onChange={(e) => setBrandImage(e.target.files[0])}
-        />
+        {/* NEW IMAGE */}
+        <div>
+          <label htmlFor="brand-image">
+            Change Image (optional)
+          </label>
 
-        <button type="submit" className="upload-btn" disabled={loading}>
-          {loading ? "Updating..." : "Update Brand"}
+          <input
+            id="brand-image"
+            type="file"
+            accept="image/*"
+            onChange={(e) =>
+              setNewImage(
+                e.target.files?.[0] || null
+              )
+            }
+          />
+        </div>
+
+        {/* ERROR */}
+        {error && (
+          <p
+            style={{
+              color: "red",
+              marginTop: "8px",
+            }}
+          >
+            {error}
+          </p>
+        )}
+
+        {/* SUBMIT */}
+        <button
+          type="submit"
+          className="upload-btn"
+        >
+          Update Brand
         </button>
       </form>
-    </div>
+    </main>
   );
 };

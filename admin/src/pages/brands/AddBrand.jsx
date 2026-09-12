@@ -1,9 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
-
-axios.defaults.baseURL = "http://localhost:8000/api";
-axios.defaults.withCredentials = true;
+import api from "../api";
+import "./AllBrands.css"
 
 export const AddBrand = () => {
   const [brandName, setBrandName] = useState("");
@@ -12,47 +10,108 @@ export const AddBrand = () => {
 
   const navigate = useNavigate();
 
+  // ============================================
+  // ADD BRAND
+  // ============================================
   const handleAddBrand = async (e) => {
     e.preventDefault();
+    setError("");
 
-    const formData = new FormData();
-    formData.append("brand_name", brandName);
-    formData.append("image", brandImage);
+    if (!brandName.trim()) {
+      setError("Brand name is required.");
+      return;
+    }
 
-    await axios.post("/brands", formData, {
-      headers: { "Content-Type": "multipart/form-data" }
-    });
+    if (!brandImage) {
+      setError("Brand image is required.");
+      return;
+    }
+
+    try {
+      const formData = new FormData();
+
+      formData.append("brand_name", brandName.trim());
+      formData.append("brand_image", brandImage);
+
+      await api.post("/brands", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      navigate("/brands/brandsTable");
+    } catch (err) {
+      console.error("❌ Error adding brand:", err);
+
+      if (err.response?.status === 400) {
+        setError("Brand already exists.");
+      } else {
+        setError("Failed to add brand.");
+      }
+    }
   };
 
-
   return (
-    <div className="user-details-page">
+    <main className="user-details-page">
       <h2>Add Brand</h2>
 
-      <form onSubmit={handleAddBrand} className="admin-form">
-        <label>Brand Name</label>
+      <form
+        onSubmit={handleAddBrand}
+        className="admin-form"
+      >
+        {/* Brand Name */}
+        <label htmlFor="brand-name">
+          Brand Name:
+        </label>
+
         <input
+          id="brand-name"
           type="text"
           value={brandName}
-          onChange={(e) => setBrandName(e.target.value)}
+          onChange={(e) =>
+            setBrandName(e.target.value)
+          }
           placeholder="Enter brand name"
           required
         />
 
-        <label>Brand Image</label>
-      <input
-  type="file"
-  name="image"
-  onChange={(e) => setBrandImage(e.target.files[0])}
-/>
+        {/* Brand Image */}
+        <label htmlFor="brand-image">
+          Brand Image:
+        </label>
 
+        <input
+          id="brand-image"
+          type="file"
+          accept="image/*"
+          onChange={(e) =>
+            setBrandImage(
+              e.target.files?.[0] || null
+            )
+          }
+          required
+        />
 
-        {error && <p style={{ color: "red" }}>{error}</p>}
+        {/* Error */}
+        {error && (
+          <p
+            style={{
+              color: "red",
+              marginTop: "8px",
+            }}
+          >
+            {error}
+          </p>
+        )}
 
-        <button type="submit" className="upload-btn">
+        {/* Submit */}
+        <button
+          type="submit"
+          className="upload-btn"
+        >
           Add Brand
         </button>
       </form>
-    </div>
+    </main>
   );
 };

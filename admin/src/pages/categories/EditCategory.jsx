@@ -1,26 +1,49 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import api, { ASSET_BASE_URL } from "../api";
 import "./AllCategories.css";
 
 export const EditCategory = () => {
-  const { id } = useParams(); // category ID from route
+  const { id } = useParams();
   const navigate = useNavigate();
 
-  const [name, setName] = useState("");
-  const [image, setImage] = useState(null); // new image file
-  const [preview, setPreview] = useState(null); // preview image
+  const [activeTab, setActiveTab] = useState("basic");
+
+  const [form, setForm] = useState({
+    name: "",
+    slug: "",
+    meta_title: "",
+    meta_description: "",
+    keywords: "",
+    canonical_url: "",
+    structured_data: "",
+  });
+
+  const [image, setImage] = useState(null);
+  const [preview, setPreview] = useState(null);
   const [message, setMessage] = useState("");
 
-  // Fetch category details
+  // ================= FETCH =================
   const fetchCategory = async () => {
     try {
-      const res = await axios.get(`http://localhost:8000/api/categories/${id}`);
-      setName(res.data.name);
-      setPreview(`http://localhost:8000${res.data.image}`);
+      const res = await api.get(`/categories/${id}`);
+
+      setForm({
+        name: res.data.name || "",
+        slug: res.data.slug || "",
+        meta_title: res.data.meta_title || "",
+        meta_description: res.data.meta_description || "",
+        keywords: res.data.keywords || "",
+        canonical_url: res.data.canonical_url || "",
+        structured_data: res.data.structured_data || "",
+      });
+
+      if (res.data.image) {
+        setPreview(`${ASSET_BASE_URL}${res.data.image}`);
+      }
     } catch (err) {
       console.error(err);
-      setMessage("Error fetching category details");
+      setMessage("❌ Failed to load category");
     }
   };
 
@@ -28,69 +51,270 @@ export const EditCategory = () => {
     fetchCategory();
   }, [id]);
 
-  // Handle image selection
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
+  // ================= SLUG =================
+  const generateSlug = (text) =>
+    text
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+
+  useEffect(() => {
+    if (!form.slug) {
+      setForm((prev) => ({
+        ...prev,
+        slug: generateSlug(prev.name),
+      }));
+    }
+  }, [form.name]);
+
+  // ================= IMAGE =================
+  const handleImage = (file) => {
     setImage(file);
+
     if (file) {
-      const reader = new FileReader();
-      reader.onload = () => setPreview(reader.result);
-      reader.readAsDataURL(file);
+      setPreview(URL.createObjectURL(file));
     }
   };
 
-  // Submit updated category
+  // ================= SUBMIT =================
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!name) {
-      setMessage("Category name is required");
+
+    if (!form.name.trim()) {
+      setMessage("❌ Name is required");
       return;
     }
 
+    // Validate JSON
+    if (form.structured_data) {
+      try {
+        JSON.parse(form.structured_data);
+      } catch {
+        setMessage("❌ Invalid JSON in structured data");
+        return;
+      }
+    }
+
     const formData = new FormData();
-    formData.append("name", name);
-    if (image) formData.append("image", image);
+
+    Object.keys(form).forEach((key) => {
+      formData.append(key, form[key]);
+    });
+
+    if (image) {
+      formData.append("image", image);
+    }
 
     try {
-      await axios.put(`http://localhost:8000/api/categories/${id}`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      setMessage("Category updated successfully!");
-      setTimeout(() => navigate("/categories/categoryTable"), 1000); // redirect after success
+      await api.put(`/categories/${id}`, formData);
+
+      setMessage("✅ Updated successfully");
+
+      setTimeout(() => {
+        navigate("/categories/categoryTable");
+      }, 1000);
     } catch (err) {
       console.error(err);
-      setMessage("Error updating category");
+      setMessage("❌ Update failed");
     }
   };
 
   return (
-    <div className="upload-category">
-      <h2>Edit Category</h2>
-      {message && <p>{message}</p>}
+    <div className="cms-layout">
 
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="Category Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-        />
+      {/* ================= MAIN ================= */}
+      <main className="cms-content">
 
-        <input type="file" accept="image/*" onChange={handleImageChange} />
+        <h1>Edit Category</h1>
 
-        {preview && (
-          <div className="image-preview">
-            <p>Preview:</p>
-            <img src={preview} alt="Preview" className="img-card" />
-          </div>
-        )}
+        {message && <p>{message}</p>}
 
-        <button type="submit">Update Category</button>
-        <button type="button" onClick={() => navigate("/categories/categoryTable")}>
-          Cancel
-        </button>
-      </form>
+        {/* ================= TABS ================= */}
+        <div className="cms-tabs">
+          {["basic", "seo", "advanced"].map((tab) => (
+            <button
+              key={tab}
+              type="button"
+              onClick={() => setActiveTab(tab)}
+              className={activeTab === tab ? "active" : ""}
+            >
+              {tab.toUpperCase()}
+            </button>
+          ))}
+        </div>
+
+        <form onSubmit={handleSubmit}>
+
+          {/* ================= BASIC ================= */}
+          {activeTab === "basic" && (
+            <section>
+              <h3>Basic Info</h3>
+
+              <div className="cms-field">
+                <label>Name</label>
+
+                <input
+                  value={form.name}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      name: e.target.value,
+                    })
+                  }
+                />
+              </div>
+
+              <div className="cms-field">
+                <label>Slug</label>
+
+                <input
+                  value={form.slug}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      slug: e.target.value,
+                    })
+                  }
+                />
+              </div>
+
+              <div className="cms-field">
+                <label>Image</label>
+
+                <input
+                  type="file"
+                  onChange={(e) =>
+                    handleImage(e.target.files[0])
+                  }
+                />
+
+                {preview && (
+                  <img
+                    src={preview}
+                    alt="preview"
+                    style={{
+                      marginTop: 10,
+                      width: 120,
+                    }}
+                  />
+                )}
+              </div>
+            </section>
+          )}
+
+          {/* ================= SEO ================= */}
+          {activeTab === "seo" && (
+            <section>
+              <h3>SEO Settings</h3>
+
+              <div className="cms-field">
+                <label>Meta Title</label>
+
+                <input
+                  value={form.meta_title}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      meta_title: e.target.value,
+                    })
+                  }
+                />
+              </div>
+
+              <div className="cms-field">
+                <label>Meta Description</label>
+
+                <textarea
+                  value={form.meta_description}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      meta_description: e.target.value,
+                    })
+                  }
+                />
+              </div>
+
+              <div className="cms-field">
+                <label>Keywords</label>
+
+                <textarea
+                  value={form.keywords}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      keywords: e.target.value,
+                    })
+                  }
+                />
+              </div>
+
+              {/* SEO PREVIEW */}
+              <div className="seo-preview">
+                <p>
+                  {form.meta_title ||
+                    form.name ||
+                    "Page Title"}
+                </p>
+
+                <p>
+                  /{form.slug}
+                </p>
+
+                <p>
+                  {form.meta_description ||
+                    "Your description will appear here..."}
+                </p>
+              </div>
+            </section>
+          )}
+
+          {/* ================= ADVANCED ================= */}
+          {activeTab === "advanced" && (
+            <section>
+              <h3>Advanced</h3>
+
+              <div className="cms-field">
+                <label>Canonical URL</label>
+
+                <input
+                  value={form.canonical_url}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      canonical_url: e.target.value,
+                    })
+                  }
+                />
+              </div>
+
+              <div className="cms-field">
+                <label>
+                  Structured Data (JSON)
+                </label>
+
+                <textarea
+                  value={form.structured_data}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      structured_data: e.target.value,
+                    })
+                  }
+                />
+              </div>
+            </section>
+          )}
+
+          {/* ================= SUBMIT ================= */}
+          <button type="submit">
+            Update Category
+          </button>
+
+        </form>
+      </main>
+
     </div>
   );
 };

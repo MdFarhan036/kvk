@@ -1,5 +1,4 @@
 // ✅ /src/routes/index.jsx
-import React from "react";
 import { createBrowserRouter } from "react-router-dom";
 
 // Layout
@@ -36,6 +35,10 @@ import PriceFilterPage from "../components/pages/filters/PriceFilterPage.jsx";
 import BrandFilterPage from "../components/pages/filters/BrandFilterPage.jsx";
 import StockFilterPage from "../components/pages/filters/StockFilterPage.jsx";
 import SearchResults from "../components/Header/SearchResults.jsx";
+import BlogsCarousel from "../components/pages/blogs/BlogsCarousel.jsx";
+import SingleBlog from "../components/pages/blogs/SingleBlog.jsx";
+import { AllOrders } from "../components/pages/AllOrders.jsx";
+import CompareProducts from "../components/pages/compare/CompareProducts.jsx";
 
 // Protected Route
 
@@ -58,7 +61,7 @@ const router = createBrowserRouter([
       { path: "daily-deals/:categoryName/:productId", element: <DailyDealsProductPage /> },
 
       // Smart Farming / Seasonal
- 
+
       // Product Routes
       { path: "all-categories", element: <AllCategoriesProducts /> },
       { path: "products-categories/:categoryName", element: <ProductListing /> },
@@ -102,6 +105,14 @@ const router = createBrowserRouter([
       { path: "login", element: <CustomerLogin /> },
       { path: "signup", element: <CustomerSignup /> },
       {
+        path: "/blogs",
+        element: <BlogsCarousel />
+      },
+      {
+        path: "/blog/:slug",
+        element: <SingleBlog />
+      },
+      {
         path: "search",
         element: <SearchResults />,
       },
@@ -123,6 +134,14 @@ const router = createBrowserRouter([
         ),
       },
       {
+        path: "compare",
+        element: (
+          <CustomerProtectedRoute>
+            <CompareProducts />
+          </CustomerProtectedRoute>
+        ),
+      },
+      {
         path: "checkout",
         element: (
           <CustomerProtectedRoute>
@@ -136,6 +155,14 @@ const router = createBrowserRouter([
           <CustomerProtectedRoute>
             <TrackMyOrders />
           </CustomerProtectedRoute>
+        ),
+      },
+      {
+        path: "/orders",
+        element: (
+          <CustomerProtectedRoute >
+            <AllOrders />
+          </CustomerProtectedRoute >
         ),
       },
 

@@ -8,25 +8,31 @@ const PriceFilter = ({ minPrice, maxPrice, setMinPrice, setMaxPrice }) => {
         <div className="pf-box">₹{maxPrice}</div>
       </div>
 
-      <div className="pf-slider-group">
-        <input
-          type="range"
-          min="0"
-          max="100000"
-          value={minPrice}
-          onChange={(e) => setMinPrice(+e.target.value)}
-          className="pf-slider"
-        />
+     <div className="pf-slider-group">
+  <input
+    type="range"
+    min="0"
+    max="100000"
+    value={minPrice}
+    onChange={(e) => {
+      const value = +e.target.value;
+      setMinPrice(Math.min(value, maxPrice));
+    }}
+    className="pf-slider pf-min-slider"
+  />
 
-        <input
-          type="range"
-          min="0"
-          max="100000"
-          value={maxPrice}
-          onChange={(e) => setMaxPrice(+e.target.value)}
-          className="pf-slider"
-        />
-      </div>
+  <input
+    type="range"
+    min="0"
+    max="100000"
+    value={maxPrice}
+    onChange={(e) => {
+      const value = +e.target.value;
+      setMaxPrice(Math.max(value, minPrice));
+    }}
+    className="pf-slider pf-max-slider"
+  />
+</div>
     </div>
   );
 };

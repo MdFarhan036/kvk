@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import loginIcons from "../../assets/img/signin.gif";
 import iconpass from "../../assets/img/eyeicon.jpg";

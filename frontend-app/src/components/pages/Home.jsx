@@ -1,4 +1,3 @@
-import React from 'react'
 import { HomeCarousel } from './HomeCarousel'
 import { ProductCategory } from './listing/ProductCategory'
 import { HomeCarousel2 } from './HomeCarousel2'
@@ -6,7 +5,6 @@ import { Affiliations } from './Affiliations'
 import { HomeProducts } from './popular/HomeProducts'
 import { DailyDealsProducts } from './dailydeals/DailyDealsProducts'
 
-import { DailyDealsCategory } from './dailydeals/DailyDealsCategory'
 import { AllCategoriesProducts } from './categorywise/AllCategoriesProducts'
 
 export const Home = () => {

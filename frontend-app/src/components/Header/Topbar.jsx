@@ -1,26 +1,48 @@
-/* eslint-disable jsx-a11y/img-redundant-alt */
-import { useState } from "react";
-import "./Header.css";
+import "./Topbar.css";
 import { Link } from "react-router-dom";
-// import { Link } from "react-router-dom";
-export const Topbar = () => {
-  const [isopenDropdown, setIsopenDropdown] = useState(false);
 
+export const Topbar = () => {
   return (
     <div className="topbar">
-      {/* optional: small promo, language switch, login / account links */}
-      <div className="topbar-left">Welcome farmers!</div>
-      <div className="topbar-right">
+      <div className="topbar-container">
 
-
-        <div className="callnow">
-          <span className="callnow-elem">
-            <i className="fa-brands fa-rocketchat"></i>
-          </span>
-          <span className="callnow-elem">
-            <p className="call-num">+91 7488210403</p>
-          </span>
+        {/* LEFT */}
+        <div className="topbar-left">
+          <i className="fa-solid fa-location-dot"></i>
+          <span>Delivering across India</span>
         </div>
+
+        {/* CENTER */}
+        <div className="topbar-center">
+          <i className="fa-solid fa-truck-fast"></i>
+          <span>Free Shipping on orders above ₹999</span>
+        </div>
+
+        {/* RIGHT */}
+        <div className="topbar-right">
+
+          <a href="tel:+919308270123" className="topbar-item">
+            <i className="fa-solid fa-phone"></i>
+            <span>+91 7488210403</span>
+          </a>
+
+          <a
+            href="https://wa.me/919308270123"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="topbar-item"
+          >
+            <i className="fa-brands fa-whatsapp"></i>
+            <span>WhatsApp</span>
+          </a>
+
+          <Link to="/trackmyorder" className="topbar-item">
+            <i className="fa-solid fa-truck"></i>
+            <span>Track Order</span>
+          </Link>
+
+        </div>
+
       </div>
     </div>
   );

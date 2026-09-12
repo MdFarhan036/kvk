@@ -1,56 +1,162 @@
-import React from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
-import partnersimage1 from "../../assets/img/brands/advantaSeedsLogo.webp";
-import partnersimage2 from "../../assets/img/brands/ankurLogo.webp";
-import partnersimage3 from "../../assets/img/brands/bayerLogo.webp";
-import partnersimage4 from "../../assets/img/brands/cortevaLogo.webp";
-import partnersimage5 from "../../assets/img/brands/dupontPioneerLogo.webp";
-import partnersimage6 from "../../assets/img/brands/kaveriSeedsLogo.webp";
-import partnersimage7 from "../../assets/img/brands/mahycoLogo.webp";
-import partnersimage8 from "../../assets/img/brands/nuziveeduSeeds.webp";
-import partnersimage9 from "../../assets/img/brands/pahujaSeedsLogo.webp";
-import partnersimage10 from "../../assets/img/brands/seminisLogo.webp";
-import partnersimage11 from "../../assets/img/brands/syngentaLogo.webp";
-import partnersimage12 from "../../assets/img/brands/uplLogo.webp";
-import partnersimage13 from "../../assets/img/brands/vnrLogo.webp";
+import api, { ASSET_BASE_URL } from "../api.js";
+
+import "./BrandsPage.css";
 
 export const BrandsPage = () => {
-    const partnersData = [
-        { id: 1, partnerImg: partnersimage1 },
-        { id: 2, partnerImg: partnersimage2 },
-        { id: 3, partnerImg: partnersimage3 },
-        { id: 4, partnerImg: partnersimage4 },
-        { id: 5, partnerImg: partnersimage5 },
-        { id: 6, partnerImg: partnersimage6 },
-        { id: 7, partnerImg: partnersimage7 },
-        { id: 8, partnerImg: partnersimage8 },
-        { id: 9, partnerImg: partnersimage9 },
-        { id: 10, partnerImg: partnersimage10 },
-        { id: 11, partnerImg: partnersimage11 },
-        { id: 12, partnerImg: partnersimage12 },
-        { id: 13, partnerImg: partnersimage13 },
-    ];
+  const [brands, setBrands] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-    return (
-        <div className="brands-page">
-            <div className="brands-container">
-                <div className="section-title">
-                    <h2>Our Brands</h2>
-                    <Link to="/" className="back-btn">
-                        ← Back to Home
-                    </Link>
-                </div>
+  // =================================
+  // IMAGE URL HELPER
+  // =================================
 
+  const getImageUrl = (image) => {
+    if (!image) return null;
 
-                <div className="brands-grid">
-                    {partnersData.map((partner) => (
-                        <div key={partner.id} className="brand-card">
-                            <img src={partner.partnerImg} alt={`Brand ${partner.id}`} />
-                        </div>
-                    ))}
-                </div>
-            </div>
+    if (/^https?:\/\//i.test(image)) {
+      return image;
+    }
+
+    return `${ASSET_BASE_URL}${
+      image.startsWith("/") ? "" : "/"
+    }${image}`;
+  };
+
+  // =================================
+  // FETCH BRANDS FROM BACKEND
+  // =================================
+
+  useEffect(() => {
+    const fetchBrands = async () => {
+      try {
+        setLoading(true);
+
+        const { data } = await api.get("/brands/public");
+
+        const formattedBrands = Array.isArray(data)
+          ? data.map((brand) => ({
+              ...brand,
+
+              // Normalize brand name
+              name:
+                brand.brand_name ||
+                brand.name ||
+                brand.brand ||
+                "",
+
+              // Normalize image URL
+              image: getImageUrl(brand.image),
+            }))
+          : [];
+
+        setBrands(formattedBrands);
+      } catch (error) {
+        console.error(
+          "Error fetching brands:",
+          error
+        );
+
+        setBrands([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBrands();
+  }, []);
+
+  return (
+    <div className="brands-page">
+      <div className="brands-container">
+
+        {/* =================================
+            PAGE HEADER
+        ================================= */}
+
+        <div className="brands-page-header">
+
+          <div>
+            <h2>Our Brands</h2>
+
+            <p>
+              Explore our trusted agricultural brands
+            </p>
+          </div>
+
+          <Link
+            to="/"
+            className="back-btn"
+          >
+            ← Back to Home
+          </Link>
+
         </div>
-    );
+
+        {/* =================================
+            LOADING
+        ================================= */}
+
+        {loading ? (
+
+          <div className="brands-loading">
+            Loading brands...
+          </div>
+
+        ) : brands.length > 0 ? (
+
+          /* =================================
+             BRANDS
+          ================================= */
+
+          <div className="brands-grid">
+
+            {brands.map((brand) => (
+
+              <Link
+                key={brand.id}
+                to={`/products?brand=${encodeURIComponent(
+                  brand.name
+                )}`}
+                className="brand-card"
+              >
+
+                {brand.image ? (
+
+                  <img
+                    src={brand.image}
+                    alt={brand.name}
+                  />
+
+                ) : (
+
+                  <span className="brand-placeholder">
+                    {brand.name}
+                  </span>
+
+                )}
+
+              </Link>
+
+            ))}
+
+          </div>
+
+        ) : (
+
+          /* =================================
+             EMPTY
+          ================================= */
+
+          <div className="no-brands">
+            No brands available.
+          </div>
+
+        )}
+
+      </div>
+    </div>
+  );
 };

@@ -186,6 +186,12 @@ export const AdminPanel = () => {
                 {!isCollapsed && <p>Brands</p>}
               </li>
             </Link>
+                  <Link to="/carousels/carouselsTable">
+              <li className={`admin-box ${activeTab === 3 ? "activetab" : ""}`}>
+                <img src={checkoutimg} alt="Carousels" />
+                {!isCollapsed && <p>Carousels</p>}
+              </li>
+            </Link>
             <Link to="/transactions">
               <li className={`admin-box ${activeTab === 5 ? "activetab" : ""}`} onClick={() => handleTabClick(4)}>
                 <img src={checkoutimg} alt="Transactions" />
@@ -198,6 +204,12 @@ export const AdminPanel = () => {
               <li className={`admin-box ${activeTab === 6 ? "activetab" : ""}`} onClick={() => handleTabClick(5)}>
                 <img src={settingimg} alt="Settings" />
                 {!isCollapsed && <p>Settings</p>}
+              </li>
+            </Link>
+            <Link to="/blogs">
+              <li className={`admin-box ${activeTab === 6 ? "activetab" : ""}`} onClick={() => handleTabClick(6)}>
+                <img src={settingimg} alt="Blogs" />
+                {!isCollapsed && <p>Blogs</p>}
               </li>
             </Link>
 

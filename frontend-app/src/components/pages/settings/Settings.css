@@ -1,114 +1,676 @@
-/* General styles for the page content */
+/* =========================================================
+   SETTINGS / ACCOUNT PAGE
+========================================================= */
+
 .settings-content {
-  padding-top: 150px;
-  padding-bottom: 150px;
-}
-
-/* Container styles */
-.settings-container {
-  max-width: 1000px;
   width: 100%;
-  margin: 0 auto;
+  padding: 40px 0 70px;
+  background: #fff;
 }
 
-/* Row styles to manage grid layout */
-
-/* Column for left and right sections */
+.settings-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  box-sizing: border-box;
+}
 
 .settings-row {
   display: flex;
-  justify-content: space-around;
-  align-items: center;
+  align-items: flex-start;
+  gap: 35px;
 }
-.settings-card-body {
-  flex: 1 1 auto;
+
+
+/* =========================================================
+   LEFT ACCOUNT MENU
+========================================================= */
+
+.dashboard-menu {
+  width: 250px;
+  min-width: 250px;
+  background: #fff;
+  border: 1px solid #e7e7e7;
+  border-radius: 6px;
+  overflow: hidden;
 }
-.settings-card-body p {
-  font-size: 1rem;
-  font-weight: 400;
-  line-height: 24px;
-  margin-bottom: 5px;
-  color: #7e7e7e;
+
+.dashboard-menu ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
-.settings-card {
-  /* min-width: 0; */
-  word-wrap: break-word;
+
+.dashboard-item {
+  margin: 0;
+  padding: 0;
+  border-bottom: 1px solid #eeeeee;
 }
-.settings-address-card {
+
+.dashboard-item:last-child {
+  border-bottom: none;
+}
+
+
+/* =========================================================
+   SIDEBAR LINKS / BUTTONS
+========================================================= */
+
+.dashboard-link {
+  width: 100%;
+  min-height: 52px;
   display: flex;
-  justify-content: space-around;
-  position: relative;
-  /* min-width: 0; */
+  align-items: center;
+  padding: 14px 18px;
+  margin: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: #333;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
 }
-.settings-card h5{
-    font-size: 20px;
+
+.dashboard-link:hover {
+  background: #f7f7f7;
+  color: #111;
 }
+
+.dashboard-link.active {
+  background: #f1f1f1;
+  color: #111;
+  font-weight: 600;
+}
+
+.dashboard-link i {
+  width: 20px;
+  min-width: 20px;
+  margin-right: 10px;
+  font-size: 15px;
+  text-align: center;
+}
+
+.mr-10 {
+  margin-right: 10px;
+}
+
+
+/* =========================================================
+   RIGHT CONTENT
+========================================================= */
+
+.dashboard-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.dashboard-content.pl-50 {
+  padding-left: 0;
+}
+
+.dashboard-pane {
+  width: 100%;
+}
+
+
+/* =========================================================
+   SETTINGS CARD
+========================================================= */
+
+.settings-card {
+  width: 100%;
+  margin-bottom: 25px;
+  background: #fff;
+  border: 1px solid #e7e7e7;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.settings-card-header {
+  padding: 18px 22px;
+  background: #fafafa;
+  border-bottom: 1px solid #e7e7e7;
+}
+
+.settings-card-header h3,
+.settings-card-header h5 {
+  margin: 0;
+  color: #222;
+  font-size: 20px;
+  line-height: 1.4;
+  font-weight: 600;
+}
+
+.settings-card-header h5 {
+  font-size: 18px;
+}
+
+.settings-card-body {
+  padding: 25px 22px;
+}
+
+.settings-settings-card-body {
+  padding: 0;
+}
+
+
+/* =========================================================
+   DASHBOARD TEXT
+========================================================= */
+
+.settings-card-body p {
+  margin: 0;
+  color: #555;
+  font-size: 15px;
+  line-height: 1.8;
+}
+
+.settings-card-body a {
+  color: #222;
+  font-weight: 500;
+  text-decoration: underline;
+}
+
+.settings-card-body a:hover {
+  text-decoration: none;
+}
+
+
+/* =========================================================
+   INLINE DASHBOARD LINKS
+========================================================= */
+
+.settings-inline-link {
+  display: inline;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #222;
+  font: inherit;
+  font-weight: 500;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.settings-inline-link:hover {
+  text-decoration: none;
+}
+
+
+/* =========================================================
+   ORDERS TABLE
+========================================================= */
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th {
+  padding: 16px 18px;
+  background: #fafafa;
+  border-bottom: 1px solid #e5e5e5;
+  color: #222;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.table td {
+  padding: 16px 18px;
+  border-bottom: 1px solid #eeeeee;
+  color: #555;
+  font-size: 14px;
+  vertical-align: middle;
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.table tbody tr:hover {
+  background: #fafafa;
+}
+
+
+/* =========================================================
+   SMALL BUTTON
+========================================================= */
+
+.btn-small {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 75px;
+  min-height: 36px;
+  padding: 8px 15px;
+  border: 1px solid #222;
+  border-radius: 4px;
+  background: #222;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+  box-sizing: border-box;
+}
+
+.btn-small:hover {
+  background: #fff;
+  color: #222;
+  border-color: #222;
+}
+
+
+/* =========================================================
+   TRACK ORDER
+========================================================= */
+
+.contact-from-area {
+  width: 100%;
+}
+
+.settings-card-body-form {
+  width: 100%;
+}
+
+.contact-form-style {
+  width: 100%;
+  max-width: 650px;
+}
+
 .contact-form-input-style {
   margin-bottom: 20px;
 }
-.settings-card-body input {
-  border: 1px solid #ececec;
-  border-radius: 10px;
-  /* height: 64px; */
-  box-shadow: none;
-  padding: 15px;
-  margin: 10px 0;
-  font-size: 16px;
+
+.contact-form-input-style label {
+  display: block;
+  margin-bottom: 8px;
+  color: #333;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.contact-form-input-style input {
   width: 100%;
+  height: 48px;
+  padding: 0 14px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  outline: none;
+  background: #fff;
+  color: #333;
+  font-size: 14px;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease;
 }
-.settings-card-body address {
-  margin: 1rem 0;
-  font-style: normal;
-  line-height: inherit;
+
+.contact-form-input-style input:focus {
+  border-color: #222;
 }
-.settings-card-header {
-  padding: 1rem;
+
+.contact-form-input-style input::placeholder {
+  color: #999;
+}
+
+
+/* =========================================================
+   FORM BUTTON
+========================================================= */
+
+.submit-auto-width {
+  width: auto !important;
+}
+
+.submit {
+  min-height: 45px;
+  padding: 10px 25px;
+  border: 1px solid #222;
+  border-radius: 4px;
+  background: #222;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.submit:hover {
+  background: #fff;
+  color: #222;
+}
+
+
+/* =========================================================
+   ADDRESS SECTION
+========================================================= */
+
+.settings-address-card {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 25px;
+}
+
+.settings-address-card .settings-card {
   margin-bottom: 0;
-  background-color: #f7f8f9;
-  border-bottom: 1px solid #ececec;
 }
-.dashboard-pane {
+
+.settings-address-card address {
+  margin: 0 0 15px;
+  color: #555;
+  font-size: 14px;
+  line-height: 1.8;
+  font-style: normal;
+}
+
+.settings-address-card .settings-card-body p {
+  margin: 0 0 18px;
+  color: #555;
+}
+
+
+/* =========================================================
+   ACCOUNT DETAILS FORM
+========================================================= */
+
+.settings-card .row {
   display: flex;
   flex-wrap: wrap;
-  padding: 20px;
-  /* justify-content: space-between; */
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-  background: #fff;
+  margin-left: -10px;
+  margin-right: -10px;
+}
 
-  list-style: none;
-}
-.dashboard-content {
-  max-width: 600px;
-  width: 100%;
-}
-.dashboard-menu {
-  width: 200px;
-  padding: 10px;
-  background: #ffff;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-}
-.dashboard-item {
-  position: relative;
-  /* width: 100%; */
-  border: 1px solid #ececec;
-  border-radius: 5px;
-  font-size: 18px;
-  padding: 10px;
+.settings-card .form-group {
   margin-bottom: 20px;
+  padding-left: 10px;
+  padding-right: 10px;
+  box-sizing: border-box;
 }
-.dashboard-item .dashboard-link {
+
+.settings-card .col-md-6 {
+  width: 50%;
+}
+
+.settings-card .col-md-12 {
   width: 100%;
-  font-size: 16px;
-  color: #7e7e7e;
-  /* padding: 15px 30px; */
-  font-family: "Quicksand", sans-serif;
+}
+
+.settings-card .form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: #333;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.required {
+  color: #d33;
+}
+
+.form-control {
+  width: 100%;
+  height: 46px;
+  padding: 0 13px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  outline: none;
+  background: #fff;
+  color: #333;
+  font-size: 14px;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease;
+}
+
+.form-control:focus {
+  border-color: #222;
+}
+
+
+/* =========================================================
+   SAVE CHANGE BUTTON
+========================================================= */
+
+.btn-fill-out {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 45px;
+  padding: 10px 25px;
+  border: 1px solid #222;
+  border-radius: 4px;
+  background: #222;
+  color: #fff;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.btn-fill-out:hover {
+  background: #fff;
+  color: #222;
+}
+
+
+/* =========================================================
+   UTILITY CLASSES
+========================================================= */
+
+.mb-0 {
+  margin-bottom: 0 !important;
+}
+
+.mt-30 {
+  margin-top: 30px !important;
+}
+
+.mb-50 {
+  margin-bottom: 50px !important;
+}
+
+.font-weight-bold {
   font-weight: 700;
 }
-.dashboard-item .dashboard-link.active {
-  color: #fff;
-  font-size: 18px;
-  padding: 10px;
-  background-color: #3bb77e;
-  width: 100%;
-  border-radius: 5px;
+
+
+/* =========================================================
+   RESPONSIVE — TABLET
+========================================================= */
+
+@media (max-width: 991px) {
+
+  .settings-content {
+    padding: 30px 0 50px;
+  }
+
+  .settings-row {
+    gap: 25px;
+  }
+
+  .dashboard-menu {
+    width: 220px;
+    min-width: 220px;
+  }
+
+  .dashboard-link {
+    padding: 13px 14px;
+    font-size: 13px;
+  }
+
+  .dashboard-link i {
+    font-size: 14px;
+  }
+
+  .settings-card-body {
+    padding: 20px;
+  }
+
+}
+
+
+/* =========================================================
+   RESPONSIVE — MOBILE
+========================================================= */
+
+@media (max-width: 767px) {
+
+  .settings-content {
+    padding: 25px 0 40px;
+  }
+
+  .settings-container {
+    padding: 0 15px;
+  }
+
+  .settings-row {
+    display: block;
+  }
+
+  /* Sidebar becomes horizontal menu */
+
+  .dashboard-menu {
+    width: 100%;
+    min-width: 0;
+    margin-bottom: 25px;
+    overflow-x: auto;
+  }
+
+  .dashboard-menu ul {
+    display: flex;
+    width: max-content;
+    min-width: 100%;
+  }
+
+  .dashboard-item {
+    border-bottom: none;
+    border-right: 1px solid #eeeeee;
+    flex-shrink: 0;
+  }
+
+  .dashboard-item:last-child {
+    border-right: none;
+  }
+
+  .dashboard-link {
+    width: auto;
+    min-height: 48px;
+    padding: 12px 15px;
+    white-space: nowrap;
+    font-size: 13px;
+  }
+
+  .dashboard-link i {
+    width: auto;
+    min-width: auto;
+    margin-right: 7px;
+  }
+
+  /* Content */
+
+  .dashboard-content {
+    width: 100%;
+  }
+
+  .settings-card-header {
+    padding: 15px 17px;
+  }
+
+  .settings-card-header h3 {
+    font-size: 18px;
+  }
+
+  .settings-card-body {
+    padding: 18px 17px;
+  }
+
+  /* Address */
+
+  .settings-address-card {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  /* Account form */
+
+  .settings-card .col-md-6,
+  .settings-card .col-md-12 {
+    width: 100%;
+  }
+
+  /* Orders */
+
+  .table-wishlist,
+  .table {
+    min-width: 650px;
+  }
+
+  .table-responsive {
+    overflow-x: auto;
+  }
+
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 480px) {
+
+  .settings-container {
+    padding: 0 10px;
+  }
+
+  .dashboard-link {
+    padding: 11px 12px;
+    font-size: 12px;
+  }
+
+  .dashboard-link i {
+    font-size: 12px;
+  }
+
+  .settings-card-header h3 {
+    font-size: 17px;
+  }
+
+  .settings-card-body {
+    padding: 15px;
+  }
+
+  .settings-card-body p {
+    font-size: 14px;
+  }
+
+  .contact-form-style {
+    max-width: 100%;
+  }
+
+  .btn-fill-out,
+  .submit {
+    width: 100%;
+  }
+
 }

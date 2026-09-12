@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 const ProductDetails = ({ product, addToCart, addToWishlist }) => {
   const [inputValue, setInputValue] = useState(1);
@@ -20,9 +20,9 @@ const ProductDetails = ({ product, addToCart, addToWishlist }) => {
 
         <div className="product-actions">
           <div className="product-quantity">
-            <span className="qty-down" onClick={minus}><i className="fi-rs-angle-small-down"></i></span>
+            <span className="qty-down" onClick={minus}><i className="fa-solid fa-chevron-down"></i></span>
             <input type="number" value={inputValue} onChange={handleInputChange} min="1" />
-            <span className="qty-up" onClick={plus}><i className="fi-rs-angle-small-up"></i></span>
+            <span className="qty-up" onClick={plus}><i className="fa-solid fa-chevron-up"></i></span>
           </div>
         </div>
 

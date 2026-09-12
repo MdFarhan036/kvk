@@ -145,7 +145,106 @@ export const getOrders = async (req, res) => {
     res.status(500).json({ message: "Failed to fetch orders" });
   }
 };
+// =====================================================
+// GET LOGGED-IN CUSTOMER ORDERS
+// =====================================================
 
+export const getMyOrders = async (req, res) => {
+  try {
+    console.log("CUSTOMER AUTH DATA:", req.customer);
+
+    // Adjust this based on your verifyCustomer middleware
+    const customerId =
+      req.customer?.id ||
+      req.customer?.customerId ||
+      req.user?.id ||
+      req.user?.customerId;
+
+    if (!customerId) {
+      return res.status(401).json({
+        message: "Customer authentication required",
+      });
+    }
+
+    const [orders] = await db.query(
+      `
+      SELECT
+        o.*,
+        c.customerName,
+        c.email,
+        c.mobile
+      FROM orders o
+      LEFT JOIN customers c
+        ON o.customerId = c.id
+      WHERE o.customerId = ?
+      ORDER BY o.orderDate DESC
+      `,
+      [customerId]
+    );
+
+    if (orders.length === 0) {
+      return res.json([]);
+    }
+
+    const orderIds = orders.map((order) => order.id);
+
+    const [items] = await db.query(
+      `
+      SELECT
+        oi.*,
+        p.title AS productTitle,
+        p.price AS productPrice,
+        p.images AS productImages
+      FROM order_items oi
+      LEFT JOIN products p
+        ON oi.product_id = p.id
+      WHERE oi.orderId IN (?)
+      `,
+      [orderIds]
+    );
+
+    const mergedOrders = orders.map((order) => {
+      const orderItems = items
+        .filter(
+          (item) =>
+            Number(item.orderId) === Number(order.id)
+        )
+        .map((item) => {
+          let productImages = [];
+
+          try {
+            productImages = item.productImages
+              ? JSON.parse(item.productImages)
+              : [];
+          } catch (error) {
+            productImages = [];
+          }
+
+          return {
+            ...item,
+            productImages,
+          };
+        });
+
+      return {
+        ...order,
+        items: orderItems,
+      };
+    });
+
+    return res.json(mergedOrders);
+
+  } catch (error) {
+    console.error(
+      "❌ Error fetching my orders:",
+      error
+    );
+
+    return res.status(500).json({
+      message: "Failed to fetch your orders",
+    });
+  }
+};
 // ✅ Get orders by customer ID
 export const getOrdersByCustomer = async (req, res) => {
   const { customerId } = req.params;
