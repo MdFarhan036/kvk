@@ -7,7 +7,7 @@ import "./Header.css";
 
 import logonav from "../../assets/img/kvklogo1.png";
 
-import api from "../api.js";
+import api, { ASSET_BASE_URL } from "../api.js";
 import { useCustomerAuth } from "../../context/CustomerContext";
 import { Loader } from "../Loader";
 
@@ -15,6 +15,7 @@ export const Header = () => {
   // ============================================
   // STATE
   // ============================================
+
   const [cartItems, setCartItems] = useState([]);
   const [wishlistItems, setWishlistItems] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -31,9 +32,11 @@ export const Header = () => {
     loading,
   } = useCustomerAuth();
 
+
   // ============================================
   // FETCH CART
   // ============================================
+
   useEffect(() => {
     const fetchCart = async () => {
       if (!customer) {
@@ -47,7 +50,9 @@ export const Header = () => {
         setCartItems(
           Array.isArray(data)
             ? data
-            : data?.items || data?.cart || []
+            : data?.items ||
+              data?.cart ||
+              []
         );
       } catch (error) {
         console.error(
@@ -62,9 +67,11 @@ export const Header = () => {
     fetchCart();
   }, [customer]);
 
+
   // ============================================
   // FETCH WISHLIST
   // ============================================
+
   useEffect(() => {
     const fetchWishlist = async () => {
       if (!customer) {
@@ -73,16 +80,15 @@ export const Header = () => {
       }
 
       try {
-        const { data } = await api.get(
-          "/wishlist"
-        );
+        const { data } =
+          await api.get("/wishlist");
 
         setWishlistItems(
           Array.isArray(data)
             ? data
             : data?.wishlist ||
-                data?.items ||
-                []
+              data?.items ||
+              []
         );
       } catch (error) {
         console.error(
@@ -97,18 +103,21 @@ export const Header = () => {
     fetchWishlist();
   }, [customer]);
 
+
   // ============================================
   // FETCH CATEGORIES
   // ============================================
+
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const { data } = await api.get(
-          "/categories"
-        );
+        const { data } =
+          await api.get("/categories");
 
         setCategories(
-          Array.isArray(data) ? data : []
+          Array.isArray(data)
+            ? data
+            : []
         );
       } catch (error) {
         console.error(
@@ -123,9 +132,11 @@ export const Header = () => {
     fetchCategories();
   }, []);
 
+
   // ============================================
   // CLOSE DROPDOWNS ON OUTSIDE CLICK
   // ============================================
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -158,26 +169,32 @@ export const Header = () => {
     };
   }, []);
 
+
   // ============================================
   // CART COUNT
   // ============================================
+
   const cartCount = cartItems.reduce(
     (total, item) =>
       total + Number(item.quantity || 0),
     0
   );
 
+
   // ============================================
   // CART TOTAL
   // ============================================
+
   const cartTotal = cartItems.reduce(
     (total, item) => {
       const product =
         item?.product || item;
 
       const price = Number(
-        item?.price ||
-          product?.price ||
+        item?.price ??
+          product?.price ??
+          product?.selling_price ??
+          product?.sale_price ??
           0
       );
 
@@ -190,9 +207,28 @@ export const Header = () => {
     0
   );
 
+
+  // ============================================
+  // IMAGE URL
+  // ============================================
+
+  const getImageUrl = (image) => {
+    if (!image) return null;
+
+    if (/^https?:\/\//i.test(image)) {
+      return image;
+    }
+
+    return `${ASSET_BASE_URL}${
+      image.startsWith("/") ? "" : "/"
+    }${image}`;
+  };
+
+
   // ============================================
   // CATEGORY DROPDOWN
   // ============================================
+
   const toggleCategory = () => {
     setCategoryOpen(
       (previous) => !previous
@@ -201,9 +237,11 @@ export const Header = () => {
     setAccountOpen(false);
   };
 
+
   // ============================================
   // ACCOUNT DROPDOWN
   // ============================================
+
   const toggleAccount = () => {
     setAccountOpen(
       (previous) => !previous
@@ -212,9 +250,11 @@ export const Header = () => {
     setCategoryOpen(false);
   };
 
+
   // ============================================
   // SEARCH
   // ============================================
+
   const handleSearch = (event) => {
     event.preventDefault();
 
@@ -229,9 +269,11 @@ export const Header = () => {
     setSearchQuery("");
   };
 
+
   // ============================================
   // LOGOUT
   // ============================================
+
   const handleLogout = async () => {
     try {
       setAccountOpen(false);
@@ -247,16 +289,20 @@ export const Header = () => {
     }
   };
 
+
   // ============================================
   // PRODUCT OBJECT
   // ============================================
+
   const getProduct = (item) => {
     return item?.product || item || {};
   };
 
+
   // ============================================
   // PRODUCT ID
   // ============================================
+
   const getProductId = (item) => {
     const product = getProduct(item);
 
@@ -269,9 +315,11 @@ export const Header = () => {
     );
   };
 
+
   // ============================================
   // PRODUCT IMAGE
   // ============================================
+
   const getProductImage = (item) => {
     const product = getProduct(item);
 
@@ -287,9 +335,11 @@ export const Header = () => {
     );
   };
 
+
   // ============================================
   // PRODUCT NAME
   // ============================================
+
   const getProductName = (item) => {
     const product = getProduct(item);
 
@@ -303,9 +353,11 @@ export const Header = () => {
     );
   };
 
+
   // ============================================
   // PRODUCT PRICE
   // ============================================
+
   const getProductPrice = (item) => {
     const product = getProduct(item);
 
@@ -318,9 +370,11 @@ export const Header = () => {
     );
   };
 
+
   // ============================================
   // PRODUCT CATEGORY
   // ============================================
+
   const getProductCategory = (item) => {
     const product = getProduct(item);
 
@@ -343,9 +397,11 @@ export const Header = () => {
     );
   };
 
+
   // ============================================
   // PRODUCT DESCRIPTION
   // ============================================
+
   const getProductDescription = (item) => {
     const product = getProduct(item);
 
@@ -359,9 +415,11 @@ export const Header = () => {
     );
   };
 
+
   // ============================================
   // PRODUCT STOCK
   // ============================================
+
   const getProductStock = (item) => {
     const product = getProduct(item);
 
@@ -373,8 +431,7 @@ export const Header = () => {
     }
 
     if (
-      product?.stock_quantity !==
-        undefined &&
+      product?.stock_quantity !== undefined &&
       product?.stock_quantity !== null
     ) {
       return product.stock_quantity;
@@ -390,9 +447,11 @@ export const Header = () => {
     return null;
   };
 
+
   // ============================================
   // PRODUCT BRAND
   // ============================================
+
   const getProductBrand = (item) => {
     const product = getProduct(item);
 
@@ -415,9 +474,11 @@ export const Header = () => {
     );
   };
 
+
   // ============================================
   // PRODUCT RATING
   // ============================================
+
   const getProductRating = (item) => {
     const product = getProduct(item);
 
@@ -430,9 +491,11 @@ export const Header = () => {
     );
   };
 
+
   // ============================================
   // PRODUCT STATUS
   // ============================================
+
   const getProductStatus = (item) => {
     const product = getProduct(item);
 
@@ -453,9 +516,11 @@ export const Header = () => {
     return "";
   };
 
+
   // ============================================
   // PRODUCT URL
   // ============================================
+
   const getProductUrl = (item) => {
     const id = getProductId(item);
 
@@ -466,9 +531,11 @@ export const Header = () => {
     return `/product/${id}`;
   };
 
+
   // ============================================
   // PRODUCT DETAIL HOVER
   // ============================================
+
   const ProductDetailHover = ({
     item,
     isCart = false,
@@ -476,6 +543,8 @@ export const Header = () => {
     const product = getProduct(item);
 
     const image = getProductImage(item);
+    const imageUrl = getImageUrl(image);
+
     const name = getProductName(item);
     const price = getProductPrice(item);
 
@@ -508,11 +577,13 @@ export const Header = () => {
           event.stopPropagation()
         }
       >
+
         {/* IMAGE */}
         <div className="header-detail-image">
-          {image ? (
+
+          {imageUrl ? (
             <img
-              src={image}
+              src={imageUrl}
               alt={name}
             />
           ) : (
@@ -520,7 +591,9 @@ export const Header = () => {
               <i className="fa-regular fa-image"></i>
             </div>
           )}
+
         </div>
+
 
         {/* DETAILS */}
         <div className="header-detail-content">
@@ -529,17 +602,24 @@ export const Header = () => {
             {name}
           </h4>
 
+
           {/* PRICE */}
           <div className="header-detail-price">
             ₹
             {price.toLocaleString(
-              "en-IN"
+              "en-IN",
+              {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              }
             )}
           </div>
+
 
           {/* BRAND */}
           {brand && (
             <div className="header-detail-row">
+
               <span>
                 Brand
               </span>
@@ -547,12 +627,15 @@ export const Header = () => {
               <strong>
                 {brand}
               </strong>
+
             </div>
           )}
+
 
           {/* CATEGORY */}
           {category && (
             <div className="header-detail-row">
+
               <span>
                 Category
               </span>
@@ -560,12 +643,15 @@ export const Header = () => {
               <strong>
                 {category}
               </strong>
+
             </div>
           )}
+
 
           {/* CART QUANTITY */}
           {isCart && (
             <div className="header-detail-row">
+
               <span>
                 Quantity
               </span>
@@ -573,12 +659,15 @@ export const Header = () => {
               <strong>
                 {quantity}
               </strong>
+
             </div>
           )}
+
 
           {/* STOCK */}
           {stock !== null && (
             <div className="header-detail-row">
+
               <span>
                 Stock
               </span>
@@ -594,12 +683,15 @@ export const Header = () => {
                   ? `${stock} available`
                   : "Out of stock"}
               </strong>
+
             </div>
           )}
+
 
           {/* STATUS */}
           {status && (
             <div className="header-detail-row">
+
               <span>
                 Status
               </span>
@@ -607,22 +699,25 @@ export const Header = () => {
               <strong>
                 {status}
               </strong>
+
             </div>
           )}
+
 
           {/* RATING */}
           {rating !== null &&
             rating !== undefined && (
               <div className="header-detail-rating">
+
                 <i className="fa-solid fa-star"></i>
 
                 <span>
-                  {Number(rating).toFixed(
-                    1
-                  )}
+                  {Number(rating).toFixed(1)}
                 </span>
+
               </div>
             )}
+
 
           {/* DESCRIPTION */}
           {description && (
@@ -630,6 +725,7 @@ export const Header = () => {
               {description}
             </p>
           )}
+
 
           {/* VIEW PRODUCT */}
           <Link
@@ -640,13 +736,16 @@ export const Header = () => {
           </Link>
 
         </div>
+
       </div>
     );
   };
 
+
   // ============================================
   // LOADING
   // ============================================
+
   if (loading) {
     return (
       <Loader
@@ -656,34 +755,43 @@ export const Header = () => {
     );
   }
 
+
   // ============================================
   // RENDER
   // ============================================
+
   return (
     <header className="site-header">
 
       <Topbar />
+
 
       <div className="header-main">
 
         {/* ======================================
             LOGO
         ====================================== */}
+
         <div className="header-logo">
+
           <Link to="/">
             <img
               src={logonav}
               alt="KVK Logo"
             />
           </Link>
+
         </div>
+
 
         {/* ======================================
             SEARCH + CATEGORY
         ====================================== */}
+
         <div className="header-search-wrapper">
 
           {/* CATEGORY */}
+
           <div
             className={`header-category ${
               categoryOpen
@@ -691,20 +799,25 @@ export const Header = () => {
                 : ""
             }`}
           >
+
             <button
               type="button"
               className="openselect"
               onClick={toggleCategory}
               aria-expanded={categoryOpen}
             >
+
               <span>
                 All Categories
               </span>
 
               <i className="fa-solid fa-chevron-down"></i>
+
             </button>
 
+
             <div className="selectDrop">
+
               <ul className="searchResults">
 
                 {categories.length > 0 ? (
@@ -718,9 +831,7 @@ export const Header = () => {
                             category.name
                           )}`}
                           onClick={() =>
-                            setCategoryOpen(
-                              false
-                            )
+                            setCategoryOpen(false)
                           }
                         >
                           {category.name}
@@ -735,14 +846,19 @@ export const Header = () => {
                 )}
 
               </ul>
+
             </div>
+
           </div>
 
+
           {/* SEARCH */}
+
           <form
             className="header-search"
             onSubmit={handleSearch}
           >
+
             <input
               type="search"
               placeholder="Search for products..."
@@ -760,46 +876,67 @@ export const Header = () => {
             >
               <i className="fa-solid fa-magnifying-glass"></i>
             </button>
+
           </form>
 
         </div>
 
+
         {/* ======================================
             RIGHT ACTIONS
         ====================================== */}
+
         <div className="header-actions">
 
-          {/* TRACK */}
+
+          {/* ==================================
+              TRACK
+          ================================== */}
+
           <Link
             to="/trackmyorder"
             className="action-item"
           >
+
             <i className="fa-solid fa-truck"></i>
 
             <span>
               Track
             </span>
+
           </Link>
+
 
           {/* ==================================
               WISHLIST
           ================================== */}
+
           <div className="header-hover-action">
 
             <Link
               to="/wishlist"
               className="action-item"
             >
+
               <i className="fa-solid fa-heart"></i>
+
+              {wishlistItems.length > 0 && (
+                <span className="header-action-badge">
+                  {wishlistItems.length}
+                </span>
+              )}
 
               <span>
                 Wishlist
               </span>
+
             </Link>
+
 
             <div className="header-product-dropdown">
 
               <div className="header-dropdown-title">
+
                 <span>
                   Wishlist
                 </span>
@@ -807,10 +944,13 @@ export const Header = () => {
                 <span className="header-dropdown-count">
                   {wishlistItems.length}
                 </span>
+
               </div>
+
 
               {wishlistItems.length > 0 ? (
                 <>
+
                   <div className="header-product-list">
 
                     {wishlistItems
@@ -820,6 +960,7 @@ export const Header = () => {
                           item,
                           index
                         ) => (
+
                           <div
                             className="header-product-item"
                             key={
@@ -830,71 +971,96 @@ export const Header = () => {
                           >
 
                             {/* SMALL IMAGE */}
-                            {getProductImage(
-                              item
-                            ) ? (
-                              <img
-                                src={getProductImage(
-                                  item
-                                )}
-                                alt={getProductName(
-                                  item
-                                )}
-                              />
-                            ) : (
-                              <div className="header-product-placeholder">
-                                <i className="fa-regular fa-image"></i>
-                              </div>
-                            )}
+
+                            <Link
+                              to={getProductUrl(item)}
+                              className="header-product-image-link"
+                            >
+
+                              {getImageUrl(
+                                getProductImage(item)
+                              ) ? (
+                                <img
+                                  src={getImageUrl(
+                                    getProductImage(item)
+                                  )}
+                                  alt={getProductName(
+                                    item
+                                  )}
+                                  className="header-product-image"
+                                />
+                              ) : (
+                                <div className="header-product-placeholder">
+                                  <i className="fa-regular fa-image"></i>
+                                </div>
+                              )}
+
+                            </Link>
+
 
                             {/* BASIC INFO */}
+
                             <div className="header-product-info">
 
-                              <div className="header-product-name">
+                              <Link
+                                to={getProductUrl(item)}
+                                className="header-product-name"
+                              >
                                 {getProductName(
                                   item
                                 )}
-                              </div>
+                              </Link>
 
                               <div className="header-product-price">
                                 ₹
                                 {getProductPrice(
                                   item
                                 ).toLocaleString(
-                                  "en-IN"
+                                  "en-IN",
+                                  {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2,
+                                  }
                                 )}
                               </div>
 
                             </div>
 
+
                             {/* COMPLETE DETAILS ON HOVER */}
+
                             <ProductDetailHover
                               item={item}
                             />
 
                           </div>
+
                         )
                       )}
 
                   </div>
 
+
                   {wishlistItems.length > 5 && (
                     <div className="header-more-items">
                       +
-                      {wishlistItems.length -
-                        5}{" "}
+                      {wishlistItems.length - 5}{" "}
                       more items
                     </div>
                   )}
+
 
                   <Link
                     to="/wishlist"
                     className="header-dropdown-footer"
                   >
-                    View Wishlist
+                    View Wishlist →
                   </Link>
+
                 </>
+
               ) : (
+
                 <div className="header-dropdown-empty">
 
                   <i className="fa-regular fa-heart"></i>
@@ -908,24 +1074,29 @@ export const Header = () => {
                   </Link>
 
                 </div>
+
               )}
 
             </div>
+
           </div>
+
 
           {/* ==================================
               CART
           ================================== */}
+
           <div className="header-hover-action">
 
             <Link
               to="/cartpage"
               className="action-item cart-item"
             >
+
               <i className="fa-solid fa-cart-shopping"></i>
 
               {cartCount > 0 && (
-                <span className="cart-badge">
+                <span className="header-action-badge">
                   {cartCount}
                 </span>
               )}
@@ -933,11 +1104,14 @@ export const Header = () => {
               <span>
                 Cart
               </span>
+
             </Link>
+
 
             <div className="header-product-dropdown">
 
               <div className="header-dropdown-title">
+
                 <span>
                   Shopping Cart
                 </span>
@@ -945,10 +1119,13 @@ export const Header = () => {
                 <span className="header-dropdown-count">
                   {cartCount}
                 </span>
+
               </div>
+
 
               {cartItems.length > 0 ? (
                 <>
+
                   <div className="header-product-list">
 
                     {cartItems
@@ -958,16 +1135,17 @@ export const Header = () => {
                           item,
                           index
                         ) => {
+
                           const price =
-                            getProductPrice(
-                              item
-                            );
+                            getProductPrice(item);
 
                           const quantity =
                             Number(
-                              item.quantity ||
-                                1
+                              item.quantity || 1
                             );
+
+                          const itemTotal =
+                            price * quantity;
 
                           return (
                             <div
@@ -980,50 +1158,66 @@ export const Header = () => {
                             >
 
                               {/* SMALL IMAGE */}
-                              {getProductImage(
-                                item
-                              ) ? (
-                                <img
-                                  src={getProductImage(
-                                    item
-                                  )}
-                                  alt={getProductName(
-                                    item
-                                  )}
-                                />
-                              ) : (
-                                <div className="header-product-placeholder">
-                                  <i className="fa-regular fa-image"></i>
-                                </div>
-                              )}
+
+                              <Link
+                                to={getProductUrl(item)}
+                                className="header-product-image-link"
+                              >
+
+                                {getImageUrl(
+                                  getProductImage(item)
+                                ) ? (
+                                  <img
+                                    src={getImageUrl(
+                                      getProductImage(item)
+                                    )}
+                                    alt={getProductName(
+                                      item
+                                    )}
+                                    className="header-product-image"
+                                  />
+                                ) : (
+                                  <div className="header-product-placeholder">
+                                    <i className="fa-regular fa-image"></i>
+                                  </div>
+                                )}
+
+                              </Link>
+
 
                               {/* BASIC INFO */}
+
                               <div className="header-product-info">
 
-                                <div className="header-product-name">
+                                <Link
+                                  to={getProductUrl(item)}
+                                  className="header-product-name"
+                                >
                                   {getProductName(
                                     item
                                   )}
-                                </div>
+                                </Link>
 
                                 <div className="header-cart-item-meta">
-                                  Qty:{" "}
-                                  {quantity}
+                                  Qty: {quantity}
                                 </div>
 
                                 <div className="header-product-price">
                                   ₹
-                                  {(
-                                    price *
-                                    quantity
-                                  ).toLocaleString(
-                                    "en-IN"
+                                  {itemTotal.toLocaleString(
+                                    "en-IN",
+                                    {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 2,
+                                    }
                                   )}
                                 </div>
 
                               </div>
 
+
                               {/* COMPLETE DETAILS ON HOVER */}
+
                               <ProductDetailHover
                                 item={item}
                                 isCart
@@ -1036,16 +1230,18 @@ export const Header = () => {
 
                   </div>
 
+
                   {cartItems.length > 5 && (
                     <div className="header-more-items">
                       +
-                      {cartItems.length -
-                        5}{" "}
+                      {cartItems.length - 5}{" "}
                       more items
                     </div>
                   )}
 
+
                   {/* CART TOTAL */}
+
                   <div className="header-cart-total">
 
                     <span>
@@ -1055,21 +1251,30 @@ export const Header = () => {
                     <strong>
                       ₹
                       {cartTotal.toLocaleString(
-                        "en-IN"
+                        "en-IN",
+                        {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        }
                       )}
                     </strong>
 
                   </div>
 
+
+                  {/* VIEW CART */}
+
                   <Link
                     to="/cartpage"
                     className="header-dropdown-footer"
                   >
-                    View Cart
+                    View Cart →
                   </Link>
 
                 </>
+
               ) : (
+
                 <div className="header-dropdown-empty">
 
                   <i className="fa-solid fa-cart-shopping"></i>
@@ -1083,15 +1288,20 @@ export const Header = () => {
                   </Link>
 
                 </div>
+
               )}
 
             </div>
+
           </div>
+
 
           {/* ==================================
               ACCOUNT
           ================================== */}
+
           {customer ? (
+
             <div
               className={`profile-dropdown ${
                 accountOpen
@@ -1099,58 +1309,103 @@ export const Header = () => {
                   : ""
               }`}
             >
+
               <button
                 type="button"
                 className="action-item account-toggle"
                 onClick={toggleAccount}
                 aria-expanded={accountOpen}
               >
+
                 <i className="fa-solid fa-user"></i>
 
                 <span>
                   Account
                 </span>
+
               </button>
+
 
               <ul className="dropdown-menu">
 
+                {/* MY ACCOUNT */}
+
                 <li>
                   <Link
-                    to="/profile"
+                    to="/account/profile"
                     onClick={() =>
-                      setAccountOpen(
-                        false
-                      )
+                      setAccountOpen(false)
                     }
                   >
-                    My Profile
+                    <i className="fa-regular fa-user"> </i> 
+                     My Account
                   </Link>
                 </li>
+
+
+                {/* MY ORDERS */}
+
                 <li>
                   <Link
-                    to="/settings"
+                    to="/orders"
                     onClick={() =>
-                      setAccountOpen(
-                        false
-                      )
+                      setAccountOpen(false)
                     }
                   >
-                    Settings
+                    <i className="fa-solid fa-box"></i>
+                    My Orders
                   </Link>
                 </li>
+
+
+                {/* CHANGE PASSWORD */}
+
+                <li>
+                  <Link
+                    to="/account/password"
+                    onClick={() =>
+                      setAccountOpen(false)
+                    }
+                  >
+                    <i className="fa-solid fa-lock"></i>
+                    Change Password
+                  </Link>
+                </li>
+
+
+                {/* MY ADDRESSES */}
+
+                <li>
+                  <Link
+                    to="/account/addresses"
+                    onClick={() =>
+                      setAccountOpen(false)
+                    }
+                  >
+                    <i className="fa-solid fa-location-dot"></i>
+                    My Addresses
+                  </Link>
+                </li>
+
+
+                {/* LOGOUT */}
 
                 <li>
                   <button
                     type="button"
                     onClick={handleLogout}
                   >
+                    <i className="fa-solid fa-right-from-bracket"></i>
                     Logout
                   </button>
                 </li>
 
               </ul>
+
             </div>
+
           ) : (
+
             <Link
               to="/login"
               className="action-item"
@@ -1161,14 +1416,20 @@ export const Header = () => {
                 Sign In
               </span>
             </Link>
+
           )}
 
         </div>
+
       </div>
 
+
       {/* NAVBAR */}
+
       <Navbar />
 
     </header>
   );
 };
+
+export default Header;

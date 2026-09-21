@@ -1,98 +1,90 @@
-import { Link, Outlet, useNavigate } from "react-router-dom";
-import api from "../api.js";
+import {
+  Link,
+  Outlet,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
+
+import "./MyAddresses.css";
+import { useCustomerAuth } from "../../context/CustomerContext";
 
 export const MyAccount = () => {
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const token = localStorage.getItem("token");
-
-  // ============================================
-  // LOGOUT
-  // ============================================
+  const { logout } = useCustomerAuth();
 
   const handleLogout = async () => {
     try {
-      // Use backend logout if your auth route supports it.
-      // If the endpoint is not available, the local
-      // authentication data is still cleared below.
-      await api.post("/auth/customer/logout");
+      await logout();
     } catch (error) {
-      console.error(
-        "Logout request failed:",
-        error
-      );
+      console.error("Logout error:", error);
     } finally {
-      localStorage.removeItem("token");
-      localStorage.removeItem("role");
-
-      navigate("/login", {
-        replace: true,
-      });
+      navigate("/login", { replace: true });
     }
   };
+
+  const isProfile =
+    location.pathname === "/account" ||
+    location.pathname === "/account/profile";
+
+  const isPassword =
+    location.pathname.startsWith("/account/password");
+
+  const isAddresses =
+    location.pathname.startsWith("/account/addresses");
 
   return (
     <div className="my-account">
 
-      {/* ============================================
-          ACCOUNT NAVIGATION
-      ============================================ */}
+      <nav className="my-account-nav">
 
-      <nav
-        className="my-account-nav"
-        style={{ marginBottom: "20px" }}
-      >
+        <Link
+          to="/account/profile"
+          className={
+            isProfile
+              ? "my-account-nav-link active"
+              : "my-account-nav-link"
+          }
+        >
+          👤 My Account
+        </Link>
 
-        {!token && (
-          <>
-            <Link
-              to="/signup"
-              style={{ marginRight: "10px" }}
-            >
-              Signup
-            </Link>
+        <Link
+          to="/account/password"
+          className={
+            isPassword
+              ? "my-account-nav-link active"
+              : "my-account-nav-link"
+          }
+        >
+          🔐 Change Password
+        </Link>
 
-            <Link
-              to="/login"
-              style={{ marginRight: "10px" }}
-            >
-              Login
-            </Link>
-          </>
-        )}
+        <Link
+          to="/account/addresses"
+          className={
+            isAddresses
+              ? "my-account-nav-link active"
+              : "my-account-nav-link"
+          }
+        >
+          📍 My Addresses
+        </Link>
 
-        {token && (
-          <>
-            <Link
-              to="/dashboard"
-              style={{ marginRight: "10px" }}
-            >
-              Dashboard
-            </Link>
-
-            <Link
-              to="/account"
-              style={{ marginRight: "10px" }}
-            >
-              My Account
-            </Link>
-
-            <button
-              type="button"
-              onClick={handleLogout}
-            >
-              Logout
-            </button>
-          </>
-        )}
+        <button
+          type="button"
+          className="my-account-logout"
+          onClick={handleLogout}
+        >
+          Logout
+        </button>
 
       </nav>
 
-      {/* ============================================
-          CHILD ACCOUNT ROUTES
-      ============================================ */}
-
-      <Outlet />
+      <div className="my-account-content">
+        <Outlet />
+      </div>
 
     </div>
   );

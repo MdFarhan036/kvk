@@ -1,0 +1,504 @@
+/* =========================================================
+   DELIVERY PERSONS PAGE
+========================================================= */
+
+.delivery-persons-page {
+  padding: 24px;
+  width: 100%;
+  box-sizing: border-box;
+  background: #f5f7f6;
+  min-height: 100vh;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.delivery-persons-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 22px;
+}
+
+.delivery-persons-header h1 {
+  margin: 0;
+
+  font-size: 26px;
+  font-weight: 700;
+
+  color: #1f2937;
+}
+
+.delivery-persons-header p {
+  margin: 6px 0 0;
+
+  font-size: 14px;
+
+  color: #6b7280;
+}
+
+
+/* =========================================================
+   MESSAGES
+========================================================= */
+
+.delivery-persons-error,
+.delivery-persons-success {
+  padding: 12px 15px;
+
+  margin-bottom: 18px;
+
+  border-radius: 7px;
+
+  font-size: 14px;
+}
+
+.delivery-persons-error {
+  background: #fef2f2;
+
+  border: 1px solid #fecaca;
+
+  color: #b91c1c;
+}
+
+.delivery-persons-success {
+  background: #f0fdf4;
+
+  border: 1px solid #bbf7d0;
+
+  color: #15803d;
+}
+
+
+/* =========================================================
+   FORM CARD
+========================================================= */
+
+.delivery-persons-form-card {
+  background: #ffffff;
+
+  border: 1px solid #e5e7eb;
+
+  border-radius: 12px;
+
+  padding: 24px;
+
+  margin-bottom: 24px;
+
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.delivery-persons-form-card h2 {
+  margin: 0 0 20px;
+
+  color: #1f2937;
+
+  font-size: 18px;
+  font-weight: 700;
+}
+
+
+/* =========================================================
+   FORM GRID
+========================================================= */
+
+.delivery-form-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 18px 20px;
+}
+
+.delivery-form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.delivery-form-group label {
+  margin-bottom: 7px;
+
+  color: #374151;
+
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.delivery-form-group input {
+  width: 100%;
+
+  height: 44px;
+
+  padding: 0 12px;
+
+  box-sizing: border-box;
+
+  border: 1px solid #d1d5db;
+
+  border-radius: 7px;
+
+  background: #ffffff;
+
+  color: #1f2937;
+
+  outline: none;
+
+  font-size: 14px;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.delivery-form-group input::placeholder {
+  color: #9ca3af;
+}
+
+.delivery-form-group input:focus {
+  border-color: #2e7d32;
+
+  box-shadow:
+    0 0 0 3px rgba(46, 125, 50, 0.1);
+}
+
+.delivery-form-group input:disabled {
+  background: #f3f4f6;
+
+  cursor: not-allowed;
+}
+
+
+/* =========================================================
+   CREATE BUTTON
+========================================================= */
+
+.delivery-create-btn {
+  margin-top: 22px;
+
+  padding: 11px 20px;
+
+  border: none;
+
+  border-radius: 7px;
+
+  background: #2e7d32;
+
+  color: #ffffff;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    transform 0.15s ease,
+    opacity 0.2s ease;
+}
+
+.delivery-create-btn:hover {
+  background: #1b5e20;
+}
+
+.delivery-create-btn:active {
+  transform: scale(0.98);
+}
+
+.delivery-create-btn:disabled {
+  opacity: 0.6;
+
+  cursor: not-allowed;
+}
+
+
+/* =========================================================
+   LIST CARD
+========================================================= */
+
+.delivery-persons-list-card {
+  background: #ffffff;
+
+  border: 1px solid #e5e7eb;
+
+  border-radius: 12px;
+
+  overflow: hidden;
+
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+
+/* =========================================================
+   LIST HEADER
+========================================================= */
+
+.delivery-list-header {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 15px;
+
+  padding: 20px 24px;
+
+  border-bottom: 1px solid #edf0ee;
+}
+
+.delivery-list-header h2 {
+  margin: 0;
+
+  color: #1f2937;
+
+  font-size: 18px;
+  font-weight: 700;
+}
+
+
+/* =========================================================
+   REFRESH
+========================================================= */
+
+.delivery-refresh-btn {
+  padding: 8px 13px;
+
+  border: 1px solid #d1d5db;
+
+  border-radius: 6px;
+
+  background: #ffffff;
+
+  color: #374151;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
+}
+
+.delivery-refresh-btn:hover {
+  background: #f9fafb;
+
+  border-color: #9ca3af;
+}
+
+.delivery-refresh-btn:disabled {
+  opacity: 0.5;
+
+  cursor: not-allowed;
+}
+
+
+/* =========================================================
+   LOADING / EMPTY
+========================================================= */
+
+.delivery-list-loading,
+.delivery-list-empty {
+  padding: 45px 20px;
+
+  text-align: center;
+
+  color: #6b7280;
+
+  font-size: 14px;
+}
+
+
+/* =========================================================
+   TABLE WRAPPER
+========================================================= */
+
+.delivery-table-wrapper {
+  width: 100%;
+
+  overflow-x: auto;
+}
+
+
+/* =========================================================
+   TABLE
+========================================================= */
+
+.delivery-persons-table {
+  width: 100%;
+
+  border-collapse: collapse;
+
+  min-width: 850px;
+}
+
+.delivery-persons-table th {
+  padding: 13px 16px;
+
+  background: #f8faf9;
+
+  border-bottom: 1px solid #e5e7eb;
+
+  color: #6b7280;
+
+  text-align: left;
+
+  font-size: 11px;
+
+  font-weight: 700;
+
+  text-transform: uppercase;
+
+  letter-spacing: 0.4px;
+
+  white-space: nowrap;
+}
+
+.delivery-persons-table td {
+  padding: 15px 16px;
+
+  border-bottom: 1px solid #edf0ee;
+
+  color: #4b5563;
+
+  font-size: 13px;
+
+  vertical-align: middle;
+}
+
+.delivery-persons-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.delivery-persons-table tbody tr:hover {
+  background: #fafcfb;
+}
+
+.delivery-persons-table td strong {
+  color: #1f2937;
+
+  font-weight: 600;
+}
+
+
+/* =========================================================
+   ROLE BADGE
+========================================================= */
+
+.delivery-role-badge {
+  display: inline-flex;
+
+  align-items: center;
+
+  padding: 5px 9px;
+
+  border-radius: 20px;
+
+  background: #e8f5e9;
+
+  color: #2e7d32;
+
+  font-size: 11px;
+
+  font-weight: 700;
+}
+
+
+/* =========================================================
+   DELETE
+========================================================= */
+
+.delivery-delete-btn {
+  padding: 7px 12px;
+
+  border: 1px solid #fecaca;
+
+  border-radius: 6px;
+
+  background: #fef2f2;
+
+  color: #b91c1c;
+
+  font-size: 12px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
+}
+
+.delivery-delete-btn:hover {
+  background: #fee2e2;
+
+  border-color: #fca5a5;
+}
+
+.delivery-delete-btn:disabled {
+  opacity: 0.5;
+
+  cursor: not-allowed;
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 768px) {
+  .delivery-persons-page {
+    padding: 18px;
+  }
+
+  .delivery-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .delivery-persons-form-card {
+    padding: 20px;
+  }
+
+  .delivery-list-header {
+    padding: 18px;
+  }
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 480px) {
+  .delivery-persons-page {
+    padding: 12px;
+  }
+
+  .delivery-persons-header h1 {
+    font-size: 22px;
+  }
+
+  .delivery-persons-header p {
+    font-size: 12px;
+  }
+
+  .delivery-persons-form-card {
+    padding: 16px;
+  }
+
+  .delivery-create-btn {
+    width: 100%;
+  }
+
+  .delivery-list-header {
+    padding: 15px;
+  }
+
+  .delivery-list-header h2 {
+    font-size: 16px;
+  }
+}

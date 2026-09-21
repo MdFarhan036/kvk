@@ -76,3 +76,36 @@ export const verifyAdmin = (req, res, next) => {
 
 
 export default verifyToken;
+// ==================== Delivery Middleware ====================
+export const verifyDelivery = (req, res, next) => {
+  const token = req.cookies?.delivery_token;
+
+  if (!token) {
+    return res.status(401).json({
+      isAuthenticated: false,
+      error: "Delivery person not logged in",
+    });
+  }
+
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+
+    if (decoded.role !== "delivery") {
+      return res.status(403).json({
+        isAuthenticated: false,
+        error: "Access denied",
+      });
+    }
+
+    req.deliveryPerson = decoded;
+
+    next();
+  } catch (err) {
+    console.error("Delivery JWT error:", err.message);
+
+    return res.status(403).json({
+      isAuthenticated: false,
+      error: "Invalid or expired delivery token",
+    });
+  }
+};

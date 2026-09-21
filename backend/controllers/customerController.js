@@ -207,3 +207,544 @@ export const deleteCustomer = async (req, res) => {
     res.status(500).json({ error: "Failed to delete customer" });
   }
 };
+/**
+ * ============================================
+ * GET CUSTOMER ADDRESSES
+ * ============================================
+ */
+export const getCustomerAddresses = async (req, res) => {
+  try {
+    const customerId = req.customer.id;
+
+    const [rows] = await db.query(
+      `
+      SELECT
+        id,
+        customerId,
+        addressType,
+        fullName,
+        mobile,
+        houseNo,
+        addressLine1,
+        addressLine2,
+        landmark,
+        city,
+        state,
+        pincode,
+        country,
+        latitude,
+        longitude,
+        isDefault,
+        createdAt,
+        updatedAt
+      FROM customer_addresses
+      WHERE customerId = ?
+      ORDER BY isDefault DESC, id DESC
+      `,
+      [customerId]
+    );
+
+    res.status(200).json(rows);
+  } catch (error) {
+    console.error(
+      "❌ Error fetching customer addresses:",
+      error
+    );
+
+    res.status(500).json({
+      error: "Failed to fetch addresses",
+    });
+  }
+};
+/**
+ * ============================================
+ * ADD NEW ADDRESS
+ * ============================================
+ */
+export const createCustomerAddress = async (req, res) => {
+  const connection = await db.getConnection();
+
+  try {
+    const customerId = req.customer.id;
+
+    const {
+      addressType,
+      fullName,
+      mobile,
+      houseNo,
+      addressLine1,
+      addressLine2,
+      latitude,
+      longitude,
+      landmark,
+      city,
+      state,
+      pincode,
+      country,
+      isDefault,
+    } = req.body;
+
+    if (
+      !fullName ||
+      !mobile ||
+      !houseNo ||
+      !addressLine1 ||
+      !city ||
+      !state ||
+      !pincode
+    ) {
+      return res.status(400).json({
+        error: "All required address fields must be provided",
+      });
+    }
+
+    // Validate GPS only when supplied
+    if (
+      latitude !== undefined &&
+      latitude !== null &&
+      latitude !== "" &&
+      !Number.isFinite(Number(latitude))
+    ) {
+      return res.status(400).json({
+        error: "Invalid latitude",
+      });
+    }
+
+    if (
+      longitude !== undefined &&
+      longitude !== null &&
+      longitude !== "" &&
+      !Number.isFinite(Number(longitude))
+    ) {
+      return res.status(400).json({
+        error: "Invalid longitude",
+      });
+    }
+
+    await connection.beginTransaction();
+
+    /*
+     * If this address is default,
+     * remove default status from existing addresses.
+     */
+    if (isDefault) {
+      await connection.query(
+        `
+        UPDATE customer_addresses
+        SET isDefault = FALSE
+        WHERE customerId = ?
+        `,
+        [customerId]
+      );
+    }
+
+    /*
+     * If this is the customer's first address,
+     * automatically make it default.
+     */
+    const [existing] = await connection.query(
+      `
+      SELECT id
+      FROM customer_addresses
+      WHERE customerId = ?
+      LIMIT 1
+      `,
+      [customerId]
+    );
+
+    const makeDefault =
+      existing.length === 0 || Boolean(isDefault);
+
+    const [result] = await connection.query(
+      `
+      INSERT INTO customer_addresses
+      (
+        customerId,
+        addressType,
+        fullName,
+        mobile,
+        houseNo,
+        addressLine1,
+        addressLine2,
+        latitude,
+        longitude,
+        landmark,
+        city,
+        state,
+        pincode,
+        country,
+        isDefault
+      )
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `,
+      [
+        customerId,
+        addressType || "Home",
+        fullName,
+        mobile,
+        houseNo,
+        addressLine1,
+        addressLine2 || null,
+        latitude !== undefined && latitude !== ""
+          ? Number(latitude)
+          : null,
+        longitude !== undefined && longitude !== ""
+          ? Number(longitude)
+          : null,
+        landmark || null,
+        city,
+        state,
+        pincode,
+        country || "India",
+        makeDefault,
+      ]
+    );
+
+    await connection.commit();
+
+    res.status(201).json({
+      message: "✅ Address added successfully",
+      id: result.insertId,
+    });
+  } catch (error) {
+    await connection.rollback();
+
+    console.error(
+      "❌ Error creating customer address:",
+      error
+    );
+
+    res.status(500).json({
+      error: "Failed to add address",
+    });
+  } finally {
+    connection.release();
+  }
+};
+
+/**
+ * ============================================
+ * UPDATE ADDRESS
+ * ============================================
+ */
+export const updateCustomerAddress = async (req, res) => {
+  const connection = await db.getConnection();
+
+  try {
+    const customerId = req.customer.id;
+    const { id } = req.params;
+
+    const {
+      addressType,
+      fullName,
+      mobile,
+      houseNo,
+      addressLine1,
+      addressLine2,
+      latitude,
+      longitude,
+      landmark,
+      city,
+      state,
+      pincode,
+      country,
+      isDefault,
+    } = req.body;
+
+    if (
+      !fullName ||
+      !mobile ||
+      !houseNo ||
+      !addressLine1 ||
+      !city ||
+      !state ||
+      !pincode
+    ) {
+      return res.status(400).json({
+        error: "All required address fields must be provided",
+      });
+    }
+
+    // Validate GPS only when supplied
+    if (
+      latitude !== undefined &&
+      latitude !== null &&
+      latitude !== "" &&
+      !Number.isFinite(Number(latitude))
+    ) {
+      return res.status(400).json({
+        error: "Invalid latitude",
+      });
+    }
+
+    if (
+      longitude !== undefined &&
+      longitude !== null &&
+      longitude !== "" &&
+      !Number.isFinite(Number(longitude))
+    ) {
+      return res.status(400).json({
+        error: "Invalid longitude",
+      });
+    }
+
+    const [addressRows] = await connection.query(
+      `
+      SELECT id
+      FROM customer_addresses
+      WHERE id = ? AND customerId = ?
+      `,
+      [id, customerId]
+    );
+
+    if (addressRows.length === 0) {
+      return res.status(404).json({
+        error: "Address not found",
+      });
+    }
+
+    await connection.beginTransaction();
+
+    if (isDefault) {
+      await connection.query(
+        `
+        UPDATE customer_addresses
+        SET isDefault = FALSE
+        WHERE customerId = ?
+        `,
+        [customerId]
+      );
+    }
+
+    await connection.query(
+      `
+      UPDATE customer_addresses
+      SET
+        addressType = ?,
+        fullName = ?,
+        mobile = ?,
+        houseNo = ?,
+        addressLine1 = ?,
+        addressLine2 = ?,
+        latitude = ?,
+        longitude = ?,
+        landmark = ?,
+        city = ?,
+        state = ?,
+        pincode = ?,
+        country = ?,
+        isDefault = ?
+      WHERE id = ?
+        AND customerId = ?
+      `,
+      [
+        addressType || "Home",
+        fullName,
+        mobile,
+        houseNo,
+        addressLine1,
+        addressLine2 || null,
+        latitude !== undefined && latitude !== ""
+          ? Number(latitude)
+          : null,
+        longitude !== undefined && longitude !== ""
+          ? Number(longitude)
+          : null,
+        landmark || null,
+        city,
+        state,
+        pincode,
+        country || "India",
+        Boolean(isDefault),
+        id,
+        customerId,
+      ]
+    );
+
+    await connection.commit();
+
+    res.status(200).json({
+      message: "✅ Address updated successfully",
+    });
+  } catch (error) {
+    await connection.rollback();
+
+    console.error(
+      "❌ Error updating customer address:",
+      error
+    );
+
+    res.status(500).json({
+      error: "Failed to update address",
+    });
+  } finally {
+    connection.release();
+  }
+};
+
+
+/**
+ * ============================================
+ * DELETE ADDRESS
+ * ============================================
+ */
+export const deleteCustomerAddress = async (req, res) => {
+  const connection = await db.getConnection();
+
+  try {
+const customerId = req.customer.id;    const { id } = req.params;
+
+    const [rows] = await connection.query(
+      `
+      SELECT isDefault
+      FROM customer_addresses
+      WHERE id = ? AND customerId = ?
+      `,
+      [id, customerId]
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({
+        error: "Address not found",
+      });
+    }
+
+    const wasDefault = Boolean(rows[0].isDefault);
+
+    await connection.beginTransaction();
+
+    const [result] = await connection.query(
+      `
+      DELETE FROM customer_addresses
+      WHERE id = ? AND customerId = ?
+      `,
+      [id, customerId]
+    );
+
+    /*
+     * If default address was deleted,
+     * automatically make another address default.
+     */
+    if (wasDefault) {
+      const [nextAddress] = await connection.query(
+        `
+        SELECT id
+        FROM customer_addresses
+        WHERE customerId = ?
+        ORDER BY id DESC
+        LIMIT 1
+        `,
+        [customerId]
+      );
+
+      if (nextAddress.length > 0) {
+        await connection.query(
+          `
+          UPDATE customer_addresses
+          SET isDefault = TRUE
+          WHERE id = ?
+            AND customerId = ?
+          `,
+          [
+            nextAddress[0].id,
+            customerId,
+          ]
+        );
+      }
+    }
+
+    await connection.commit();
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({
+        error: "Address not found",
+      });
+    }
+
+    res.status(200).json({
+      message: "✅ Address deleted successfully",
+    });
+  } catch (error) {
+    await connection.rollback();
+
+    console.error(
+      "❌ Error deleting customer address:",
+      error
+    );
+
+    res.status(500).json({
+      error: "Failed to delete address",
+    });
+  } finally {
+    connection.release();
+  }
+};
+
+
+/**
+ * ============================================
+ * SET DEFAULT ADDRESS
+ * ============================================
+ */
+export const setDefaultCustomerAddress = async (req, res) => {
+  const connection = await db.getConnection();
+
+  try {
+const customerId = req.customer.id;    const { id } = req.params;
+
+    const [rows] = await connection.query(
+      `
+      SELECT id
+      FROM customer_addresses
+      WHERE id = ? AND customerId = ?
+      `,
+      [id, customerId]
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({
+        error: "Address not found",
+      });
+    }
+
+    await connection.beginTransaction();
+
+    await connection.query(
+      `
+      UPDATE customer_addresses
+      SET isDefault = FALSE
+      WHERE customerId = ?
+      `,
+      [customerId]
+    );
+
+    await connection.query(
+      `
+      UPDATE customer_addresses
+      SET isDefault = TRUE
+      WHERE id = ?
+        AND customerId = ?
+      `,
+      [id, customerId]
+    );
+
+    await connection.commit();
+
+    res.status(200).json({
+      message: "✅ Default address updated successfully",
+    });
+  } catch (error) {
+    await connection.rollback();
+
+    console.error(
+      "❌ Error setting default address:",
+      error
+    );
+
+    res.status(500).json({
+      error: "Failed to set default address",
+    });
+  } finally {
+    connection.release();
+  }
+};

@@ -1242,4 +1242,392 @@ td select {
     > button {
     width: 100%;
   }
+}/* =========================================================
+   ADMIN ORDER ADDRESS
+========================================================= */
+
+.admin-order-address {
+  margin-top: 12px;
+  padding: 18px;
+
+  border: 1px solid #dfe5e1;
+  border-radius: 10px;
+
+  background: #f8fcf9;
+}
+
+.admin-address-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding-bottom: 10px;
+  margin-bottom: 12px;
+
+  border-bottom: 1px solid #e1e7e3;
+
+  color: #198754;
+}
+
+.admin-address-top span {
+  padding: 4px 9px;
+
+  border-radius: 20px;
+
+  background: #e8f6ee;
+  color: #198754;
+
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.admin-address-content {
+  color: #444;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.admin-address-content p {
+  margin: 3px 0;
+}
+
+.admin-address-content p:first-child {
+  margin-bottom: 7px;
+  color: #222;
+  font-size: 15px;
+}
+
+.admin-no-address {
+  padding: 15px;
+
+  border: 1px dashed #ccc;
+  border-radius: 8px;
+
+  background: #fafafa;
+
+  color: #777;
+  font-size: 14px;
+}
+
+
+/* =========================================================
+   ADMIN ORDER PRODUCT
+========================================================= */
+
+.admin-order-product {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.admin-order-product img {
+  width: 50px;
+  height: 50px;
+
+  object-fit: cover;
+
+  border-radius: 6px;
+
+  border: 1px solid #eee;
+}
+
+
+/* =========================================================
+   ORDER STATUS CONTROL
+========================================================= */
+
+.order-status-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.order-status-control select {
+  min-width: 180px;
+  padding: 9px 12px;
+
+  border: 1px solid #ccc;
+  border-radius: 6px;
+
+  background: #fff;
+
+  font-family: inherit;
+  font-size: 14px;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 768px) {
+
+  .admin-order-address {
+    padding: 14px;
+  }
+
+  .order-status-control {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .order-status-control select {
+    width: 100%;
+  }
+
+  .admin-order-product img {
+    width: 42px;
+    height: 42px;
+  }
+}
+/* ============================================
+   ADMIN DELIVERY LOCATION
+============================================ */
+
+.admin-delivery-location {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.admin-delivery-location-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.admin-delivery-location-header h4 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  color: #222;
+}
+
+.open-map-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 9px 15px;
+  border-radius: 7px;
+  background: #2e7d32;
+  color: #fff;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+  border: none;
+  transition: 0.2s ease;
+}
+
+.open-map-btn:hover {
+  background: #256628;
+  color: #fff;
+}
+
+.admin-location-coordinates {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 16px;
+}
+
+.admin-location-coordinates > div {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 160px;
+  padding: 11px 14px;
+  background: #f7f8f7;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+
+.admin-location-coordinates strong {
+  font-size: 12px;
+  color: #666;
+}
+
+.admin-location-coordinates span {
+  font-size: 14px;
+  font-weight: 600;
+  color: #222;
+  font-family: monospace;
+}
+
+.admin-delivery-map {
+  width: 100%;
+  height: 400px;
+  overflow: hidden;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+}
+
+.admin-delivery-map .leaflet-container {
+  width: 100%;
+  height: 100%;
+}
+
+.admin-no-location {
+  margin-top: 15px;
+  padding: 14px 16px;
+  background: #fff8e1;
+  border: 1px solid #f0d98c;
+  border-radius: 8px;
+  color: #795548;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.admin-no-location small {
+  color: #8d6e63;
+}
+
+@media (max-width: 768px) {
+
+  .admin-delivery-location-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .admin-location-coordinates {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .admin-location-coordinates > div {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .admin-delivery-map {
+    height: 320px;
+  }
+
+}
+/* =========================================================
+   DELIVERY ASSIGNMENT - ADMIN
+========================================================= */
+
+.delivery-assignment-admin {
+  margin-top: 24px;
+  padding: 20px;
+
+  border: 1px solid #e1e5e9;
+  border-radius: 12px;
+
+  background: #f8faf9;
+}
+
+.delivery-assignment-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 15px;
+
+  margin-bottom: 15px;
+}
+
+.delivery-assignment-header h3 {
+  margin: 0;
+
+  font-size: 17px;
+  font-weight: 700;
+
+  color: #263238;
+}
+
+.delivery-assignment-header span {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.delivery-assignment-controls {
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+}
+
+.delivery-assignment-controls select {
+  flex: 1;
+
+  min-height: 42px;
+
+  padding: 9px 12px;
+
+  border: 1px solid #cfd6dc;
+  border-radius: 8px;
+
+  background: #ffffff;
+
+  color: #263238;
+
+  font-size: 14px;
+
+  outline: none;
+}
+
+.delivery-assignment-controls select:focus {
+  border-color: #2e7d32;
+}
+
+.delivery-assign-btn {
+  min-height: 42px;
+
+  padding: 9px 18px;
+
+  border: none;
+  border-radius: 8px;
+
+  background: #2e7d32;
+  color: #ffffff;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  white-space: nowrap;
+
+  transition:
+    background 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.delivery-assign-btn:hover:not(:disabled) {
+  background: #256628;
+}
+
+.delivery-assign-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.delivery-assignment-disabled {
+  padding: 12px 14px;
+
+  border-radius: 8px;
+
+  background: #f1f3f4;
+
+  color: #6b7280;
+
+  font-size: 14px;
+}
+
+@media (max-width: 700px) {
+  .delivery-assignment-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .delivery-assign-btn {
+    width: 100%;
+  }
+
+  .delivery-assignment-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
 }

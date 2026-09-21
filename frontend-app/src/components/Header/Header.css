@@ -602,21 +602,56 @@
   .header-search button {
     width: 44px;
   }
-}/* =====================================================
+}
+/* =========================================================
    CART / WISHLIST HEADER WRAPPER
-===================================================== */
+========================================================= */
 
 .header-hover-action {
   position: relative;
   height: 100%;
+
   display: flex;
   align-items: center;
 }
 
 
-/* =====================================================
-   MAIN CART / WISHLIST DROPDOWN
-===================================================== */
+/* =========================================================
+   ACTION BADGE
+========================================================= */
+
+.header-action-badge {
+  position: absolute;
+
+  top: -7px;
+  right: -10px;
+
+  min-width: 18px;
+  height: 18px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0 5px;
+
+  border-radius: 50%;
+
+  background: #198754;
+  color: #ffffff;
+
+  font-size: 10px;
+  font-weight: 700;
+
+  line-height: 1;
+
+  pointer-events: none;
+}
+
+
+/* =========================================================
+   CART / WISHLIST DROPDOWN
+========================================================= */
 
 .header-product-dropdown {
   position: absolute;
@@ -626,12 +661,15 @@
 
   width: 360px;
 
+  overflow: visible;
+
   background: #ffffff;
 
   border: 1px solid #e5e7eb;
   border-radius: 10px;
 
-  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.16);
+  box-shadow:
+    0 12px 30px rgba(15, 23, 42, 0.16);
 
   z-index: 9999;
 
@@ -648,20 +686,23 @@
 }
 
 
-/* OPEN MAIN DROPDOWN */
+/* =========================================================
+   SHOW DROPDOWN
+========================================================= */
 
 .header-hover-action:hover
 .header-product-dropdown {
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
+
   transform: translateY(0);
 }
 
 
-/* =====================================================
-   ARROW
-===================================================== */
+/* =========================================================
+   DROPDOWN ARROW
+========================================================= */
 
 .header-product-dropdown::before {
   content: "";
@@ -680,15 +721,18 @@
   border-top: 1px solid #e5e7eb;
 
   transform: rotate(45deg);
+
+  z-index: -1;
 }
 
 
-/* =====================================================
+/* =========================================================
    DROPDOWN TITLE
-===================================================== */
+========================================================= */
 
 .header-dropdown-title {
   display: flex;
+
   align-items: center;
   justify-content: space-between;
 
@@ -696,10 +740,12 @@
 
   border-bottom: 1px solid #eef0f3;
 
-  font-size: 15px;
-  font-weight: 700;
+  background: #ffffff;
 
   color: #111827;
+
+  font-size: 15px;
+  font-weight: 700;
 }
 
 .header-dropdown-count {
@@ -714,28 +760,38 @@
 
   border-radius: 20px;
 
-  background: #f1f5f9;
+  background: #198754;
+  color: #ffffff;
 
-  color: #475569;
-
-  font-size: 12px;
-  font-weight: 600;
+  font-size: 11px;
+  font-weight: 700;
 }
 
 
-/* =====================================================
+/* =========================================================
    PRODUCT LIST
-===================================================== */
+========================================================= */
 
 .header-product-list {
   max-height: 360px;
+
   overflow-y: auto;
+  overflow-x: visible;
+}
+
+.header-product-list::-webkit-scrollbar {
+  width: 5px;
+}
+
+.header-product-list::-webkit-scrollbar-thumb {
+  background: #ced4da;
+  border-radius: 10px;
 }
 
 
-/* =====================================================
+/* =========================================================
    PRODUCT ITEM
-===================================================== */
+========================================================= */
 
 .header-product-item {
   position: relative;
@@ -751,7 +807,12 @@
 
   cursor: pointer;
 
-  transition: background 0.2s ease;
+  transition:
+    background 0.2s ease;
+}
+
+.header-product-item:last-child {
+  border-bottom: none;
 }
 
 .header-product-item:hover {
@@ -759,82 +820,118 @@
 }
 
 
-/* =====================================================
-   SMALL PRODUCT IMAGE
-===================================================== */
+/* =========================================================
+   PRODUCT IMAGE LINK
+========================================================= */
 
-.header-product-item > img,
-.header-product-placeholder {
-  width: 58px;
-  height: 58px;
+.header-product-image-link {
+  display: flex;
 
   flex: 0 0 58px;
 
-  border-radius: 7px;
+  width: 58px;
+  height: 58px;
 
-  object-fit: cover;
-
-  background: #f8fafc;
-
-  border: 1px solid #e5e7eb;
-}
-
-.header-product-placeholder {
-  display: flex;
   align-items: center;
   justify-content: center;
 
-  color: #94a3b8;
+  overflow: hidden;
 
-  font-size: 20px;
+  border-radius: 7px;
+
+  background: #f8f9fa;
+
+  border: 1px solid #e5e7eb;
+
+  text-decoration: none;
+}
+
+.header-product-image {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: contain;
 }
 
 
-/* =====================================================
+/* =========================================================
+   PRODUCT PLACEHOLDER
+========================================================= */
+
+.header-product-placeholder {
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  height: 100%;
+
+  color: #adb5bd;
+
+  font-size: 20px;
+
+  background: #f8f9fa;
+}
+
+
+/* =========================================================
    BASIC PRODUCT INFO
-===================================================== */
+========================================================= */
 
 .header-product-info {
   min-width: 0;
+
   flex: 1;
 }
 
 .header-product-name {
+  display: -webkit-box;
+
+  margin-bottom: 5px;
+
+  overflow: hidden;
+
+  color: #212529;
+
   font-size: 13px;
   font-weight: 600;
 
-  color: #1f2937;
+  line-height: 1.35;
 
-  line-height: 1.4;
+  text-decoration: none;
 
-  display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+}
 
-  overflow: hidden;
+.header-product-name:hover {
+  color: #198754;
 }
 
 .header-product-price {
   margin-top: 4px;
 
+  color: #198754;
+
   font-size: 13px;
   font-weight: 700;
-
-  color: #111827;
 }
 
 .header-cart-item-meta {
-  margin-top: 3px;
+  margin-bottom: 3px;
+
+  color: #6c757d;
 
   font-size: 11px;
-
-  color: #64748b;
 }
 
 
-/* =====================================================
-   COMPLETE PRODUCT DETAIL HOVER CARD
-===================================================== */
+/* =========================================================
+   COMPLETE PRODUCT DETAIL HOVER
+========================================================= */
 
 .header-product-detail-hover {
   position: absolute;
@@ -853,7 +950,6 @@
   background: #ffffff;
 
   border: 1px solid #e5e7eb;
-
   border-radius: 10px;
 
   box-shadow:
@@ -874,21 +970,25 @@
 }
 
 
-/* SHOW DETAILS */
+/* =========================================================
+   SHOW PRODUCT DETAILS
+========================================================= */
 
 .header-product-item:hover
 .header-product-detail-hover {
   opacity: 1;
+
   visibility: visible;
+
   pointer-events: auto;
 
   transform: translate(0, -50%);
 }
 
 
-/* =====================================================
+/* =========================================================
    DETAIL IMAGE
-===================================================== */
+========================================================= */
 
 .header-detail-image {
   width: 105px;
@@ -906,12 +1006,12 @@
 }
 
 .header-detail-image img {
+  display: block;
+
   width: 100%;
   height: 100%;
 
-  display: block;
-
-  object-fit: cover;
+  object-fit: contain;
 }
 
 .header-detail-placeholder {
@@ -919,6 +1019,7 @@
   height: 100%;
 
   display: flex;
+
   align-items: center;
   justify-content: center;
 
@@ -928,48 +1029,49 @@
 }
 
 
-/* =====================================================
+/* =========================================================
    DETAIL CONTENT
-===================================================== */
+========================================================= */
 
 .header-detail-content {
   min-width: 0;
+
   flex: 1;
 }
 
 .header-detail-content h4 {
   margin: 0 0 5px;
 
-  font-size: 14px;
-  line-height: 1.4;
-
   color: #111827;
 
+  font-size: 14px;
   font-weight: 700;
+
+  line-height: 1.4;
 }
 
 
-/* =====================================================
+/* =========================================================
    DETAIL PRICE
-===================================================== */
+========================================================= */
 
 .header-detail-price {
   margin-bottom: 9px;
 
+  color: #198754;
+
   font-size: 16px;
-
   font-weight: 700;
-
-  color: #2563eb;
 }
 
 
-/* =====================================================
+/* =========================================================
    DETAIL ROW
-===================================================== */
+========================================================= */
 
 .header-detail-row {
   display: flex;
+
   align-items: flex-start;
   justify-content: space-between;
 
@@ -991,9 +1093,9 @@
 }
 
 
-/* =====================================================
+/* =========================================================
    STOCK
-===================================================== */
+========================================================= */
 
 .stock-available {
   color: #15803d !important;
@@ -1004,21 +1106,22 @@
 }
 
 
-/* =====================================================
+/* =========================================================
    RATING
-===================================================== */
+========================================================= */
 
 .header-detail-rating {
   display: flex;
+
   align-items: center;
 
   gap: 5px;
 
   margin: 7px 0;
 
-  font-size: 12px;
-
   color: #475569;
+
+  font-size: 12px;
 }
 
 .header-detail-rating i {
@@ -1026,31 +1129,31 @@
 }
 
 
-/* =====================================================
+/* =========================================================
    DESCRIPTION
-===================================================== */
+========================================================= */
 
 .header-detail-description {
+  display: -webkit-box;
+
   margin: 8px 0;
+
+  overflow: hidden;
+
+  color: #64748b;
 
   font-size: 11px;
 
   line-height: 1.5;
 
-  color: #64748b;
-
-  display: -webkit-box;
-
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
-
-  overflow: hidden;
 }
 
 
-/* =====================================================
+/* =========================================================
    VIEW PRODUCT BUTTON
-===================================================== */
+========================================================= */
 
 .header-detail-button {
   display: block;
@@ -1061,49 +1164,57 @@
 
   border-radius: 6px;
 
-  text-align: center;
-
-  background: #2563eb;
+  background: #198754;
 
   color: #ffffff;
 
-  text-decoration: none;
-
   font-size: 12px;
-
   font-weight: 600;
 
-  transition: background 0.2s ease;
+  text-align: center;
+
+  text-decoration: none;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
 }
 
 .header-detail-button:hover {
-  background: #1d4ed8;
+  background: #146c43;
+
+  color: #ffffff;
+
+  transform: translateY(-1px);
 }
 
 
-/* =====================================================
+/* =========================================================
    MORE ITEMS
-===================================================== */
+========================================================= */
 
 .header-more-items {
   padding: 9px 16px;
 
-  text-align: center;
+  background: #f8fafc;
 
-  font-size: 12px;
+  border-top: 1px solid #eeeeee;
 
   color: #64748b;
 
-  background: #f8fafc;
+  font-size: 12px;
+
+  text-align: center;
 }
 
 
-/* =====================================================
+/* =========================================================
    CART TOTAL
-===================================================== */
+========================================================= */
 
 .header-cart-total {
   display: flex;
+
   align-items: center;
   justify-content: space-between;
 
@@ -1111,85 +1222,102 @@
 
   border-top: 1px solid #e5e7eb;
 
-  font-size: 13px;
+  background: #fafafa;
 
   color: #475569;
+
+  font-size: 13px;
 }
 
 .header-cart-total strong {
-  font-size: 15px;
+  color: #198754;
 
-  color: #111827;
+  font-size: 16px;
+  font-weight: 700;
 }
 
 
-/* =====================================================
+/* =========================================================
    DROPDOWN FOOTER
-===================================================== */
+========================================================= */
 
 .header-dropdown-footer {
-  display: block;
+  display: flex;
 
-  margin: 12px 16px;
+  align-items: center;
+  justify-content: center;
+
+  width: calc(100% - 24px);
+
+  box-sizing: border-box;
+
+  margin: 12px;
 
   padding: 10px;
 
   border-radius: 6px;
 
-  text-align: center;
-
-  background: #2563eb;
+  background: #198754;
 
   color: #ffffff;
 
   font-size: 13px;
-
   font-weight: 600;
 
   text-decoration: none;
 
-  transition: background 0.2s ease;
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
 }
 
 .header-dropdown-footer:hover {
-  background: #1d4ed8;
+  background: #146c43;
+
+  color: #ffffff;
+
+  transform: translateY(-1px);
 }
 
 
-/* =====================================================
+/* =========================================================
    EMPTY STATE
-===================================================== */
+========================================================= */
 
 .header-dropdown-empty {
-  padding: 30px 20px;
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  padding: 35px 20px;
 
   text-align: center;
 }
 
 .header-dropdown-empty > i {
-  display: block;
+  margin-bottom: 12px;
 
-  margin-bottom: 10px;
+  color: #adb5bd;
 
-  font-size: 28px;
-
-  color: #94a3b8;
+  font-size: 30px;
 }
 
 .header-dropdown-empty p {
   margin: 0 0 12px;
 
-  font-size: 13px;
+  color: #6c757d;
 
-  color: #64748b;
+  font-size: 13px;
 }
 
 .header-dropdown-empty a {
+  color: #198754;
+
   font-size: 13px;
-
   font-weight: 600;
-
-  color: #2563eb;
 
   text-decoration: none;
 }
@@ -1199,39 +1327,106 @@
 }
 
 
-/* =====================================================
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 900px) {
+
+  .header-product-detail-hover {
+    width: 320px;
+  }
+
+}
+
+
+/* =========================================================
    MOBILE
-===================================================== */
+========================================================= */
 
 @media (max-width: 768px) {
+
   .header-product-dropdown {
     position: fixed;
 
     top: 70px;
+
     right: 10px;
     left: 10px;
 
     width: auto;
+
+    max-width: none;
   }
 
   .header-product-dropdown::before {
     display: none;
   }
 
-  .header-product-detail-hover {
-    position: fixed;
+  /*
+    On touch devices the hover detail should not
+    cover the entire screen unexpectedly.
+  */
 
-    top: 50%;
-    left: 10px;
+  .header-product-detail-hover {
+    position: absolute;
+
     right: 10px;
+    left: 10px;
+
+    top: calc(100% + 8px);
 
     width: auto;
 
-    transform: translateY(-50%);
+    transform: translateY(8px);
   }
 
   .header-product-item:hover
   .header-product-detail-hover {
-    transform: translateY(-50%);
+    transform: translateY(0);
   }
+
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 480px) {
+
+  .header-product-dropdown {
+    top: 65px;
+
+    right: 8px;
+    left: 8px;
+  }
+
+  .header-product-item {
+    padding: 10px;
+  }
+
+  .header-product-image-link {
+    flex-basis: 52px;
+
+    width: 52px;
+    height: 52px;
+  }
+
+  .header-product-detail-hover {
+    right: 8px;
+    left: 8px;
+
+    padding: 12px;
+
+    gap: 10px;
+  }
+
+  .header-detail-image {
+    width: 80px;
+    height: 80px;
+
+    flex-basis: 80px;
+  }
+
 }

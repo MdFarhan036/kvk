@@ -4,11 +4,18 @@ import { useNavigate } from "react-router-dom";
 import api from "../api";
 import "./CustomerProfile.css";
 
-// 💡 Use axios instance instead of axios
-
 export const CustomerProfile = () => {
-  const { customer, logout, setCustomer } = useCustomerAuth();
+  const {
+    customer,
+    logout,
+    setCustomer,
+  } = useCustomerAuth();
+
   const navigate = useNavigate();
+
+  // =====================================================
+  // FORM STATE
+  // =====================================================
 
   const [formData, setFormData] = useState({
     customerName: "",
@@ -20,228 +27,380 @@ export const CustomerProfile = () => {
     email: "",
   });
 
-  const [showPasswordBox, setShowPasswordBox] = useState(false);
-  const [passwordData, setPasswordData] = useState({
-    oldPassword: "",
-    newPassword: "",
-    confirmPassword: "",
-  });
-
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
 
-  // Load logged-in customer
+  // =====================================================
+  // LOAD CUSTOMER
+  // =====================================================
+
   useEffect(() => {
     if (customer) {
       setFormData({
-        customerName: customer.customerName || customer.name || "",
-        address: customer.address || "",
-        city: customer.city || "",
-        state: customer.state || "",
-        pincode: customer.pincode || "",
-        mobile: customer.mobile || "",
-        email: customer.email || "",
+        customerName:
+          customer.customerName ||
+          customer.name ||
+          "",
+
+        address:
+          customer.address ||
+          "",
+
+        city:
+          customer.city ||
+          "",
+
+        state:
+          customer.state ||
+          "",
+
+        pincode:
+          customer.pincode ||
+          "",
+
+        mobile:
+          customer.mobile ||
+          "",
+
+        email:
+          customer.email ||
+          "",
       });
+
+      setLoading(false);
+    } else {
       setLoading(false);
     }
   }, [customer]);
 
-  // Profile input change
+  // =====================================================
+  // INPUT CHANGE
+  // =====================================================
+
   const handleChange = (e) => {
-    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    const {
+      name,
+      value,
+    } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
-  // Password input change
-  const handlePasswordChange = (e) => {
-    setPasswordData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-  };
+  // =====================================================
+  // UPDATE PROFILE
+  // =====================================================
 
-  // ✅ Update profile
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
-      const res = await api.put(`/customers/profile`, formData);
-      alert("✅ Profile updated successfully!");
-      setCustomer(res.data);
+      setSaving(true);
+
+      const res = await api.put(
+        "/customers/profile",
+        {
+          customerName: formData.customerName,
+          address: formData.address,
+          city: formData.city,
+          state: formData.state,
+          pincode: formData.pincode,
+          mobile: formData.mobile,
+        }
+      );
+
+      const updatedCustomer =
+        res?.data?.customer ||
+        res?.data;
+
+      if (updatedCustomer) {
+        setCustomer(updatedCustomer);
+      }
+
+      alert(
+        "Profile updated successfully!"
+      );
     } catch (err) {
-      console.error("❌ Profile update error:", err);
-      alert(err.response?.data?.error || "Profile update failed");
+      console.error(
+        "Profile update error:",
+        err
+      );
+
+      alert(
+        err?.response?.data?.error ||
+        err?.response?.data?.message ||
+        "Profile update failed"
+      );
+    } finally {
+      setSaving(false);
     }
   };
 
-  // ✅ Change password
-  const handlePasswordSubmit = async (e) => {
-    e.preventDefault();
+  // =====================================================
+  // LOGOUT
+  // =====================================================
 
-    const { oldPassword, newPassword, confirmPassword } = passwordData;
-
-    if (!oldPassword || !newPassword || !confirmPassword) {
-      return alert("All password fields are required");
-    }
-
-    if (newPassword.length < 6) {
-      return alert("New password must be at least 6 characters");
-    }
-
-    if (newPassword !== confirmPassword) {
-      return alert("New password and confirm password do not match");
-    }
-
+  const handleLogout = async () => {
     try {
-      await api.put("/customers/change-password", {
-        oldPassword,
-        newPassword,
+      await logout();
+    } catch (error) {
+      console.error(
+        "Logout failed:",
+        error
+      );
+    } finally {
+      navigate("/login", {
+        replace: true,
       });
-
-      alert("✅ Password updated successfully!");
-
-      setPasswordData({
-        oldPassword: "",
-        newPassword: "",
-        confirmPassword: "",
-      });
-
-      setShowPasswordBox(false);
-    } catch (err) {
-      console.error("❌ Password update error:", err);
-      alert(err.response?.data?.error || "Password change failed");
     }
   };
 
-  if (loading) return <div className="customer-profile-loading">Loading profile...</div>;
+  // =====================================================
+  // LOADING
+  // =====================================================
+
+  if (loading) {
+    return (
+      <div className="customer-profile-loading">
+        Loading profile...
+      </div>
+    );
+  }
+
+  // =====================================================
+  // UI
+  // =====================================================
 
   return (
     <div className="customer-profile-page">
+
       <div className="customer-profile-card">
-        {/* HEADER */}
+
+        {/* =================================================
+            HEADER
+        ================================================= */}
+
         <div className="customer-profile-header">
+
           <div className="avatar-circle">
-            {formData.customerName?.charAt(0)?.toUpperCase() || "U"}
+            {formData.customerName
+              ?.charAt(0)
+              ?.toUpperCase() || "U"}
           </div>
+
           <div>
-            <h2 className="customer-profile-title">My Profile</h2>
-            <p className="customer-profile-subtitle">{formData.email}</p>
+            <h2 className="customer-profile-title">
+              My Profile
+            </h2>
+
+            <p className="customer-profile-subtitle">
+              {formData.email}
+            </p>
           </div>
+
         </div>
 
-        {/* PROFILE FORM */}
-        <form onSubmit={handleSubmit} className="customer-form">
+        {/* =================================================
+            PROFILE FORM
+        ================================================= */}
+
+        <form
+          onSubmit={handleSubmit}
+          className="customer-form"
+        >
+
           <div className="customer-form-grid">
+
+            {/* FULL NAME */}
             <div className="form-group">
-              <label>Full Name</label>
+
+              <label htmlFor="customerName">
+                Full Name
+              </label>
+
               <input
+                id="customerName"
                 type="text"
                 name="customerName"
-                value={formData.customerName}
+                value={
+                  formData.customerName
+                }
                 onChange={handleChange}
+                placeholder="Enter your full name"
               />
+
             </div>
 
+            {/* MOBILE */}
             <div className="form-group">
-              <label>Mobile Number</label>
+
+              <label htmlFor="mobile">
+                Mobile Number
+              </label>
+
               <input
-                type="text"
+                id="mobile"
+                type="tel"
                 name="mobile"
-                value={formData.mobile}
+                value={
+                  formData.mobile
+                }
                 onChange={handleChange}
+                placeholder="Enter mobile number"
               />
+
             </div>
 
+            {/* EMAIL */}
             <div className="form-group full-width">
-              <label>Email</label>
-              <input type="email" name="email" value={formData.email} disabled />
-              <small className="field-hint">Email cannot be changed</small>
-            </div>
 
-            <div className="form-group full-width">
-              <label>Address</label>
+              <label htmlFor="email">
+                Email
+              </label>
+
               <input
+                id="email"
+                type="email"
+                name="email"
+                value={
+                  formData.email
+                }
+                disabled
+              />
+
+              <small className="field-hint">
+                Email cannot be changed
+              </small>
+
+            </div>
+
+            {/* ADDRESS */}
+            <div className="form-group full-width">
+
+              <label htmlFor="address">
+                Address
+              </label>
+
+              <input
+                id="address"
                 type="text"
                 name="address"
-                value={formData.address}
+                value={
+                  formData.address
+                }
                 onChange={handleChange}
+                placeholder="Enter your address"
               />
+
             </div>
 
+            {/* CITY */}
             <div className="form-group">
-              <label>City</label>
-              <input type="text" name="city" value={formData.city} onChange={handleChange} />
-            </div>
 
-            <div className="form-group">
-              <label>State</label>
-              <input type="text" name="state" value={formData.state} onChange={handleChange} />
-            </div>
+              <label htmlFor="city">
+                City
+              </label>
 
-            <div className="form-group">
-              <label>Pincode</label>
               <input
+                id="city"
+                type="text"
+                name="city"
+                value={
+                  formData.city
+                }
+                onChange={handleChange}
+                placeholder="Enter city"
+              />
+
+            </div>
+
+            {/* STATE */}
+            <div className="form-group">
+
+              <label htmlFor="state">
+                State
+              </label>
+
+              <input
+                id="state"
+                type="text"
+                name="state"
+                value={
+                  formData.state
+                }
+                onChange={handleChange}
+                placeholder="Enter state"
+              />
+
+            </div>
+
+            {/* PINCODE */}
+            <div className="form-group">
+
+              <label htmlFor="pincode">
+                Pincode
+              </label>
+
+              <input
+                id="pincode"
                 type="text"
                 name="pincode"
-                value={formData.pincode}
+                value={
+                  formData.pincode
+                }
                 onChange={handleChange}
+                placeholder="Enter pincode"
+                maxLength={6}
               />
+
             </div>
+
           </div>
 
+          {/* =================================================
+              ACTIONS
+          ================================================= */}
+
           <div className="customer-profile-actions">
-            <button type="submit" className="btn primary">Save Changes</button>
+
+            <button
+              type="submit"
+              className="btn primary"
+              disabled={saving}
+            >
+              {saving
+                ? "Saving..."
+                : "Save Changes"}
+            </button>
 
             <button
               type="button"
               className="btn secondary"
-              onClick={() => setShowPasswordBox(!showPasswordBox)}
+              onClick={() =>
+                navigate("/account/password")
+              }
             >
-              {showPasswordBox ? "Cancel Password Change" : "Change Password"}
+              Change Password
             </button>
 
             <button
               type="button"
               className="btn ghost"
-              onClick={() => {
-                logout();
-                navigate("/");
-              }}
+              onClick={handleLogout}
             >
               Logout
             </button>
+
           </div>
+
         </form>
 
-        {/* PASSWORD CHANGE BOX */}
-        {showPasswordBox && (
-          <form className="password-box" onSubmit={handlePasswordSubmit}>
-            <h3>Change Password</h3>
-
-            <input
-              type="password"
-              name="oldPassword"
-              placeholder="Current Password"
-              value={passwordData.oldPassword}
-              onChange={handlePasswordChange}
-            />
-
-            <input
-              type="password"
-              name="newPassword"
-              placeholder="New Password"
-              value={passwordData.newPassword}
-              onChange={handlePasswordChange}
-            />
-
-            <input
-              type="password"
-              name="confirmPassword"
-              placeholder="Confirm New Password"
-              value={passwordData.confirmPassword}
-              onChange={handlePasswordChange}
-            />
-
-            <button type="submit" className="btn primary full">
-              Update Password
-            </button>
-          </form>
-        )}
       </div>
+
     </div>
   );
 };
+
+export default CustomerProfile;

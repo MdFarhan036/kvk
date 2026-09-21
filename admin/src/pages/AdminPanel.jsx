@@ -180,6 +180,12 @@ export const AdminPanel = () => {
                 {!isCollapsed && <p>Users</p>}
               </li>
             </Link>
+            <Link to="/delivery-persons">
+              <li className={`admin-box ${activeTab === 3 ? "activetab" : ""}`} onClick={() => handleTabClick(3)}>
+                <img src={checkoutimg} alt="Delivery persons" />
+                {!isCollapsed && <p>Delivery persons</p>}
+              </li>
+            </Link>
             <Link to="/brands/brandsTable">
               <li className={`admin-box ${activeTab === 3 ? "activetab" : ""}`}>
                 <img src={checkoutimg} alt="Brands" />

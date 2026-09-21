@@ -34,7 +34,8 @@ import adminAuthRoutes from "./routes/adminAuthRoutes.js";
 import transactionRoutes from "./routes/transactionRoutes.js";
 import blogRoutes from "./routes/blogRoutes.js";
 import adminBlogRoutes from "./routes/adminBlogRoutes.js";
-
+import customerAddressRoutes from "./routes/customerAddressRoutes.js";
+import deliveryRoutes from "./routes/deliveryRoutes.js";
 // ================================
 // APP
 // ================================
@@ -49,9 +50,12 @@ const __dirname = path.dirname(__filename);
 app.use(
   cors({
     origin: [
+      
       "http://localhost:5173",
       "http://localhost:5174",
+      "http://localhost:8081",
       "http://localhost:5175",
+      "http://localhost:5176",
     ],
     credentials: true,
     methods: [
@@ -188,7 +192,11 @@ app.use(
   verifyCustomer,
   wishlistRoutes
 );
-
+app.use(
+  "/api/customer/addresses",
+  customerAddressRoutes
+);
+app.use("/api/delivery", deliveryRoutes);
 // ================================
 // 404 HANDLER
 // ================================

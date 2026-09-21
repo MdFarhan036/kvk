@@ -151,3 +151,447 @@
   .cart-summary { position: static; }
   .table-wishlist th:nth-child(2), .table-wishlist td:nth-child(2) { display: none; }
 }
+/* =========================================================
+   CHECKOUT DELIVERY ADDRESS
+========================================================= */
+
+.checkout-address-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 15px;
+}
+
+
+/* =========================================================
+   ADDRESS CARD
+========================================================= */
+
+.checkout-address-card {
+  position: relative;
+  padding: 18px;
+  border: 1px solid #dedede;
+  border-radius: 10px;
+  background: #ffffff;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.checkout-address-card:hover {
+  border-color: #198754;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
+}
+
+.checkout-address-card.selected {
+  border: 2px solid #198754;
+  background: #f5fbf7;
+  box-shadow: 0 3px 12px rgba(25, 135, 84, 0.08);
+}
+
+
+/* =========================================================
+   ADDRESS HEADER
+========================================================= */
+
+.checkout-address-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.checkout-address-radio {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0;
+  color: #222;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.checkout-address-radio input {
+  width: 17px;
+  height: 17px;
+  margin: 0;
+  accent-color: #198754;
+  cursor: pointer;
+}
+
+
+/* =========================================================
+   DEFAULT BADGE
+========================================================= */
+
+.checkout-default-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 4px 9px;
+
+  border-radius: 20px;
+
+  background: #e8f6ee;
+  color: #198754;
+
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+
+/* =========================================================
+   ADDRESS DETAILS
+========================================================= */
+
+.checkout-address-details {
+  padding-left: 26px;
+  color: #555;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.checkout-address-details strong {
+  display: inline-block;
+  margin-right: 12px;
+  color: #222;
+  font-size: 15px;
+}
+
+.checkout-address-details span {
+  color: #666;
+  font-size: 13px;
+}
+
+.checkout-address-details p {
+  margin: 3px 0;
+}
+
+
+/* =========================================================
+   MANAGE ADDRESS BUTTON
+========================================================= */
+
+.checkout-change-address {
+  margin-top: 12px;
+  margin-left: 26px;
+
+  padding: 7px 12px;
+
+  border: 1px solid #198754;
+  border-radius: 5px;
+
+  background: #ffffff;
+  color: #198754;
+
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.checkout-change-address:hover {
+  background: #198754;
+  color: #ffffff;
+}
+
+
+/* =========================================================
+   ADD / MANAGE ADDRESS
+========================================================= */
+
+.checkout-add-address {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-top: 15px;
+
+  padding: 10px 16px;
+
+  border: 1px dashed #198754;
+  border-radius: 6px;
+
+  background: #f8fffb;
+  color: #198754;
+
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.checkout-add-address:hover {
+  background: #eaf8f0;
+  border-color: #146c43;
+}
+
+
+/* =========================================================
+   NO ADDRESS
+========================================================= */
+
+.checkout-no-address {
+  margin-top: 15px;
+  padding: 22px;
+
+  border: 1px dashed #cccccc;
+  border-radius: 8px;
+
+  background: #fafafa;
+
+  text-align: center;
+}
+
+.checkout-no-address p {
+  margin: 0 0 14px;
+  color: #666;
+  font-size: 14px;
+}
+
+.checkout-no-address button {
+  padding: 10px 16px;
+
+  border: none;
+  border-radius: 6px;
+
+  background: #198754;
+  color: #ffffff;
+
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: background 0.2s ease;
+}
+
+.checkout-no-address button:hover {
+  background: #146c43;
+}
+
+
+/* =========================================================
+   LOADING
+========================================================= */
+
+.checkout-address-loading {
+  margin-top: 15px;
+  padding: 20px;
+
+  border-radius: 8px;
+
+  background: #f7f7f7;
+
+  color: #666;
+  font-size: 14px;
+  text-align: center;
+}
+
+
+/* =========================================================
+   ADDITIONAL INFORMATION
+========================================================= */
+
+.checkout-additional-info {
+  margin-top: 25px;
+}
+
+.checkout-additional-info label {
+  display: block;
+  margin-bottom: 8px;
+
+  color: #333;
+
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.checkout-additional-info textarea {
+  width: 100%;
+  min-height: 100px;
+
+  padding: 12px;
+
+  box-sizing: border-box;
+
+  border: 1px solid #ddd;
+  border-radius: 7px;
+
+  background: #ffffff;
+
+  color: #333;
+
+  font-family: inherit;
+  font-size: 14px;
+
+  resize: vertical;
+
+  outline: none;
+
+  transition: border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.checkout-additional-info textarea:focus {
+  border-color: #198754;
+  box-shadow: 0 0 0 3px rgba(25, 135, 84, 0.08);
+}
+
+
+/* =========================================================
+   PLACE ORDER BUTTON
+========================================================= */
+
+.btn-place-order {
+  width: 100%;
+
+  margin-top: 20px;
+  padding: 13px 18px;
+
+  border: none;
+  border-radius: 7px;
+
+  background: #198754;
+  color: #ffffff;
+
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    transform 0.1s ease,
+    opacity 0.2s ease;
+}
+
+.btn-place-order:hover:not(:disabled) {
+  background: #146c43;
+}
+
+.btn-place-order:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.btn-place-order:disabled {
+  background: #b8c8bf;
+  color: #ffffff;
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+
+/* =========================================================
+   PAYMENT METHOD
+========================================================= */
+
+.cart-summary label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  color: #444;
+
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.cart-summary label input[type="radio"] {
+  width: 15px;
+  height: 15px;
+
+  margin: 0;
+
+  accent-color: #198754;
+
+  cursor: pointer;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 768px) {
+
+  .checkout-address-card {
+    padding: 15px;
+  }
+
+  .checkout-address-details {
+    padding-left: 0;
+    margin-top: 8px;
+  }
+
+  .checkout-change-address {
+    margin-left: 0;
+  }
+
+  .checkout-address-header {
+    align-items: flex-start;
+  }
+
+  .checkout-default-badge {
+    flex-shrink: 0;
+  }
+
+  .checkout-add-address {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .checkout-additional-info {
+    margin-top: 20px;
+  }
+}
+
+
+@media (max-width: 480px) {
+
+  .checkout-address-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .checkout-address-card.selected {
+    border-width: 2px;
+  }
+
+  .checkout-address-details {
+    font-size: 13px;
+  }
+
+  .checkout-address-details strong {
+    display: block;
+    margin-right: 0;
+    margin-bottom: 2px;
+  }
+
+  .checkout-address-radio {
+    font-size: 14px;
+  }
+
+  .cart-summary label {
+    font-size: 12px;
+  }
+
+}

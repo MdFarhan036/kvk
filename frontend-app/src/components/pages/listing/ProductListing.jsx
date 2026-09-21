@@ -269,7 +269,7 @@ export const ProductListing = () => {
             } else if (
               product.brand &&
               typeof product.brand ===
-                "object"
+              "object"
             ) {
               productBrand =
                 product.brand.name ||
@@ -341,13 +341,13 @@ export const ProductListing = () => {
         (a, b) =>
           new Date(
             b.createdAt ||
-              b.created_at ||
-              0
+            b.created_at ||
+            0
           ) -
           new Date(
             a.createdAt ||
-              a.created_at ||
-              0
+            a.created_at ||
+            0
           )
       );
     }
@@ -410,7 +410,7 @@ export const ProductListing = () => {
   const displayCategoryName =
     categoryName
       ? categoryName.charAt(0).toUpperCase() +
-        categoryName.slice(1)
+      categoryName.slice(1)
       : "Products";
 
   // =========================================
@@ -460,43 +460,37 @@ export const ProductListing = () => {
 
           {/* CATEGORIES */}
 
-          <CategoriesPage
-            categories={categories}
-            products={products}
-          />
+          <div className="listing-filters">
 
-          {/* PRICE */}
+            <CategoriesPage
+              categories={categories}
+              products={products}
+            />
 
-          <PriceFilterPage
-            minPrice={minPrice}
-            maxPrice={maxPrice}
-            setMinPrice={setMinPrice}
-            setMaxPrice={setMaxPrice}
-          />
+            <PriceFilterPage
+              minPrice={minPrice}
+              maxPrice={maxPrice}
+              setMinPrice={setMinPrice}
+              setMaxPrice={setMaxPrice}
+            />
 
-          {/* BRAND */}
+            <BrandFilterPage
+              brands={brands}
+              selectedBrands={selectedBrands}
+              setSelectedBrands={
+                setSelectedBrands
+              }
+            />
 
-          <BrandFilterPage
-            brands={brands}
-            selectedBrands={selectedBrands}
-            setSelectedBrands={
-              setSelectedBrands
-            }
-          />
+            <StockFilterPage
+              selectedStock={selectedStock}
+              setSelectedStock={
+                setSelectedStock
+              }
+              stockSummary={stockSummary}
+            />
 
-          {/* STOCK */}
-
-          <StockFilterPage
-            selectedStock={selectedStock}
-            setSelectedStock={
-              setSelectedStock
-            }
-            stockSummary={stockSummary}
-          />
-
-          {/* =========================================
-              RELATED PRODUCTS
-          ========================================= */}
+          </div>
 
           <div className="sidebar-category-card related-products-sidebar">
 
@@ -504,7 +498,8 @@ export const ProductListing = () => {
               className="related-products-sidebar-header"
               onClick={() =>
                 setIsRelatedVisible(
-                  !isRelatedVisible
+                  (previous) =>
+                    !previous
                 )
               }
             >
@@ -523,12 +518,16 @@ export const ProductListing = () => {
               <div className="related-products-sidebar-list">
 
                 {relatedProducts.length >
-                0 ? (
+                  0 ? (
                   relatedProducts.map(
                     (product) => (
                       <RelatedProductCard
-                        key={product.id}
-                        product={product}
+                        key={
+                          product.id
+                        }
+                        product={
+                          product
+                        }
                       />
                     )
                   )
@@ -544,9 +543,9 @@ export const ProductListing = () => {
 
           </div>
 
-          {/* =========================================
-              FILTER CONTROLS
-          ========================================= */}
+          {/* =================================================
+              FILTER ACTIONS
+          ================================================= */}
 
           <div className="sidebar-category-card">
 
@@ -554,7 +553,8 @@ export const ProductListing = () => {
               type="button"
               onClick={() =>
                 setIsFilterVisible(
-                  !isFilterVisible
+                  (previous) =>
+                    !previous
                 )
               }
             >
@@ -566,7 +566,17 @@ export const ProductListing = () => {
             {isFilterVisible && (
               <button
                 type="button"
-                onClick={clearFilters}
+                onClick={() => {
+                  clearFilters();
+
+                  setIsOpenDropdown(
+                    false
+                  );
+
+                  setIsOpenDropdown2(
+                    false
+                  );
+                }}
               >
                 Clear All Filters
               </button>
@@ -576,42 +586,48 @@ export const ProductListing = () => {
 
         </div>
 
-        {/* =========================================
-            PRODUCTS
-        ========================================= */}
+        {/* =================================================
+            PRODUCTS + SORT + PAGINATION
+            HomeProduct handles pagination.
+        ================================================= */}
 
         <HomeProduct
           products={
             filteredProducts
           }
+
           categoryName={
             categoryName
           }
-          handleAddToWishlist={
-            addToWishlist
-          }
-          handleAddToCart={() => {}}
+
           itemsPerPage={
             itemsPerPage
           }
+
           setItemsPerPage={
             setItemsPerPage
           }
+
           sortOption={
             sortOption
           }
+
           setSortOption={
             setSortOption
           }
+
           isOpenDropdown={
             isOpenDropdown
           }
+
           setIsOpenDropdown={
             setIsOpenDropdown
           }
+
           isOpenDropdown2={
             isOpenDropdown2
           }
+
           setIsOpenDropdown2={
             setIsOpenDropdown2
           }

@@ -1,351 +1,974 @@
-import { useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+
+import {
+  MapContainer,
+  Marker,
+  Popup,
+  TileLayer,
+  useMap,
+} from "react-leaflet";
+
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
 
 import api from "../api.js";
 
 import "./OrderTracking.css";
 
-export const OrderTracking = () => {
-  const [orderId, setOrderId] = useState("");
-  const [orderData, setOrderData] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [errorMsg, setErrorMsg] = useState("");
+// =====================================================
+// FIX LEAFLET DEFAULT MARKER ICON
+// =====================================================
 
-  // ============================================
-  // TRACK ORDER
-  // ============================================
+delete L.Icon.Default.prototype._getIconUrl;
 
-  const handleTrackOrder = async () => {
-    if (!orderId.trim()) {
-      setErrorMsg("Please enter a valid order ID.");
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl:
+    "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
+
+  iconUrl:
+    "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+
+  shadowUrl:
+    "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+});
+
+// =====================================================
+// DELIVERY ICON
+// =====================================================
+
+const deliveryIcon = new L.DivIcon({
+  className: "delivery-marker-wrapper",
+  html: `
+    <div class="delivery-marker">
+      🚚
+    </div>
+  `,
+  iconSize: [42, 42],
+  iconAnchor: [21, 21],
+  popupAnchor: [0, -21],
+});
+
+// =====================================================
+// CUSTOMER DESTINATION ICON
+// =====================================================
+
+const destinationIcon = new L.DivIcon({
+  className: "destination-marker-wrapper",
+  html: `
+    <div class="destination-marker">
+      📍
+    </div>
+  `,
+  iconSize: [42, 42],
+  iconAnchor: [21, 42],
+  popupAnchor: [0, -42],
+});
+
+// =====================================================
+// MAP AUTO FIT
+// =====================================================
+
+const TrackingMapController = ({
+  deliveryPosition,
+  destinationPosition,
+}) => {
+  const map = useMap();
+
+  useEffect(() => {
+    const positions = [];
+
+    if (
+      Array.isArray(deliveryPosition) &&
+      deliveryPosition.length === 2
+    ) {
+      positions.push(deliveryPosition);
+    }
+
+    if (
+      Array.isArray(destinationPosition) &&
+      destinationPosition.length === 2
+    ) {
+      positions.push(destinationPosition);
+    }
+
+    if (positions.length === 0) {
       return;
     }
 
-    try {
-      setLoading(true);
-      setErrorMsg("");
-      setOrderData(null);
-
-      const { data } = await api.get(
-        `/orders/${encodeURIComponent(
-          orderId.trim()
-        )}`
+    if (positions.length === 1) {
+      map.setView(
+        positions[0],
+        15,
+        {
+          animate: true,
+        }
       );
 
-      if (!data) {
-        setErrorMsg(
-          "No order found with this ID."
-        );
-      } else {
-        setOrderData(data);
-      }
-    } catch (err) {
-      console.error(
-        "❌ Error fetching order status:",
-        err
-      );
-
-      setErrorMsg(
-        err.response?.data?.message ||
-          "Failed to fetch order. Please check the ID or try again later."
-      );
-    } finally {
-      setLoading(false);
+      return;
     }
-  };
 
-  // ============================================
-  // FORMAT PRICE
-  // ============================================
+    const bounds = L.latLngBounds(
+      positions
+    );
 
-  const formatPrice = (value) => {
-    const amount = Number(value || 0);
+    map.fitBounds(
+      bounds,
+      {
+        padding: [50, 50],
+        maxZoom: 15,
+        animate: true,
+      }
+    );
+  }, [
+    map,
+    deliveryPosition,
+    destinationPosition,
+  ]);
 
-    return `₹${amount.toLocaleString("en-IN", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    })}`;
-  };
+  return null;
+};
 
-  // ============================================
+// =====================================================
+// COMPONENT
+// =====================================================
+
+export const OrderTracking = () => {
+  const navigate = useNavigate();
+
+  const { orderId } = useParams();
+
+  const [trackingData, setTrackingData] =
+    useState(null);
+
+  const [loading, setLoading] =
+    useState(true);
+
+  const [errorMsg, setErrorMsg] =
+    useState("");
+
+  const [lastUpdated, setLastUpdated] =
+    useState(null);
+
+  // =====================================================
+  // FETCH TRACKING
+  // =====================================================
+
+  const fetchTracking = useCallback(
+    async (showLoader = false) => {
+      if (!orderId) {
+        setErrorMsg(
+          "Invalid order ID."
+        );
+
+        setLoading(false);
+
+        return;
+      }
+
+      try {
+        if (showLoader) {
+          setLoading(true);
+        }
+
+        setErrorMsg("");
+
+        const { data } =
+          await api.get(
+            `/delivery/tracking/${encodeURIComponent(
+              orderId
+            )}`
+          );
+
+        setTrackingData(data);
+
+        setLastUpdated(
+          new Date()
+        );
+      } catch (err) {
+        console.error(
+          "❌ Failed to fetch order tracking:",
+          err
+        );
+
+        const status =
+          err?.response?.status;
+
+        if (status === 401) {
+          setErrorMsg(
+            "Please login to track this order."
+          );
+        } else if (status === 403) {
+          setErrorMsg(
+            "You are not authorized to track this order."
+          );
+        } else if (status === 404) {
+          setErrorMsg(
+            "Order tracking information was not found."
+          );
+        } else {
+          setErrorMsg(
+            err?.response?.data?.message ||
+              err?.response?.data?.error ||
+              "Unable to load tracking information."
+          );
+        }
+      } finally {
+        if (showLoader) {
+          setLoading(false);
+        }
+      }
+    },
+    [orderId]
+  );
+
+  // =====================================================
+  // INITIAL FETCH
+  // =====================================================
+
+  useEffect(() => {
+    fetchTracking(true);
+  }, [fetchTracking]);
+
+  // =====================================================
+  // LIVE POLLING
+  // =====================================================
+
+  useEffect(() => {
+    if (!orderId) {
+      return;
+    }
+
+    const interval =
+      setInterval(() => {
+        fetchTracking(false);
+      }, 5000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [
+    orderId,
+    fetchTracking,
+  ]);
+
+  // =====================================================
+  // NORMALIZE RESPONSE
+  // =====================================================
+
+  const normalized = useMemo(() => {
+    if (!trackingData) {
+      return {
+        order: null,
+        assignment: null,
+        destination: null,
+        currentLocation: null,
+      };
+    }
+
+    return {
+      order:
+        trackingData.order ||
+        trackingData.data?.order ||
+        null,
+
+      assignment:
+        trackingData.assignment ||
+        trackingData.data?.assignment ||
+        null,
+
+      destination:
+        trackingData.destination ||
+        trackingData.orderAddress ||
+        trackingData.data?.destination ||
+        trackingData.data?.orderAddress ||
+        null,
+
+      currentLocation:
+        trackingData.currentLocation ||
+        trackingData.latestLocation ||
+        trackingData.deliveryLocation ||
+        trackingData.data?.currentLocation ||
+        trackingData.data?.latestLocation ||
+        null,
+    };
+  }, [trackingData]);
+
+  // =====================================================
+  // DATA
+  // =====================================================
+
+  const order =
+    normalized.order;
+
+  const assignment =
+    normalized.assignment;
+
+  const destination =
+    normalized.destination;
+
+  const currentLocation =
+    normalized.currentLocation;
+
+  // =====================================================
+  // COORDINATES
+  // =====================================================
+
+  const destinationPosition =
+    destination?.latitude != null &&
+    destination?.longitude != null
+      ? [
+          Number(destination.latitude),
+          Number(destination.longitude),
+        ]
+      : null;
+
+  const deliveryPosition =
+    currentLocation?.latitude != null &&
+    currentLocation?.longitude != null
+      ? [
+          Number(currentLocation.latitude),
+          Number(currentLocation.longitude),
+        ]
+      : null;
+
+  const mapCenter =
+    deliveryPosition ||
+    destinationPosition ||
+    [26.9124, 75.7873];
+
+  // =====================================================
   // FORMAT DATE
-  // ============================================
+  // =====================================================
 
-  const formatDate = (date) => {
-    if (!date) return "N/A";
-
-    const parsedDate = new Date(date);
-
-    if (Number.isNaN(parsedDate.getTime())) {
+  const formatDateTime = (
+    value
+  ) => {
+    if (!value) {
       return "N/A";
     }
 
-    return parsedDate.toLocaleDateString(
+    const date =
+      new Date(value);
+
+    if (
+      Number.isNaN(
+        date.getTime()
+      )
+    ) {
+      return "N/A";
+    }
+
+    return date.toLocaleString(
       "en-IN",
       {
         day: "numeric",
-        month: "long",
+        month: "short",
         year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
       }
     );
   };
 
-  // ============================================
-  // ENTER KEY
-  // ============================================
+  // =====================================================
+  // STATUS
+  // =====================================================
 
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter" && !loading) {
-      handleTrackOrder();
-    }
-  };
+  const orderStatus =
+    String(
+      order?.status ||
+        "Pending"
+    );
+
+  const assignmentStatus =
+    String(
+      assignment?.status ||
+        ""
+    );
+
+  const normalizedAssignmentStatus =
+    assignmentStatus.toLowerCase();
+
+  // =====================================================
+  // DELIVERY PERSON
+  // =====================================================
+
+  const deliveryPerson =
+    assignment?.deliveryPerson ||
+    assignment?.delivery_person ||
+    null;
+
+  // =====================================================
+  // DELIVERY MESSAGE
+  // =====================================================
+
+  const getTrackingMessage =
+    () => {
+      if (
+        orderStatus.toLowerCase() ===
+        "cancelled"
+      ) {
+        return "This order has been cancelled.";
+      }
+
+      if (
+        orderStatus.toLowerCase() ===
+        "delivered"
+      ) {
+        return "Your order has been delivered.";
+      }
+
+      if (!assignment) {
+        return "Your order has not been assigned to a delivery person yet.";
+      }
+
+      if (
+        normalizedAssignmentStatus ===
+        "assigned"
+      ) {
+        return "A delivery person has been assigned to your order.";
+      }
+
+      if (
+        normalizedAssignmentStatus ===
+        "accepted"
+      ) {
+        return "Your delivery person has accepted the order.";
+      }
+
+      if (
+        normalizedAssignmentStatus ===
+        "out_for_delivery"
+      ) {
+        if (deliveryPosition) {
+          return "Your order is on the way.";
+        }
+
+        return "Your order is out for delivery. Waiting for the latest GPS location.";
+      }
+
+      if (
+        normalizedAssignmentStatus ===
+        "completed"
+      ) {
+        return "Delivery completed.";
+      }
+
+      return "Your order is being processed.";
+    };
+
+  // =====================================================
+  // LOADING
+  // =====================================================
+
+  if (loading) {
+    return (
+      <div className="order-tracking-container">
+        <div className="tracking-loading">
+          <div className="tracking-spinner" />
+
+          <h2>
+            Loading live tracking...
+          </h2>
+
+          <p>
+            Please wait while we fetch
+            your order location.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // =====================================================
+  // ERROR
+  // =====================================================
+
+  if (errorMsg) {
+    return (
+      <div className="order-tracking-container">
+        <div className="tracking-error">
+          <h2>
+            Unable to Track Order
+          </h2>
+
+          <p>
+            {errorMsg}
+          </p>
+
+          <div className="tracking-error-actions">
+            <button
+              type="button"
+              onClick={() =>
+                fetchTracking(true)
+              }
+            >
+              Try Again
+            </button>
+
+            <button
+              type="button"
+              className="secondary"
+              onClick={() =>
+                navigate("/orders")
+              }
+            >
+              Back to My Orders
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // =====================================================
+  // PAGE
+  // =====================================================
 
   return (
     <div className="order-tracking-container">
 
-      {/* ========================================
+      {/* =================================================
           HEADER
-      ======================================== */}
+      ================================================= */}
 
-      <h1>Track Your Order</h1>
+      <div className="tracking-header">
 
-      <p className="order-tracking-subtitle">
-        Enter your order ID to check your
-        order status.
-      </p>
+        <div>
+          <button
+            type="button"
+            className="tracking-back-btn"
+            onClick={() =>
+              navigate("/orders")
+            }
+          >
+            ← Back to My Orders
+          </button>
 
-      {/* ========================================
-          INPUT
-      ======================================== */}
+          <h1>
+            Track Your Order
+          </h1>
 
-      <div className="track-input-group">
+          <p className="order-tracking-subtitle">
+            Live delivery tracking for
+            order #
+            {order?.id || orderId}
+          </p>
+        </div>
 
-        <input
-          type="text"
-          placeholder="Enter your Order ID"
-          value={orderId}
-          onChange={(e) =>
-            setOrderId(e.target.value)
-          }
-          onKeyDown={handleKeyDown}
-          disabled={loading}
-        />
-
-        <button
-          type="button"
-          onClick={handleTrackOrder}
-          disabled={loading}
-        >
-          {loading
-            ? "Fetching..."
-            : "Track Order"}
-        </button>
+        <div className="live-indicator">
+          <span className="live-dot" />
+          Live Tracking
+        </div>
 
       </div>
 
-      {/* ========================================
-          ERROR
-      ======================================== */}
+      {/* =================================================
+          STATUS
+      ================================================= */}
 
-      {errorMsg && (
-        <p className="error-msg">
-          {errorMsg}
-        </p>
-      )}
+      <div className="tracking-status-card">
 
-      {/* ========================================
-          ORDER DETAILS
-      ======================================== */}
+        <div>
+          <span>
+            Order Status
+          </span>
 
-      {orderData && (
+          <strong
+            className={`tracking-order-status tracking-status-${orderStatus
+              .toLowerCase()
+              .replace(/\s+/g, "-")}`}
+          >
+            {orderStatus}
+          </strong>
+        </div>
 
-        <div className="order-details">
+        <div>
+          <span>
+            Delivery Status
+          </span>
 
-          <h2>Order Details</h2>
+          <strong>
+            {assignmentStatus
+              ? assignmentStatus
+                  .replace(/_/g, " ")
+                  .replace(
+                    /\b\w/g,
+                    (char) =>
+                      char.toUpperCase()
+                  )
+              : "Not Assigned"}
+          </strong>
+        </div>
 
-          {/* ORDER SUMMARY */}
+        <div>
+          <span>
+            Last Updated
+          </span>
 
-          <div className="order-summary">
+          <strong>
+            {lastUpdated
+              ? formatDateTime(
+                  lastUpdated
+                )
+              : "Updating..."}
+          </strong>
+        </div>
 
-            <div>
-              <span>Order ID</span>
-              <strong>
-                #
-                {orderData.id ||
-                  orderData.orderId ||
-                  orderId}
-              </strong>
-            </div>
+      </div>
 
-            <div>
-              <span>Status</span>
-              <strong>
-                {orderData.status ||
-                  "Pending"}
-              </strong>
-            </div>
+      {/* =================================================
+          TRACKING MESSAGE
+      ================================================= */}
 
-            <div>
-              <span>Date</span>
-              <strong>
-                {formatDate(
-                  orderData.date ||
-                    orderData.orderDate ||
-                    orderData.created_at ||
-                    orderData.createdAt
-                )}
-              </strong>
-            </div>
+      <div className="tracking-message">
+        <span className="tracking-message-icon">
+          {deliveryPosition
+            ? "🚚"
+            : "📦"}
+        </span>
 
-            <div>
-              <span>Payment</span>
-              <strong>
-                {orderData.paymentMethod ||
-                  orderData.payment_method ||
-                  "N/A"}
-              </strong>
-            </div>
+        <div>
+          <strong>
+            {getTrackingMessage()}
+          </strong>
 
-            <div>
-              <span>Total Amount</span>
-              <strong>
-                {formatPrice(
-                  orderData.totalCost ??
-                    orderData.total
-                )}
-              </strong>
-            </div>
+          <p>
+            Location automatically updates
+            every 5 seconds.
+          </p>
+        </div>
+      </div>
 
+      {/* =================================================
+          DELIVERY PERSON
+      ================================================= */}
+
+      {deliveryPerson && (
+        <div className="delivery-person-card">
+
+          <div className="delivery-person-icon">
+            🚚
           </div>
 
-          {/* ======================================
-              ITEMS
-          ====================================== */}
+          <div>
+            <span>
+              Delivery Partner
+            </span>
 
-          {Array.isArray(orderData.items) &&
-            orderData.items.length > 0 && (
+            <strong>
+              {deliveryPerson.name ||
+                deliveryPerson.fullName ||
+                "Delivery Partner"}
+            </strong>
 
-            <div className="order-items">
+            {deliveryPerson.mobile && (
+              <small>
+                Mobile:{" "}
+                {deliveryPerson.mobile}
+              </small>
+            )}
+          </div>
 
-              <h3>Items</h3>
+        </div>
+      )}
 
-              <div className="order-items-table-wrapper">
+      {/* =================================================
+          MAP
+      ================================================= */}
 
-                <table className="table">
+      <div className="tracking-map-section">
 
-                  <thead>
-                    <tr>
-                      <th>Product</th>
-                      <th>Quantity</th>
-                      <th>Amount</th>
-                    </tr>
-                  </thead>
+        <div className="tracking-map-header">
 
-                  <tbody>
+          <div>
+            <h2>
+              Live Location
+            </h2>
 
-                    {orderData.items.map(
-                      (item, idx) => (
+            <p>
+              🚚 Delivery partner
+              &nbsp;&nbsp; 📍 Delivery destination
+            </p>
+          </div>
 
-                        <tr
-                          key={
-                            item.id ||
-                            `${orderData.id}-${idx}`
-                          }
-                        >
-
-                          <td>
-                            {item.productTitle ||
-                              item.product_title ||
-                              item.title ||
-                              item.name ||
-                              item.description ||
-                              "Product"}
-                          </td>
-
-                          <td>
-                            {item.quantity || 1}
-                          </td>
-
-                          <td>
-                            {formatPrice(
-                              item.amount ??
-                                item.productPrice ??
-                                item.product_price ??
-                                item.price
-                            )}
-                          </td>
-
-                        </tr>
-
-                      )
-                    )}
-
-                  </tbody>
-
-                </table>
-
-              </div>
-
-            </div>
-
-          )}
-
-          {/* ======================================
-              DELIVERY INFO
-          ====================================== */}
-
-          {orderData.billingInfo && (
-
-            <div className="delivery-info">
-
-              <h3>Delivery Address</h3>
-
-              <p>
-
-                {orderData.billingInfo.fname ||
-                  orderData.billingInfo.firstName ||
-                  ""}{" "}
-
-                {orderData.billingInfo.lname ||
-                  orderData.billingInfo.lastName ||
-                  ""}
-
-                <br />
-
-                {orderData.billingInfo.address ||
-                  ""}
-
-                <br />
-
-                {orderData.billingInfo.city ||
-                  ""}
-
-                {orderData.billingInfo.pincode
-                  ? ` - ${orderData.billingInfo.pincode}`
-                  : ""}
-
-                <br />
-
-                {orderData.billingInfo.mobile && (
-                  <>
-                    <strong>
-                      Mobile:
-                    </strong>{" "}
-                    {
-                      orderData.billingInfo.mobile
-                    }
-                  </>
-                )}
-
-              </p>
-
-            </div>
-
+          {currentLocation?.accuracy != null && (
+            <span className="gps-accuracy">
+              GPS accuracy:{" "}
+              {Number(
+                currentLocation.accuracy
+              ).toFixed(0)}
+              m
+            </span>
           )}
 
         </div>
 
+        {destinationPosition ||
+        deliveryPosition ? (
+
+          <div className="tracking-map">
+
+            <MapContainer
+              center={mapCenter}
+              zoom={14}
+              scrollWheelZoom={true}
+              style={{
+                height: "100%",
+                width: "100%",
+              }}
+            >
+
+              <TileLayer
+                attribution='&copy; OpenStreetMap contributors'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              />
+
+              <TrackingMapController
+                deliveryPosition={
+                  deliveryPosition
+                }
+                destinationPosition={
+                  destinationPosition
+                }
+              />
+
+              {/* DELIVERY PERSON */}
+
+              {deliveryPosition && (
+                <Marker
+                  position={
+                    deliveryPosition
+                  }
+                  icon={deliveryIcon}
+                >
+                  <Popup>
+                    <strong>
+                      🚚 Delivery Partner
+                    </strong>
+
+                    <br />
+
+                    Current GPS location
+
+                    {currentLocation?.accuracy != null && (
+                      <>
+                        <br />
+                        Accuracy:{" "}
+                        {Number(
+                          currentLocation.accuracy
+                        ).toFixed(0)}
+                        m
+                      </>
+                    )}
+
+                    {currentLocation?.recordedAt && (
+                      <>
+                        <br />
+                        Updated:{" "}
+                        {formatDateTime(
+                          currentLocation.recordedAt
+                        )}
+                      </>
+                    )}
+                  </Popup>
+                </Marker>
+              )}
+
+              {/* DESTINATION */}
+
+              {destinationPosition && (
+                <Marker
+                  position={
+                    destinationPosition
+                  }
+                  icon={
+                    destinationIcon
+                  }
+                >
+                  <Popup>
+                    <strong>
+                      📍 Delivery Address
+                    </strong>
+
+                    <br />
+
+                    {destination?.fullName && (
+                      <>
+                        {destination.fullName}
+                        <br />
+                      </>
+                    )}
+
+                    {destination?.houseNo && (
+                      <>
+                        {destination.houseNo}
+                        <br />
+                      </>
+                    )}
+
+                    {destination?.addressLine1 && (
+                      <>
+                        {
+                          destination.addressLine1
+                        }
+                        <br />
+                      </>
+                    )}
+
+                    {destination?.addressLine2 && (
+                      <>
+                        {
+                          destination.addressLine2
+                        }
+                        <br />
+                      </>
+                    )}
+
+                    {destination?.city && (
+                      <>
+                        {destination.city}
+                        {destination?.pincode
+                          ? ` - ${destination.pincode}`
+                          : ""}
+                      </>
+                    )}
+                  </Popup>
+                </Marker>
+              )}
+
+            </MapContainer>
+
+          </div>
+
+        ) : (
+
+          <div className="no-location-map">
+            <div>
+              📍
+            </div>
+
+            <h3>
+              Location Not Available
+            </h3>
+
+            <p>
+              GPS coordinates are not
+              available for this order yet.
+            </p>
+
+            <p>
+              The map will appear once
+              location information is available.
+            </p>
+          </div>
+
+        )}
+
+      </div>
+
+      {/* =================================================
+          DELIVERY ADDRESS
+      ================================================= */}
+
+      {destination && (
+        <div className="tracking-address-card">
+
+          <h2>
+            Delivery Address
+          </h2>
+
+          <p>
+            <strong>
+              {destination.fullName ||
+                "Customer"}
+            </strong>
+
+            <br />
+
+            {destination.houseNo && (
+              <>
+                {destination.houseNo}
+                <br />
+              </>
+            )}
+
+            {destination.addressLine1 && (
+              <>
+                {
+                  destination.addressLine1
+                }
+                <br />
+              </>
+            )}
+
+            {destination.addressLine2 && (
+              <>
+                {
+                  destination.addressLine2
+                }
+                <br />
+              </>
+            )}
+
+            {destination.landmark && (
+              <>
+                Landmark:{" "}
+                {destination.landmark}
+                <br />
+              </>
+            )}
+
+            {destination.city && (
+              <>
+                {destination.city}
+                {destination.pincode
+                  ? ` - ${destination.pincode}`
+                  : ""}
+                <br />
+              </>
+            )}
+
+            {destination.state && (
+              <>
+                {destination.state}
+                {destination.country
+                  ? `, ${destination.country}`
+                  : ""}
+              </>
+            )}
+          </p>
+
+          {destinationPosition && (
+            <div className="tracking-coordinates">
+              <span>
+                Latitude
+              </span>
+
+              <strong>
+                {destinationPosition[0].toFixed(
+                  6
+                )}
+              </strong>
+
+              <span>
+                Longitude
+              </span>
+
+              <strong>
+                {destinationPosition[1].toFixed(
+                  6
+                )}
+              </strong>
+            </div>
+          )}
+
+        </div>
       )}
 
     </div>
   );
 };
+
+export default OrderTracking;

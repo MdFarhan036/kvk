@@ -188,7 +188,7 @@ export const Footer = () => {
 
                   <ul>
                     <li>
-                      <Link to="/profile">
+                      <Link to="/account/profile">
                         My Account
                       </Link>
                     </li>

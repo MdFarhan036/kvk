@@ -26,48 +26,6 @@
    PAGE BACKGROUND
 ========================================================= */
 
-.listing,
-.listing-data {
-  position: relative;
-  background: #f8fafc;
-  font-family: "Inter", system-ui, sans-serif;
-}
-
-.listing-data::before {
-  content: "";
-  position: fixed;
-  top: -180px;
-  left: -150px;
-  width: 560px;
-  height: 560px;
-  background: radial-gradient(circle, var(--aurora-2), transparent 70%);
-  filter: blur(50px);
-  opacity: 0.5;
-  z-index: 0;
-  pointer-events: none;
-  animation: drift 20s ease-in-out infinite;
-}
-
-.listing-data::after {
-  content: "";
-  position: fixed;
-  bottom: -200px;
-  right: -160px;
-  width: 540px;
-  height: 540px;
-  background: radial-gradient(circle, var(--aurora-3), transparent 70%);
-  filter: blur(50px);
-  opacity: 0.45;
-  z-index: 0;
-  pointer-events: none;
-  animation: drift 24s ease-in-out infinite reverse;
-}
-
-@keyframes drift {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  50% { transform: translate(35px, 25px) scale(1.07); }
-}
-
 
 /* =========================================================
    BREADCRUMB / TITLE HEADER
@@ -103,34 +61,6 @@
 }
 
 
-/* =========================================================
-   LAYOUT — SIDEBAR + CONTENT
-========================================================= */
-
-.listing-data {
-  position: relative;
-  z-index: 1;
-  max-width: 1300px;
-  margin: 0 auto;
-  padding: 24px 20px 60px;
-  display: flex;
-  gap: 26px;
-  align-items: flex-start;
-}
-
-.listing-wrapper {
-  flex: 0 0 270px;
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-  position: sticky;
-  top: 20px;
-}
-
-.homeProduct {
-  flex: 1;
-  min-width: 0;
-}
 
 
 /* =========================================================
@@ -299,7 +229,31 @@
   cursor: pointer;
 }
 
+/* =========================================================
+   BRAND / STOCK FILTER LISTS
+========================================================= */
 
+.listing-wrapper .filter-sidebar {
+  width: 100%;
+}
+
+.listing-wrapper .filter-sidebar ul {
+  max-height: 240px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.listing-wrapper .check-sider {
+  width: 100%;
+  min-width: 0;
+}
+
+.listing-wrapper .check-sider span,
+.listing-wrapper .check-sider label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 /* =========================================================
    FILTER SIDEBAR — Color / Condition checkboxes
 ========================================================= */
@@ -741,36 +695,6 @@
    RESPONSIVE
 ========================================================= */
 
-@media (max-width: 1024px) {
-  .listing-data {
-    flex-direction: column;
-  }
-  .listing-wrapper {
-    flex: 1 1 100%;
-    position: static;
-    flex-direction: row;
-    flex-wrap: wrap;
-  }
-  .sidebar-category-card,
-  .listing-card {
-    flex: 1 1 280px;
-  }
-}
-
-@media (max-width: 768px) {
-  .listing-wrapper {
-    flex-direction: column;
-  }
-  .featured-item {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 14px;
-  }
-  .top-strip {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-}
-
 @media (max-width: 480px) {
   .featured-item {
     grid-template-columns: 1fr;
@@ -792,4 +716,87 @@
     opacity: 1 !important;
     transform: none !important;
   }
+}/* =========================================================
+   LAYOUT — SIDEBAR + CONTENT
+========================================================= */
+
+.listing-data {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 24px 20px 60px;
+
+  display: grid;
+  grid-template-columns: 270px minmax(0, 1fr);
+  gap: 26px;
+  align-items: start;
+}
+
+/* =========================================================
+   LEFT SIDEBAR
+========================================================= */
+
+.listing-wrapper {
+  width: 270px;
+  min-width: 270px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+
+  position: sticky;
+  top: 20px;
+
+  align-self: start;
+}
+
+/* =========================================================
+   PRODUCT AREA
+========================================================= */
+
+.homeProduct {
+  width: 100%;
+  min-width: 0;
+}/* =========================================================
+   LEFT SIDEBAR — CONSISTENT CARDS
+========================================================= */
+
+.listing-wrapper > * {
+  width: 100%;
+  min-width: 0;
+}
+
+.listing-wrapper .sidebar-category-card,
+.listing-wrapper .listing-card {
+  width: 100%;
+  margin: 0;
+}
+
+/* Keep filter content inside the card */
+.listing-wrapper input,
+.listing-wrapper select,
+.listing-wrapper button {
+  max-width: 100%;
+}/* =========================================================
+   CATEGORY SIDEBAR
+========================================================= */
+
+.listing-wrapper .listing-catList {
+  max-height: 360px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.listing-wrapper .listing-catItem {
+  width: 100%;
+  min-width: 0;
+}
+
+.listing-wrapper .listing-catItem h4 {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

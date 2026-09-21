@@ -35,8 +35,6 @@ function useWindowWidth() {
 ========================================================= */
 
 const ViewAllModal = ({ blogs, onClose }) => {
-  const [query, setQuery] = useState("");
-
   const windowWidth = useWindowWidth();
   const isMobile = windowWidth <= 640;
 
@@ -58,32 +56,11 @@ const ViewAllModal = ({ blogs, onClose }) => {
     document.body.style.overflow = "hidden";
 
     return () => {
-      document.removeEventListener(
-        "keydown",
-        handleKeyDown
-      );
+      document.removeEventListener("keydown", handleKeyDown);
 
       document.body.style.overflow = previousOverflow;
     };
   }, [onClose]);
-
-  /* =================================
-     MODAL SEARCH
-  ================================= */
-
-  const filteredBlogs = blogs.filter((blog) => {
-    const search = query.trim().toLowerCase();
-
-    if (!search) {
-      return true;
-    }
-
-    return (
-      blog.title?.toLowerCase().includes(search) ||
-      blog.category?.toLowerCase().includes(search) ||
-      blog.excerpt?.toLowerCase().includes(search)
-    );
-  });
 
   return createPortal(
     <div
@@ -130,37 +107,11 @@ const ViewAllModal = ({ blogs, onClose }) => {
         </div>
 
         {/* =================================
-            SEARCH
-        ================================= */}
-
-        <div className="bcm__search-bar">
-          <div className="bcm__search-inner">
-            <input
-              type="text"
-              className="bcm__search-input"
-              placeholder="Search articles…"
-              value={query}
-              onChange={(e) => {
-                setQuery(e.target.value);
-              }}
-              autoFocus={!isMobile}
-              aria-label="Search articles"
-            />
-          </div>
-
-          <span className="bcm__count">
-            {filteredBlogs.length} result
-            {filteredBlogs.length !== 1 ? "s" : ""}
-          </span>
-        </div>
-
-        {/* =================================
             MODAL BODY
         ================================= */}
 
         <div className="bcm__body">
-          {/* No Results */}
-          {filteredBlogs.length === 0 ? (
+          {blogs.length === 0 ? (
             <div className="bcm__empty">
               <strong>No articles found</strong>
             </div>
@@ -170,7 +121,7 @@ const ViewAllModal = ({ blogs, onClose }) => {
             ================================= */
 
             <div className="bcm__list">
-              {filteredBlogs.map((blog, index) => (
+              {blogs.map((blog, index) => (
                 <div
                   key={blog.id}
                   className="bcm__list-item"
@@ -204,7 +155,7 @@ const ViewAllModal = ({ blogs, onClose }) => {
             ================================= */
 
             <div className="bcm__grid">
-              {filteredBlogs.map((blog, index) => (
+              {blogs.map((blog, index) => (
                 <div
                   key={blog.id}
                   className="bcm__grid-item"
@@ -249,7 +200,6 @@ const BlogsCarousel = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const [searchQuery, setSearchQuery] = useState("");
   const [showModal, setShowModal] = useState(false);
 
   /* =================================
@@ -342,19 +292,6 @@ const BlogsCarousel = () => {
         <p className="blogcarousel__hero-subtitle">
           Latest updates from Agriculture
         </p>
-
-        <div className="blogcarousel__search-wrap">
-          <input
-            type="text"
-            className="blogcarousel__search-input"
-            placeholder="Search"
-            value={searchQuery}
-            onChange={(e) => {
-              setSearchQuery(e.target.value);
-            }}
-            aria-label="Search blog articles"
-          />
-        </div>
       </div>
     </div>
   );
@@ -413,52 +350,13 @@ const BlogsCarousel = () => {
   }
 
   /* =================================
-     SEARCH FILTER
-  ================================= */
-
-  const searchedBlogs = blogs.filter((blog) => {
-    const query = searchQuery
-      .trim()
-      .toLowerCase();
-
-    if (!query) {
-      return true;
-    }
-
-    return (
-      blog.title?.toLowerCase().includes(query) ||
-      blog.category?.toLowerCase().includes(query) ||
-      blog.excerpt?.toLowerCase().includes(query)
-    );
-  });
-
-  /* =================================
-     NO SEARCH RESULTS
-  ================================= */
-
-  if (!searchedBlogs.length) {
-    return (
-      <section className="blogcarousel__section">
-        <div className="blogcarousel__container">
-          <HeroBanner />
-
-          <div className="blogcarousel__error">
-            No articles found matching "
-            {searchQuery}".
-          </div>
-        </div>
-      </section>
-    );
-  }
-
-  /* =================================
      FEATURED + SIDEBAR
   ================================= */
 
-  const featured = searchedBlogs[0];
+  const featured = blogs[0];
 
   // Maximum 3 recent posts
-  const sidebarBlogs = searchedBlogs.slice(1, 4);
+  const sidebarBlogs = blogs.slice(1, 4);
 
   return (
     <>

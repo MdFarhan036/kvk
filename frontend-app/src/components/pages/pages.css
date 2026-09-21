@@ -1028,3 +1028,93 @@ p {
 .btn.full {
   width: 100%;
 }
+/* =========================================================
+   ORDER DELIVERY ADDRESS
+========================================================= */
+
+.order-delivery-address {
+  margin-top: 12px;
+  padding: 18px;
+
+  border: 1px solid #dfe5e1;
+  border-radius: 10px;
+
+  background: #f8fcf9;
+
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.order-address-header {
+  padding-bottom: 10px;
+  margin-bottom: 12px;
+
+  border-bottom: 1px solid #e2e8e4;
+
+  color: #198754;
+  font-size: 15px;
+}
+
+.order-address-body {
+  color: #444;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.order-address-body p {
+  margin: 3px 0;
+}
+
+.order-address-body p:first-child {
+  margin-bottom: 7px;
+  color: #222;
+  font-size: 15px;
+}
+
+.order-no-address {
+  padding: 15px;
+
+  border: 1px dashed #ccc;
+  border-radius: 8px;
+
+  background: #fafafa;
+
+  color: #777;
+  font-size: 14px;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 600px) {
+  .order-delivery-address {
+    padding: 14px;
+  }
+
+  .order-address-body {
+    font-size: 13px;
+  }
+
+  .order-address-body p:first-child {
+    font-size: 14px;
+  }
+}.order-track-btn {
+  background: #2e7d32;
+  color: #fff;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: 0.2s ease;
+}
+
+.order-track-btn:hover {
+  background: #1b5e20;
+}
+
+.order-track-btn:active {
+  transform: scale(0.97);
+}

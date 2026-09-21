@@ -25,65 +25,175 @@ import { DailyDealsProducts } from "../components/pages/dailydeals/DailyDealsPro
 import { AllCategoriesProducts } from "../components/pages/categorywise/AllCategoriesProducts";
 import { HomeProducts } from "../components/pages/popular/HomeProducts";
 
+// Orders
+import { AllOrders } from "../components/pages/AllOrders.jsx";
+import OrderTracking from "../components/pages/OrderTracking.jsx";
+
 // Auth
 import { CustomerSignup } from "../components/auth/CustomerSignup";
 import { CustomerProfile } from "../components/auth/CustomerProfile";
 import { CustomerLogin } from "../components/auth/CustomerLogin.jsx";
+
 import { CustomerProtectedRoute } from "./PrivateRoute.jsx";
+
 import CategoriesPage from "../components/pages/filters/CategoriesPage.jsx";
 import PriceFilterPage from "../components/pages/filters/PriceFilterPage.jsx";
 import BrandFilterPage from "../components/pages/filters/BrandFilterPage.jsx";
 import StockFilterPage from "../components/pages/filters/StockFilterPage.jsx";
+
 import SearchResults from "../components/Header/SearchResults.jsx";
+
 import BlogsCarousel from "../components/pages/blogs/BlogsCarousel.jsx";
 import SingleBlog from "../components/pages/blogs/SingleBlog.jsx";
-import { AllOrders } from "../components/pages/AllOrders.jsx";
+
 import CompareProducts from "../components/pages/compare/CompareProducts.jsx";
 
-// Protected Route
+import { MyAddresses1 } from "../components/pages/MyAddresses1.jsx";
+import { MyAccount } from "../components/pages/MyAccount.jsx";
+import ChangePassword from "../components/pages/ChangePassword.jsx";
+import OrderDetails from "../components/pages/OrderDetails.jsx";
 
-// ✅ Define all routes
+// =====================================================
+// ROUTER
+// =====================================================
+
 const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
+
     children: [
-      { path: "", element: <Home /> },
-      { path: "about", element: <About /> },
-      { path: "contact", element: <ContactPage /> },
+      // =================================================
+      // HOME
+      // =================================================
 
-      // Popular & Featured
-      { path: "featured-category", element: <HomeProducts /> },
-      { path: "featured-category/:categoryName/:productId", element: <FeatureCategoriesPage /> },
+      {
+        path: "",
+        element: <Home />,
+      },
 
-      // Daily Deals
-      { path: "daily-deals-category", element: <DailyDealsProducts /> },
-      { path: "daily-deals/:categoryName/:productId", element: <DailyDealsProductPage /> },
+      {
+        path: "about",
+        element: <About />,
+      },
 
-      // Smart Farming / Seasonal
+      {
+        path: "contact",
+        element: <ContactPage />,
+      },
 
-      // Product Routes
-      { path: "all-categories", element: <AllCategoriesProducts /> },
-      { path: "products-categories/:categoryName", element: <ProductListing /> },
+      // =================================================
+      // POPULAR & FEATURED
+      // =================================================
+
+      {
+        path: "featured-category",
+        element: <HomeProducts />,
+      },
+
+      {
+        path: "featured-category/:categoryName/:productId",
+        element: <FeatureCategoriesPage />,
+      },
+
+      // =================================================
+      // DAILY DEALS
+      // =================================================
+
+      {
+        path: "daily-deals-category",
+        element: <DailyDealsProducts />,
+      },
+
+      {
+        path: "daily-deals/:categoryName/:productId",
+        element: <DailyDealsProductPage />,
+      },
+
+      // =================================================
+      // PRODUCTS
+      // =================================================
+
+      {
+        path: "all-categories",
+        element: <AllCategoriesProducts />,
+      },
+
+      {
+        path: "products-categories/:categoryName",
+        element: <ProductListing />,
+      },
+
+      {
+        path: "products-categories/:categoryName/:productId",
+        element: <SingleProductListing />,
+      },
+
+      // =================================================
+      // FILTERS
+      // =================================================
+
       {
         path: "filter/categories/:categoryName",
         element: <CategoriesPage />,
       },
+
       {
         path: "filter/price/:categoryName",
         element: <PriceFilterPage />,
       },
+
       {
         path: "filter/brand/:categoryName",
         element: <BrandFilterPage />,
       },
+
       {
         path: "filter/stock/:categoryName",
         element: <StockFilterPage />,
       },
-      { path: "products-categories/:categoryName/:productId", element: <SingleProductListing /> },
 
-      // User Routes
+      // =================================================
+      // AUTH
+      // =================================================
+
+      {
+        path: "login",
+        element: <CustomerLogin />,
+      },
+
+      {
+        path: "signup",
+        element: <CustomerSignup />,
+      },
+
+      // =================================================
+      // BLOGS
+      // =================================================
+
+      {
+        path: "/blogs",
+        element: <BlogsCarousel />,
+      },
+
+      {
+        path: "/blog/:slug",
+        element: <SingleBlog />,
+      },
+
+      // =================================================
+      // SEARCH
+      // =================================================
+
+      {
+        path: "search",
+        element: <SearchResults />,
+      },
+
+      // =================================================
+      // WISHLIST
+      // =================================================
+
       {
         path: "wishlist",
         element: (
@@ -92,6 +202,11 @@ const router = createBrowserRouter([
           </CustomerProtectedRoute>
         ),
       },
+
+      // =================================================
+      // SETTINGS
+      // =================================================
+
       {
         path: "settings",
         element: (
@@ -101,22 +216,10 @@ const router = createBrowserRouter([
         ),
       },
 
-      // ✅ Auth Routes
-      { path: "login", element: <CustomerLogin /> },
-      { path: "signup", element: <CustomerSignup /> },
-      {
-        path: "/blogs",
-        element: <BlogsCarousel />
-      },
-      {
-        path: "/blog/:slug",
-        element: <SingleBlog />
-      },
-      {
-        path: "search",
-        element: <SearchResults />,
-      },
-      // ✅ Protected Customer Pages
+      // =================================================
+      // PROFILE
+      // =================================================
+
       {
         path: "profile",
         element: (
@@ -125,6 +228,45 @@ const router = createBrowserRouter([
           </CustomerProtectedRoute>
         ),
       },
+
+      // =================================================
+      // ACCOUNT
+      // =================================================
+{
+  path: "account",
+  element: (
+    <CustomerProtectedRoute>
+      <MyAccount />
+    </CustomerProtectedRoute>
+  ),
+
+  children: [
+    {
+      index: true,
+      element: <CustomerProfile />,
+    },
+
+    {
+      path: "profile",
+      element: <CustomerProfile />,
+    },
+
+    {
+      path: "password",
+      element: <ChangePassword />,
+    },
+
+    {
+      path: "addresses",
+      element: <MyAddresses1 />,
+    },
+  ],
+},
+
+      // =================================================
+      // CART
+      // =================================================
+
       {
         path: "cartpage",
         element: (
@@ -133,6 +275,11 @@ const router = createBrowserRouter([
           </CustomerProtectedRoute>
         ),
       },
+
+      // =================================================
+      // COMPARE
+      // =================================================
+
       {
         path: "compare",
         element: (
@@ -141,6 +288,11 @@ const router = createBrowserRouter([
           </CustomerProtectedRoute>
         ),
       },
+
+      // =================================================
+      // CHECKOUT
+      // =================================================
+
       {
         path: "checkout",
         element: (
@@ -149,6 +301,11 @@ const router = createBrowserRouter([
           </CustomerProtectedRoute>
         ),
       },
+
+      // =================================================
+      // TRACK MY ORDERS - OLD PAGE
+      // =================================================
+
       {
         path: "trackmyorder",
         element: (
@@ -157,16 +314,45 @@ const router = createBrowserRouter([
           </CustomerProtectedRoute>
         ),
       },
+
+      // =================================================
+      // MY ORDERS
+      // =================================================
+
       {
         path: "/orders",
         element: (
-          <CustomerProtectedRoute >
+          <CustomerProtectedRoute>
             <AllOrders />
-          </CustomerProtectedRoute >
+          </CustomerProtectedRoute>
         ),
       },
 
-      // ✅ Misc
+      // =================================================
+      // LIVE ORDER TRACKING
+      // =================================================
+
+      {
+        path: "/orders/:orderId/",
+        element: (
+          <CustomerProtectedRoute>
+            <OrderDetails />
+          </CustomerProtectedRoute>
+        ),
+      },
+      {
+        path: "/orders/:orderId/tracking",
+        element: (
+          <CustomerProtectedRoute>
+            <OrderTracking />
+          </CustomerProtectedRoute>
+        ),
+      },
+
+      // =================================================
+      // INVOICE
+      // =================================================
+
       {
         path: "invoice",
         element: (
@@ -175,8 +361,20 @@ const router = createBrowserRouter([
           </CustomerProtectedRoute>
         ),
       },
-      { path: "brands", element: <BrandsPage /> },
-      { path: "affiliations", element: <Affiliations /> },
+
+      // =================================================
+      // OTHER
+      // =================================================
+
+      {
+        path: "brands",
+        element: <BrandsPage />,
+      },
+
+      {
+        path: "affiliations",
+        element: <Affiliations />,
+      },
     ],
   },
 ]);

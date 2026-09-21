@@ -1,0 +1,818 @@
+/* =========================================================
+   DELIVERY ORDERS PAGE
+========================================================= */
+
+.delivery-page {
+  min-height: 100vh;
+  background: #f5f7f6;
+  padding: 30px;
+  box-sizing: border-box;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.delivery-header {
+  max-width: 1400px;
+  margin: 0 auto 30px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  background: #ffffff;
+  padding: 22px 26px;
+
+  border-radius: 12px;
+  border: 1px solid #e3e7e5;
+
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.delivery-header h1 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.delivery-header p {
+  margin: 6px 0 0;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+
+/* =========================================================
+   LOGOUT
+========================================================= */
+
+.delivery-logout-btn {
+  border: none;
+  background: #dc2626;
+  color: #ffffff;
+
+  padding: 10px 18px;
+  border-radius: 7px;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.delivery-logout-btn:hover {
+  background: #b91c1c;
+}
+
+.delivery-logout-btn:active {
+  transform: scale(0.97);
+}
+
+
+/* =========================================================
+   ERROR
+========================================================= */
+
+.delivery-error {
+  max-width: 1400px;
+  margin: 0 auto 20px;
+
+  background: #fef2f2;
+  color: #b91c1c;
+
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+
+  padding: 14px 18px;
+
+  font-size: 14px;
+}
+
+
+/* =========================================================
+   LOADING
+========================================================= */
+
+.delivery-loading {
+  min-height: 70vh;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #4b5563;
+  font-size: 17px;
+  font-weight: 500;
+}
+
+
+/* =========================================================
+   EMPTY STATE
+========================================================= */
+
+.delivery-empty {
+  max-width: 600px;
+  margin: 80px auto;
+
+  text-align: center;
+
+  background: #ffffff;
+  padding: 55px 30px;
+
+  border-radius: 14px;
+  border: 1px solid #e5e7eb;
+
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+}
+
+.empty-icon {
+  font-size: 52px;
+  margin-bottom: 15px;
+}
+
+.delivery-empty h2 {
+  margin: 0 0 8px;
+
+  color: #1f2937;
+  font-size: 22px;
+}
+
+.delivery-empty p {
+  margin: 0;
+
+  color: #6b7280;
+  font-size: 14px;
+}
+
+
+/* =========================================================
+   ORDERS GRID
+========================================================= */
+
+.delivery-orders-grid {
+  max-width: 1400px;
+  margin: 0 auto;
+
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(360px, 1fr)
+  );
+
+  gap: 22px;
+}
+
+
+/* =========================================================
+   ORDER CARD
+========================================================= */
+
+.delivery-order-card {
+  background: #ffffff;
+
+  border: 1px solid #e3e7e5;
+  border-radius: 14px;
+
+  overflow: hidden;
+
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.05);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.delivery-order-card:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 7px 20px rgba(0, 0, 0, 0.08);
+}
+
+
+/* =========================================================
+   CARD TOP
+========================================================= */
+
+.delivery-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 15px;
+
+  padding: 20px;
+
+  border-bottom: 1px solid #edf0ee;
+}
+
+.order-label {
+  display: block;
+
+  font-size: 12px;
+  color: #9ca3af;
+
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+
+  margin-bottom: 3px;
+}
+
+.delivery-card-top h2 {
+  margin: 0;
+
+  font-size: 22px;
+  color: #111827;
+}
+
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+.delivery-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 6px 11px;
+
+  border-radius: 20px;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  white-space: nowrap;
+}
+
+
+/* Assigned */
+
+.status-assigned {
+  background: #fff7ed;
+  color: #c2410c;
+}
+
+
+/* Accepted */
+
+.status-accepted {
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+
+/* Out for delivery */
+
+.status-out {
+  background: #ecfdf5;
+  color: #047857;
+}
+
+
+/* Completed */
+
+.status-completed {
+  background: #f0fdf4;
+  color: #15803d;
+}
+
+
+/* Cancelled */
+
+.status-cancelled {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+
+/* =========================================================
+   SECTIONS
+========================================================= */
+
+.delivery-section {
+  padding: 18px 20px;
+
+  border-bottom: 1px solid #edf0ee;
+}
+
+.delivery-section h3 {
+  margin: 0 0 12px;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  color: #374151;
+}
+
+
+/* =========================================================
+   CUSTOMER INFO
+========================================================= */
+
+.delivery-info-row {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  margin-bottom: 9px;
+
+  color: #4b5563;
+  font-size: 14px;
+}
+
+.delivery-info-row:last-child {
+  margin-bottom: 0;
+}
+
+.delivery-info-row > span {
+  width: 24px;
+
+  font-size: 16px;
+
+  display: flex;
+  justify-content: center;
+}
+
+.delivery-info-row strong {
+  color: #1f2937;
+  font-weight: 600;
+}
+
+.delivery-info-row a {
+  color: #2563eb;
+  text-decoration: none;
+}
+
+.delivery-info-row a:hover {
+  text-decoration: underline;
+}
+
+
+/* =========================================================
+   ADDRESS
+========================================================= */
+
+.delivery-address {
+  color: #4b5563;
+
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.delivery-coordinates {
+  margin-top: 12px;
+
+  padding: 8px 10px;
+
+  background: #f8faf9;
+
+  border-radius: 6px;
+
+  color: #6b7280;
+
+  font-size: 12px;
+  font-family: monospace;
+}
+
+
+/* =========================================================
+   ORDER DETAILS
+========================================================= */
+
+.delivery-details-grid {
+  display: grid;
+
+  grid-template-columns: 1fr 1fr;
+
+  gap: 14px;
+}
+
+.delivery-details-grid > div {
+  display: flex;
+  flex-direction: column;
+
+  gap: 4px;
+}
+
+.delivery-details-grid span {
+  color: #9ca3af;
+
+  font-size: 11px;
+
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.delivery-details-grid strong {
+  color: #374151;
+
+  font-size: 13px;
+
+  font-weight: 600;
+}
+
+
+/* =========================================================
+   ACTIONS
+========================================================= */
+
+.delivery-actions {
+  padding: 18px 20px;
+
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 10px;
+}
+
+.delivery-action {
+  flex: 1;
+
+  min-width: 140px;
+
+  border: none;
+
+  padding: 11px 15px;
+
+  border-radius: 7px;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    transform 0.15s ease,
+    opacity 0.2s ease;
+}
+
+.delivery-action:active {
+  transform: scale(0.97);
+}
+
+.delivery-action:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+
+/* =========================================================
+   PRIMARY
+========================================================= */
+
+.delivery-action.primary {
+  background: #2e7d32;
+  color: #ffffff;
+}
+
+.delivery-action.primary:hover {
+  background: #1b5e20;
+}
+
+
+/* =========================================================
+   TRACKING
+========================================================= */
+
+.delivery-action.tracking {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.delivery-action.tracking:hover {
+  background: #1d4ed8;
+}
+
+
+/* =========================================================
+   COMPLETE
+========================================================= */
+
+.delivery-action.complete {
+  background: #16a34a;
+  color: #ffffff;
+}
+
+.delivery-action.complete:hover {
+  background: #15803d;
+}
+
+
+/* =========================================================
+   COMPLETED MESSAGE
+========================================================= */
+
+.delivery-completed {
+  width: 100%;
+
+  padding: 11px;
+
+  background: #f0fdf4;
+
+  color: #15803d;
+
+  border: 1px solid #bbf7d0;
+
+  border-radius: 7px;
+
+  text-align: center;
+
+  font-size: 13px;
+  font-weight: 700;
+}
+
+
+/* =========================================================
+   CANCELLED MESSAGE
+========================================================= */
+
+.delivery-cancelled {
+  width: 100%;
+
+  padding: 11px;
+
+  background: #fef2f2;
+
+  color: #b91c1c;
+
+  border: 1px solid #fecaca;
+
+  border-radius: 7px;
+
+  text-align: center;
+
+  font-size: 13px;
+  font-weight: 600;
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 768px) {
+  .delivery-page {
+    padding: 18px;
+  }
+
+  .delivery-header {
+    padding: 18px;
+
+    margin-bottom: 20px;
+  }
+
+  .delivery-header h1 {
+    font-size: 23px;
+  }
+
+  .delivery-orders-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 480px) {
+  .delivery-page {
+    padding: 10px;
+  }
+
+  .delivery-header {
+    padding: 15px;
+
+    border-radius: 10px;
+  }
+
+  .delivery-header h1 {
+    font-size: 20px;
+  }
+
+  .delivery-header p {
+    font-size: 12px;
+  }
+
+  .delivery-logout-btn {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+
+  .delivery-orders-grid {
+    gap: 14px;
+  }
+
+  .delivery-card-top {
+    padding: 16px;
+  }
+
+  .delivery-section {
+    padding: 15px 16px;
+  }
+
+  .delivery-actions {
+    padding: 15px 16px;
+
+    flex-direction: column;
+  }
+
+  .delivery-action {
+    width: 100%;
+  }
+
+  .delivery-details-grid {
+    grid-template-columns: 1fr;
+  }
+}
+/* =========================================================
+   NAVIGATE TO CUSTOMER
+========================================================= */
+
+.delivery-navigate-btn {
+  width: 100%;
+  margin-top: 12px;
+  padding: 11px 16px;
+
+  border: none;
+  border-radius: 9px;
+
+  background: #1976d2;
+  color: #ffffff;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    transform 0.15s ease;
+}
+
+.delivery-navigate-btn:hover {
+  background: #1565c0;
+}
+
+.delivery-navigate-btn:active {
+  transform: scale(0.98);
+}
+
+
+/* =========================================================
+   DELIVERY VERIFICATION MODAL
+========================================================= */
+
+.delivery-verification-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 20px;
+
+  background: rgba(0, 0, 0, 0.55);
+}
+
+.delivery-verification-modal {
+  width: 100%;
+  max-width: 420px;
+
+  padding: 30px;
+
+  background: #ffffff;
+  border-radius: 18px;
+
+  text-align: center;
+
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+}
+
+.verification-modal-icon {
+  width: 58px;
+  height: 58px;
+
+  margin: 0 auto 16px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #e8f5e9;
+
+  font-size: 27px;
+}
+
+.delivery-verification-modal h2 {
+  margin: 0;
+
+  font-size: 24px;
+  color: #1f2937;
+}
+
+.verification-modal-order {
+  margin: 7px 0 16px;
+
+  font-weight: 600;
+  color: #2e7d32;
+}
+
+.verification-modal-text {
+  margin: 0 auto 22px;
+
+  max-width: 340px;
+
+  line-height: 1.6;
+
+  color: #6b7280;
+}
+
+.delivery-verification-input {
+  width: 100%;
+  box-sizing: border-box;
+
+  padding: 14px;
+
+  border: 2px solid #d1d5db;
+  border-radius: 10px;
+
+  font-size: 24px;
+  font-weight: 700;
+
+  letter-spacing: 7px;
+  text-align: center;
+
+  outline: none;
+}
+
+.delivery-verification-input:focus {
+  border-color: #2e7d32;
+}
+
+.verification-modal-actions {
+  display: flex;
+  gap: 12px;
+
+  margin-top: 20px;
+}
+
+.verification-modal-actions button {
+  flex: 1;
+
+  padding: 12px 16px;
+
+  border: none;
+  border-radius: 9px;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+.verification-cancel-btn {
+  background: #f1f3f4;
+  color: #374151;
+}
+
+.verification-confirm-btn {
+  background: #2e7d32;
+  color: #ffffff;
+}
+
+.verification-confirm-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.verification-cancel-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 480px) {
+  .delivery-verification-modal {
+    padding: 24px 18px;
+  }
+
+  .verification-modal-actions {
+    flex-direction: column;
+  }
+
+  .delivery-verification-input {
+    font-size: 21px;
+    letter-spacing: 5px;
+  }
+}

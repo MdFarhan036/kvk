@@ -18,7 +18,8 @@ export const TrackMyOrders = () => {
   const [orderId, setOrderId] =
     useState(initialOrderId);
 
-  const [order, setOrder] = useState(null);
+  const [order, setOrder] =
+    useState(null);
 
   const [loading, setLoading] =
     useState(false);
@@ -27,11 +28,12 @@ export const TrackMyOrders = () => {
     useState("");
 
   // =====================================================
-  // FETCH ORDER FROM API
+  // FETCH ORDER
   // =====================================================
 
   const fetchOrder = async (id) => {
-    const trimmedId = String(id || "").trim();
+    const trimmedId =
+      String(id || "").trim();
 
     if (!trimmedId) {
       setOrder(null);
@@ -60,6 +62,7 @@ export const TrackMyOrders = () => {
       }
 
       setOrder(data);
+
     } catch (err) {
       console.error(
         "❌ TRACK ORDER ERROR:",
@@ -69,16 +72,17 @@ export const TrackMyOrders = () => {
       setOrder(null);
 
       setError(
-        err.response?.data?.message ||
+        err?.response?.data?.message ||
           "No order found. Please check your Order ID."
       );
+
     } finally {
       setLoading(false);
     }
   };
 
   // =====================================================
-  // AUTO-LOAD ORDER
+  // AUTO LOAD ORDER
   // =====================================================
 
   useEffect(() => {
@@ -99,17 +103,9 @@ export const TrackMyOrders = () => {
     "Cancelled",
   ];
 
-  // =====================================================
-  // FIND ACTIVE STEP
-  // =====================================================
-
   const currentStep = order?.status
     ? steps.indexOf(order.status)
     : -1;
-
-  // =====================================================
-  // PROGRESS WIDTH
-  // =====================================================
 
   const progressWidth =
     currentStep >= 0
@@ -139,9 +135,14 @@ export const TrackMyOrders = () => {
   const formatDate = (date) => {
     if (!date) return "N/A";
 
-    const parsedDate = new Date(date);
+    const parsedDate =
+      new Date(date);
 
-    if (Number.isNaN(parsedDate.getTime())) {
+    if (
+      Number.isNaN(
+        parsedDate.getTime()
+      )
+    ) {
       return "N/A";
     }
 
@@ -155,13 +156,67 @@ export const TrackMyOrders = () => {
   };
 
   // =====================================================
+  // GET ORDER ADDRESS
+  // =====================================================
+
+  const orderAddress =
+    order?.orderAddress ||
+    order?.address ||
+    null;
+
+  // =====================================================
+  // GET DELIVERY COORDINATES
+  // =====================================================
+
+  const latitude =
+    orderAddress?.latitude ??
+    orderAddress?.lat ??
+    null;
+
+  const longitude =
+    orderAddress?.longitude ??
+    orderAddress?.lng ??
+    null;
+
+  const hasCoordinates =
+    latitude !== null &&
+    latitude !== undefined &&
+    longitude !== null &&
+    longitude !== undefined &&
+    latitude !== "" &&
+    longitude !== "";
+
+  // =====================================================
+  // OPEN DELIVERY LOCATION
+  // =====================================================
+
+  const handleViewLocation = () => {
+    if (!hasCoordinates) {
+      return;
+    }
+
+    const mapsUrl =
+      `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+        `${latitude},${longitude}`
+      )}`;
+
+    window.open(
+      mapsUrl,
+      "_blank",
+      "noopener,noreferrer"
+    );
+  };
+
+  // =====================================================
   // RENDER
   // =====================================================
 
   return (
     <div className="track-order-container">
 
-      <h1>Track Your Order</h1>
+      <h1>
+        Track Your Order
+      </h1>
 
       {/* =================================================
           ORDER ID INPUT
@@ -271,7 +326,8 @@ export const TrackMyOrders = () => {
             <div
               className="progress-line-fill"
               style={{
-                width: progressWidth,
+                width:
+                  progressWidth,
               }}
             />
 
@@ -291,7 +347,9 @@ export const TrackMyOrders = () => {
                     {index + 1}
                   </div>
 
-                  <p>{step}</p>
+                  <p>
+                    {step}
+                  </p>
 
                 </div>
 
@@ -327,6 +385,123 @@ export const TrackMyOrders = () => {
           </p>
 
           {/* =================================================
+              DELIVERY ADDRESS
+          ================================================= */}
+
+          <h4 className="mt-30">
+            Delivery Address
+          </h4>
+
+          {orderAddress ? (
+
+            <div className="order-delivery-address">
+
+              <div className="order-address-header">
+
+                <strong>
+                  {orderAddress.addressType ||
+                    "Delivery Address"}
+                </strong>
+
+                {hasCoordinates && (
+                  <button
+                    type="button"
+                    className="btn-view-location"
+                    onClick={
+                      handleViewLocation
+                    }
+                  >
+                    📍 View Delivery Location
+                  </button>
+                )}
+
+              </div>
+
+              <div className="order-address-body">
+
+                <p>
+                  <strong>
+                    {orderAddress.fullName ||
+                      order.customerName ||
+                      "N/A"}
+                  </strong>
+                </p>
+
+                <p>
+                  Mobile:{" "}
+                  {orderAddress.mobile ||
+                    order.mobile ||
+                    "N/A"}
+                </p>
+
+                {orderAddress.houseNo && (
+                  <p>
+                    {orderAddress.houseNo}
+                    {orderAddress.addressLine1
+                      ? `, ${orderAddress.addressLine1}`
+                      : ""}
+                  </p>
+                )}
+
+                {!orderAddress.houseNo &&
+                  orderAddress.addressLine1 && (
+                    <p>
+                      {orderAddress.addressLine1}
+                    </p>
+                  )}
+
+                {orderAddress.addressLine2 && (
+                  <p>
+                    {orderAddress.addressLine2}
+                  </p>
+                )}
+
+                {orderAddress.landmark && (
+                  <p>
+                    Landmark:{" "}
+                    {orderAddress.landmark}
+                  </p>
+                )}
+
+                <p>
+                  {orderAddress.city},{" "}
+                  {orderAddress.state} -{" "}
+                  {orderAddress.pincode}
+                </p>
+
+                <p>
+                  {orderAddress.country ||
+                    "India"}
+                </p>
+
+                {hasCoordinates && (
+                  <p className="delivery-coordinates">
+                    <strong>
+                      Location:
+                    </strong>{" "}
+                    {Number(latitude).toFixed(
+                      6
+                    )},{" "}
+                    {Number(longitude).toFixed(
+                      6
+                    )}
+                  </p>
+                )}
+
+              </div>
+
+            </div>
+
+          ) : (
+
+            <div className="order-no-address">
+              Delivery address information
+              is not available for this order.
+            </div>
+
+          )}
+
+          {/* =================================================
               ORDER ITEMS
           ================================================= */}
 
@@ -339,12 +514,14 @@ export const TrackMyOrders = () => {
             <table className="table order-items-table">
 
               <thead>
+
                 <tr>
                   <th>#</th>
                   <th>Description</th>
                   <th>Qty</th>
                   <th>Amount</th>
                 </tr>
+
               </thead>
 
               <tbody>
@@ -400,6 +577,7 @@ export const TrackMyOrders = () => {
                 ) : (
 
                   <tr>
+
                     <td
                       colSpan="4"
                       style={{
@@ -410,6 +588,7 @@ export const TrackMyOrders = () => {
                       No items in this
                       order.
                     </td>
+
                   </tr>
 
                 )}

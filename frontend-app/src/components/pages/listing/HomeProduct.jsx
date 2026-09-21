@@ -127,68 +127,79 @@ export const HomeProduct = ({
 
     return 0;
   });
+// =====================================================
+// PAGINATION
+// =====================================================
 
-  // =====================================================
-  // PAGINATION
-  // =====================================================
+const safeItemsPerPage =
+  Number(itemsPerPage) > 0
+    ? Number(itemsPerPage)
+    : 50;
 
-  const safeItemsPerPage =
-    Number(itemsPerPage) > 0
-      ? Number(itemsPerPage)
-      : 50;
+const totalPages = Math.ceil(
+  sortedProducts.length / safeItemsPerPage
+);
 
-  const totalPages = Math.ceil(
-    sortedProducts.length /
-      safeItemsPerPage
+const safeCurrentPage =
+  totalPages > 0
+    ? Math.min(currentPage, totalPages)
+    : 1;
+
+const indexOfLast =
+  safeCurrentPage * safeItemsPerPage;
+
+const indexOfFirst =
+  indexOfLast - safeItemsPerPage;
+
+const currentProducts =
+  sortedProducts.slice(
+    indexOfFirst,
+    indexOfLast
   );
 
-  const indexOfLast =
-    currentPage *
-    safeItemsPerPage;
+// =====================================================
+// PAGE CHANGE
+// =====================================================
 
-  const indexOfFirst =
-    indexOfLast -
-    safeItemsPerPage;
+const handlePageChange = (page) => {
+  if (
+    page < 1 ||
+    page > totalPages
+  ) {
+    return;
+  }
 
-  const currentProducts =
-    sortedProducts.slice(
-      indexOfFirst,
-      indexOfLast
-    );
+  setCurrentPage(page);
 
-  // =====================================================
-  // PAGE CHANGE
-  // =====================================================
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth",
+  });
+};
 
-  const handlePageChange = (
-    page
-  ) => {
-    if (
-      page < 1 ||
-      page > totalPages
-    ) {
-      return;
-    }
+// =====================================================
+// RESET / CORRECT PAGE WHEN RESULT SET CHANGES
+// =====================================================
 
-    setCurrentPage(page);
+useEffect(() => {
+  setCurrentPage(1);
+}, [
+  products,
+  itemsPerPage,
+  sortOption,
+]);
 
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
-  };
-
-  // =====================================================
-  // RESET PAGE
-  // =====================================================
-
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [
-    products,
-    itemsPerPage,
-    sortOption,
-  ]);
+useEffect(() => {
+  if (
+    totalPages > 0 &&
+    currentPage > totalPages
+  ) {
+    setCurrentPage(totalPages);
+  }
+}, [
+  currentPage,
+  totalPages,
+]);
 
   // =====================================================
   // EMPTY
@@ -623,71 +634,112 @@ export const HomeProduct = ({
 
       </div>
 
-      {/* =================================================
-          PAGINATION
-      ================================================= */}
+{totalPages > 1 && (
+  <div className="pagination">
 
-      {totalPages > 1 && (
-        <div className="pagination">
+    {/* PREVIOUS */}
 
-          <button
-            type="button"
-            onClick={() =>
-              handlePageChange(
-                currentPage - 1
-              )
-            }
-            disabled={
-              currentPage === 1
-            }
-            className="page-btn"
+    <button
+      type="button"
+      className="page-btn"
+      onClick={() =>
+        handlePageChange(
+          safeCurrentPage - 1
+        )
+      }
+      disabled={
+        safeCurrentPage === 1
+      }
+    >
+      Prev
+    </button>
+
+    {/* PAGE NUMBERS */}
+
+    {Array.from(
+      { length: totalPages },
+      (_, index) => index + 1
+    )
+      .filter((page) => {
+        // Show first page
+        if (page === 1) {
+          return true;
+        }
+
+        // Show last page
+        if (page === totalPages) {
+          return true;
+        }
+
+        // Show pages around current page
+        if (
+          page >= safeCurrentPage - 1 &&
+          page <= safeCurrentPage + 1
+        ) {
+          return true;
+        }
+
+        return false;
+      })
+      .map((page, index, visiblePages) => {
+
+        const previousPage =
+          visiblePages[index - 1];
+
+        const needsEllipsis =
+          previousPage &&
+          page - previousPage > 1;
+
+        return (
+          <span
+            key={page}
+            className="pagination-group"
           >
-            Prev
-          </button>
 
-          {Array.from(
-            {
-              length: totalPages,
-            },
-            (_, i) => (
-              <button
-                type="button"
-                key={i + 1}
-                className={`page-btn ${
-                  currentPage ===
-                  i + 1
-                    ? "active"
-                    : ""
-                }`}
-                onClick={() =>
-                  handlePageChange(
-                    i + 1
-                  )
-                }
-              >
-                {i + 1}
-              </button>
-            )
-          )}
+            {needsEllipsis && (
+              <span className="pagination-dots">
+                ...
+              </span>
+            )}
 
-          <button
-            type="button"
-            onClick={() =>
-              handlePageChange(
-                currentPage + 1
-              )
-            }
-            disabled={
-              currentPage ===
-              totalPages
-            }
-            className="page-btn"
-          >
-            Next
-          </button>
+            <button
+              type="button"
+              className={`page-btn ${
+                safeCurrentPage === page
+                  ? "active"
+                  : ""
+              }`}
+              onClick={() =>
+                handlePageChange(page)
+              }
+            >
+              {page}
+            </button>
 
-        </div>
-      )}
+          </span>
+        );
+      })}
+
+    {/* NEXT */}
+
+    <button
+      type="button"
+      className="page-btn"
+      onClick={() =>
+        handlePageChange(
+          safeCurrentPage + 1
+        )
+      }
+      disabled={
+        safeCurrentPage ===
+        totalPages
+      }
+    >
+      Next
+    </button>
+
+  </div>
+)}
 
     </div>
   );

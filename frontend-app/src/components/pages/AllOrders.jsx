@@ -1,5 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+
+import { useCustomerAuth } from "../../context/CustomerContext";
+
+import CommonFilterBar from "../common/CommonFilterBar.jsx";
+import CommonPagination from "../common/CommonPagination.jsx";
+import usePagination from "../../hooks/usePagination.js";
 
 import api, { ASSET_BASE_URL } from "../api.js";
 
@@ -8,9 +14,20 @@ import "./AllOrders.css";
 export const AllOrders = () => {
   const navigate = useNavigate();
 
+  const { customer } = useCustomerAuth();
+  const customerId = customer?.id;
+
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  // =========================================================
+  // FILTERS
+  // =========================================================
+
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("All");
+  const [sortOrder, setSortOrder] = useState("newest");
 
   // =========================================================
   // IMAGE URL HELPER
@@ -23,79 +40,12 @@ export const AllOrders = () => {
       return image;
     }
 
-    return `${ASSET_BASE_URL}${
-      image.startsWith("/") ? "" : "/"
-    }${image}`;
+    return `${ASSET_BASE_URL}${image.startsWith("/") ? "" : "/"
+      }${image}`;
   };
 
   // =========================================================
-  // FETCH LOGGED-IN CUSTOMER ORDERS
-  // =========================================================
-
-  useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        setLoading(true);
-        setError("");
-
-        const { data } = await api.get(
-          "/orders/my-orders"
-        );
-
-        setOrders(
-          Array.isArray(data)
-            ? data
-            : Array.isArray(data?.orders)
-              ? data.orders
-              : []
-        );
-      } catch (err) {
-        console.error(
-          "❌ ALL ORDERS ERROR:",
-          err
-        );
-
-        setOrders([]);
-
-        if (err.response?.status === 401) {
-          setError(
-            "Please login to view your orders."
-          );
-        } else {
-          setError(
-            err.response?.data?.message ||
-              "Unable to load orders."
-          );
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchOrders();
-  }, []);
-
-  // =========================================================
-  // FORMAT DATE
-  // =========================================================
-
-  const formatDate = (date) => {
-    if (!date) return "N/A";
-
-    const parsedDate = new Date(date);
-
-    if (Number.isNaN(parsedDate.getTime())) {
-      return "N/A";
-    }
-
-    return parsedDate.toLocaleString("en-IN", {
-      dateStyle: "medium",
-      timeStyle: "short",
-    });
-  };
-
-  // =========================================================
-  // GET PRODUCT IMAGE
+  // PRODUCT IMAGE HELPER
   // =========================================================
 
   const getProductImage = (item) => {
@@ -129,6 +79,233 @@ export const AllOrders = () => {
   };
 
   // =========================================================
+  // FETCH CUSTOMER ORDERS
+  // =========================================================
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      if (!customerId) {
+        setOrders([]);
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        setError("");
+
+        const { data } = await api.get(
+          `/orders/customer/${customerId}`
+        );
+
+        setOrders(
+          Array.isArray(data)
+            ? data
+            : Array.isArray(data?.orders)
+              ? data.orders
+              : []
+        );
+      } catch (err) {
+        console.error(
+          "❌ ALL ORDERS ERROR:",
+          err
+        );
+
+        setOrders([]);
+
+        if (err.response?.status === 401) {
+          setError(
+            "Please login to view your orders."
+          );
+        } else {
+          setError(
+            err.response?.data?.message ||
+            "Unable to load orders."
+          );
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrders();
+  }, [customerId]);
+
+  // =========================================================
+  // FORMAT DATE
+  // =========================================================
+
+  const formatDate = (date) => {
+    if (!date) return "N/A";
+
+    const parsedDate = new Date(date);
+
+    if (Number.isNaN(parsedDate.getTime())) {
+      return "N/A";
+    }
+
+    return parsedDate.toLocaleString("en-IN", {
+      dateStyle: "medium",
+      timeStyle: "short",
+    });
+  };
+
+  // =========================================================
+  // CANCEL ORDER
+  // =========================================================
+
+  const cancelOrder = async (orderId) => {
+    const confirmed = window.confirm(
+      "Are you sure you want to cancel this order?"
+    );
+
+    if (!confirmed) return;
+
+    try {
+      await api.put(`/orders/${orderId}`, {
+        status: "Cancelled",
+      });
+
+      setOrders((previousOrders) =>
+        previousOrders.map((order) =>
+          Number(order.id) === Number(orderId)
+            ? {
+              ...order,
+              status: "Cancelled",
+            }
+            : order
+        )
+      );
+
+      alert("Order cancelled successfully.");
+    } catch (err) {
+      console.error(
+        "❌ Failed to cancel order:",
+        err
+      );
+
+      alert(
+        err?.response?.data?.message ||
+        "Failed to cancel order."
+      );
+    }
+  };
+
+  // =========================================================
+  // FILTER + SORT
+  // =========================================================
+
+  const filteredOrders = useMemo(() => {
+    let result = [...orders];
+
+    // SEARCH
+    const searchValue = search
+      .trim()
+      .toLowerCase();
+
+    if (searchValue) {
+      result = result.filter((order) =>
+        String(order.id || "")
+          .toLowerCase()
+          .includes(searchValue)
+      );
+    }
+
+    // STATUS
+    if (statusFilter !== "All") {
+      result = result.filter(
+        (order) =>
+          String(order.status || "")
+            .toLowerCase() ===
+          statusFilter.toLowerCase()
+      );
+    }
+
+    // SORT
+    result.sort((a, b) => {
+      const dateA = new Date(
+        a.orderDate ||
+        a.order_date ||
+        a.created_at ||
+        a.createdAt ||
+        0
+      ).getTime();
+
+      const dateB = new Date(
+        b.orderDate ||
+        b.order_date ||
+        b.created_at ||
+        b.createdAt ||
+        0
+      ).getTime();
+
+      return sortOrder === "newest"
+        ? dateB - dateA
+        : dateA - dateB;
+    });
+
+    return result;
+  }, [
+    orders,
+    search,
+    statusFilter,
+    sortOrder,
+  ]);
+
+  // =========================================================
+  // PAGINATION
+  // =========================================================
+
+  const {
+    currentPage,
+    setCurrentPage,
+    totalPages,
+    paginatedData,
+    startIndex,
+    endIndex,
+    totalItems,
+  } = usePagination(
+    filteredOrders,
+    10
+  );
+
+  // =========================================================
+  // LOADING
+  // =========================================================
+
+  if (loading) {
+    return (
+      <div className="all-orders-container">
+        <div className="orders-loading">
+          Loading your orders...
+        </div>
+      </div>
+    );
+  }
+
+  // =========================================================
+  // LOGIN
+  // =========================================================
+
+  if (!customerId) {
+    return (
+      <div className="all-orders-container">
+        <div className="orders-error">
+          <p>Please login to view your orders.</p>
+
+          <button
+            type="button"
+            className="track-order-btn"
+            onClick={() => navigate("/login")}
+          >
+            Login
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // =========================================================
   // RENDER
   // =========================================================
 
@@ -140,7 +317,6 @@ export const AllOrders = () => {
       ===================================================== */}
 
       <div className="all-orders-header">
-
         <div>
           <h1>My Orders</h1>
 
@@ -156,355 +332,505 @@ export const AllOrders = () => {
         >
           Back to Home
         </button>
-
       </div>
 
       {/* =====================================================
-          LOADING
+          FILTER BAR
       ===================================================== */}
 
-      {loading && (
-        <div className="orders-loading">
-          Loading your orders...
-        </div>
+      {orders.length > 0 && (
+        <CommonFilterBar
+          search={search}
+          setSearch={setSearch}
+          searchPlaceholder="Search Order ID"
+          filters={[
+            {
+              key: "status",
+              label: "Status",
+              value: statusFilter,
+              onChange: setStatusFilter,
+              options: [
+                {
+                  label: "All Orders",
+                  value: "All",
+                },
+                {
+                  label: "Pending",
+                  value: "Pending",
+                },
+                {
+                  label: "Processing",
+                  value: "Processing",
+                },
+                {
+                  label: "Shipped",
+                  value: "Shipped",
+                },
+                {
+                  label: "Delivered",
+                  value: "Delivered",
+                },
+                {
+                  label: "Cancelled",
+                  value: "Cancelled",
+                },
+              ],
+            },
+            {
+              key: "sort",
+              label: "Sort By",
+              value: sortOrder,
+              onChange: setSortOrder,
+              options: [
+                {
+                  label: "Newest First",
+                  value: "newest",
+                },
+                {
+                  label: "Oldest First",
+                  value: "Oldest",
+                },
+              ],
+            },
+          ]}
+          onClear={() => {
+            setSearch("");
+            setStatusFilter("All");
+            setSortOrder("newest");
+            setCurrentPage(1);
+          }}
+        />
       )}
 
       {/* =====================================================
           ERROR
       ===================================================== */}
 
-      {!loading && error && (
-        <div className="orders-error">
-
-          <p>{error}</p>
-
-          {error
-            .toLowerCase()
-            .includes("login") && (
-            <button
-              type="button"
-              className="track-order-btn"
-              onClick={() =>
-                navigate("/login")
-              }
-            >
-              Login
-            </button>
-          )}
-
-        </div>
-      )}
-
-      {/* =====================================================
-          EMPTY
-      ===================================================== */}
-
-      {!loading &&
-        !error &&
+      {!error &&
         orders.length === 0 && (
           <div className="no-orders">
-
             <h3>No orders found</h3>
 
             <p>
               You have not placed any orders yet.
             </p>
 
+            <button
+              type="button"
+              onClick={() => navigate("/")}
+            >
+              Start Shopping
+            </button>
           </div>
         )}
 
+      {error && (
+        <div className="orders-error">
+          <p>{error}</p>
+
+          {error
+            .toLowerCase()
+            .includes("login") && (
+              <button
+                type="button"
+                className="track-order-btn"
+                onClick={() => navigate("/login")}
+              >
+                Login
+              </button>
+            )}
+        </div>
+      )}
+
       {/* =====================================================
-          ORDERS
+          RESULT COUNT
       ===================================================== */}
 
-      {!loading &&
-        !error &&
-        orders.length > 0 && (
+      {!error && orders.length > 0 && (
+        <>
+          <div className="orders-result-info">
+            Showing{" "}
+            <strong>{startIndex}</strong>
+            {" - "}
+            <strong>{endIndex}</strong>
+            {" of "}
+            <strong>{totalItems}</strong>
+            {" orders"}
+          </div>
 
-          <div className="orders-list">
+          {/* =================================================
+              NO MATCHING ORDERS
+          ================================================= */}
 
-            {orders.map((order) => {
+          {filteredOrders.length === 0 ? (
+            <div className="no-orders">
+              <h3>No matching orders</h3>
 
-              const items = Array.isArray(
-                order.items
-              )
-                ? order.items
-                : [];
+              <p>
+                Try changing your search or filters.
+              </p>
+            </div>
+          ) : (
+            /* =================================================
+               ORDERS
+            ================================================= */
 
-              const itemCount =
-                items.length ||
-                Number(order.item_count) ||
-                0;
+            <div className="orders-list">
 
-              return (
+              {paginatedData.map((order) => {
+                const items = Array.isArray(
+                  order.items
+                )
+                  ? order.items
+                  : [];
 
-                <div
-                  className="order-card"
-                  key={order.id}
-                >
+                const itemCount =
+                  items.length ||
+                  Number(order.item_count) ||
+                  0;
 
-                  {/* =========================================
-                      ORDER HEADER
-                  ========================================= */}
+                const status =
+                  order.status || "Pending";
 
-                  <div className="order-card-top">
+                const statusClass = String(status)
+                  .toLowerCase()
+                  .replace(/\s+/g, "-");
 
-                    <div className="order-info">
+                const totalAmount = Number(
+                  order.totalCost ??
+                  order.total ??
+                  0
+                );
 
-                      <span className="order-label">
-                        Order ID
-                      </span>
+                return (
+                  <div
+                    className="order-card"
+                    key={order.id}
+                  >
 
-                      <h3>
-                        #{order.id}
-                      </h3>
+                    {/* =========================================
+                        ORDER HEADER
+                    ========================================= */}
+
+                    <div className="order-card-top">
+
+                      <div className="order-info">
+                        <span className="order-label">
+                          Order ID
+                        </span>
+
+                        <h3>
+                          #{order.id}
+                        </h3>
+                      </div>
+
+                      <div
+                        className={`order-status ${statusClass}`}
+                      >
+                        {status}
+                      </div>
 
                     </div>
 
-                    <div
-                      className={`order-status ${String(
-                        order.status || "pending"
-                      )
-                        .toLowerCase()
-                        .replace(/\s+/g, "-")}`}
-                    >
-                      {order.status || "Pending"}
-                    </div>
+                    {/* =========================================
+                        ORDER DETAILS
+                    ========================================= */}
 
-                  </div>
+                    <div className="order-card-details">
 
-                  {/* =========================================
-                      ORDER DETAILS
-                  ========================================= */}
+                      <div>
+                        <span>
+                          Order Date
+                        </span>
 
-                  <div className="order-card-details">
-
-                    <div>
-                      <span>
-                        Order Date
-                      </span>
-
-                      <strong>
-                        {formatDate(
-                          order.orderDate ||
+                        <strong>
+                          {formatDate(
+                            order.orderDate ||
                             order.order_date ||
                             order.created_at ||
                             order.createdAt
-                        )}
-                      </strong>
+                          )}
+                        </strong>
+                      </div>
+
+                      <div>
+                        <span>
+                          Total Amount
+                        </span>
+
+                        <strong>
+                          ₹
+                          {totalAmount.toLocaleString(
+                            "en-IN",
+                            {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            }
+                          )}
+                        </strong>
+                      </div>
+
+                      <div>
+                        <span>
+                          Total Items
+                        </span>
+
+                        <strong>
+                          {itemCount}
+                        </strong>
+                      </div>
+
                     </div>
+                    {/* =========================================
+    DELIVERY VERIFICATION CODE
+========================================= */}
 
-                    <div>
-                      <span>
-                        Total Amount
-                      </span>
+                    {String(status).toLowerCase() === "shipped" &&
+                      order.deliveryVerificationCode && (
+                        <div className="delivery-verification-card">
+                          <div className="delivery-verification-icon">
+                            🔐
+                          </div>
 
-                      <strong>
-                        ₹
-                        {Number(
-                          order.totalCost ??
-                            order.total ??
-                            0
-                        ).toLocaleString(
-                          "en-IN"
-                        )}
-                      </strong>
-                    </div>
+                          <div className="delivery-verification-content">
+                            <span className="delivery-verification-label">
+                              Delivery Verification Code
+                            </span>
 
-                    <div>
-                      <span>
-                        Total Items
-                      </span>
+                            <strong className="delivery-verification-code">
+                              {order.deliveryVerificationCode}
+                            </strong>
 
-                      <strong>
-                        {itemCount}
-                      </strong>
-                    </div>
+                            <p>
+                              Share this code with the delivery person
+                              only when your order arrives.
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                    {/* =========================================
+                        ORDER ITEMS
+                    ========================================= */}
 
-                  </div>
+                    {items.length > 0 && (
+                      <div className="order-items-breakdown">
 
-                  {/* =========================================
-                      ORDER ITEMS BREAKDOWN
-                  ========================================= */}
+                        <h4>
+                          Order Items
+                        </h4>
 
-                  {items.length > 0 && (
+                        <div className="order-items-list">
 
-                    <div className="order-items-breakdown">
+                          {items.map(
+                            (item, index) => {
 
-                      <h4>
-                        Order Items
-                      </h4>
+                              const productImage =
+                                getProductImage(
+                                  item
+                                );
 
-                      <div className="order-items-list">
+                              const productName =
+                                item.productTitle ||
+                                item.product_title ||
+                                item.title ||
+                                item.name ||
+                                item.description ||
+                                "Product";
 
-                        {items.map(
-                          (item, index) => {
+                              const imageUrl =
+                                getImageUrl(
+                                  productImage
+                                );
 
-                            const productImage =
-                              getProductImage(
-                                item
-                              );
+                              const quantity =
+                                Number(
+                                  item.quantity ?? 1
+                                );
 
-                            const productName =
-                              item.productTitle ||
-                              item.product_title ||
-                              item.title ||
-                              item.name ||
-                              item.description ||
-                              "Product";
-
-                            const imageUrl =
-                              getImageUrl(
-                                productImage
-                              );
-
-                            const quantity =
-                              Number(
-                                item.quantity ?? 1
-                              );
-
-                            const itemPrice =
-                              Number(
-                                item.amount ??
+                              const itemPrice =
+                                Number(
+                                  item.amount ??
                                   item.productPrice ??
                                   item.product_price ??
                                   item.price ??
                                   0
-                              );
+                                );
 
-                            return (
+                              return (
+                                <div
+                                  className="order-item-row"
+                                  key={
+                                    item.id ||
+                                    `${order.id}-${index}`
+                                  }
+                                >
 
-                              <div
-                                className="order-item-row"
-                                key={
-                                  item.id ||
-                                  `${order.id}-${index}`
-                                }
-                              >
+                                  {/* PRODUCT IMAGE */}
 
-                                {/* PRODUCT IMAGE */}
+                                  <div className="order-item-image">
 
-                                <div className="order-item-image">
-
-                                  {imageUrl ? (
-
-                                    <img
-                                      src={imageUrl}
-                                      alt={
-                                        productName
-                                      }
-                                    />
-
-                                  ) : (
-
-                                    <div className="product-image-placeholder">
-                                      📦
-                                    </div>
-
-                                  )}
-
-                                </div>
-
-                                {/* PRODUCT DETAILS */}
-
-                                <div className="order-item-info">
-
-                                  <h5>
-                                    {productName}
-                                  </h5>
-
-                                  {item.description &&
-                                    item.description !==
-                                      productName && (
-
-                                      <p>
-                                        {
-                                          item.description
+                                    {imageUrl ? (
+                                      <img
+                                        src={imageUrl}
+                                        alt={
+                                          productName
                                         }
-                                      </p>
-
+                                      />
+                                    ) : (
+                                      <div className="product-image-placeholder">
+                                        📦
+                                      </div>
                                     )}
 
-                                  <span>
-                                    Quantity:{" "}
-                                    <strong>
-                                      {quantity}
-                                    </strong>
-                                  </span>
+                                  </div>
+
+                                  {/* PRODUCT DETAILS */}
+
+                                  <div className="order-item-info">
+
+                                    <h5>
+                                      {productName}
+                                    </h5>
+
+                                    {item.description &&
+                                      item.description !==
+                                      productName && (
+                                        <p>
+                                          {
+                                            item.description
+                                          }
+                                        </p>
+                                      )}
+
+                                    <span>
+                                      Quantity:{" "}
+                                      <strong>
+                                        {quantity}
+                                      </strong>
+                                    </span>
+
+                                  </div>
+
+                                  {/* PRICE */}
+
+                                  <div className="order-item-price">
+                                    ₹
+                                    {itemPrice.toLocaleString(
+                                      "en-IN",
+                                      {
+                                        minimumFractionDigits: 2,
+                                        maximumFractionDigits: 2,
+                                      }
+                                    )}
+                                  </div>
 
                                 </div>
+                              );
+                            }
+                          )}
 
-                                {/* PRICE */}
+                        </div>
+                      </div>
+                    )}
 
-                                <div className="order-item-price">
+                    {/* =========================================
+                        ORDER FOOTER
+                    ========================================= */}
 
-                                  ₹
-                                  {itemPrice.toLocaleString(
-                                    "en-IN"
-                                  )}
+                    <div className="order-card-footer">
 
-                                </div>
+                      <div className="customer-info">
 
-                              </div>
+                        <strong>
+                          Payment
+                        </strong>
 
-                            );
+                        <span>
+                          {order.paymentStatus ||
+                            order.payment_status ||
+                            "Pending"}
+                        </span>
+
+                      </div>
+
+                      <div className="order-footer-actions">
+
+                        {/* CANCEL */}
+
+                        {String(status).toLowerCase() ===
+                          "pending" && (
+                            <button
+                              type="button"
+                              className="order-cancel-btn"
+                              onClick={() =>
+                                cancelOrder(
+                                  order.id
+                                )
+                              }
+                            >
+                              Cancel Order
+                            </button>
+                          )}
+
+                        {/* VIEW */}
+
+                        <button
+                          type="button"
+                          className="order-view-btn"
+                          onClick={() =>
+                            navigate(`/orders/${order.id}`)
                           }
-                        )}
+                        >
+                          View Order
+                        </button>
+
+                        {/* TRACK */}
+
+                        {String(status).toLowerCase() !==
+                          "cancelled" && (
+                            <button
+                              type="button"
+                              className="track-order-btn"
+                              onClick={() =>
+                                navigate("/trackmyorder", {
+                                  state: {
+                                    orderId: order.id,
+                                  },
+                                })
+                              }
+                            >
+                              Track Order →
+                            </button>
+                          )}
 
                       </div>
 
                     </div>
 
-                  )}
-
-                  {/* =========================================
-                      ORDER FOOTER
-                  ========================================= */}
-
-                  <div className="order-card-footer">
-
-                    <div className="customer-info">
-
-                      <strong>
-                        Payment
-                      </strong>
-
-                      <span>
-                        {order.paymentStatus ||
-                          order.payment_status ||
-                          "Pending"}
-                      </span>
-
-                    </div>
-
-                    <button
-                      type="button"
-                      className="track-order-btn"
-                      onClick={() =>
-                        navigate(
-                          "/track-order",
-                          {
-                            state: {
-                              orderId:
-                                order.id,
-                            },
-                          }
-                        )
-                      }
-                    >
-                      Track Order →
-                    </button>
-
                   </div>
+                );
+              })}
 
-                </div>
+            </div>
+          )}
 
-              );
-            })}
+          {/* =================================================
+              PAGINATION
+          ================================================= */}
 
-          </div>
-        )}
+          {filteredOrders.length > 0 && (
+            <CommonPagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+            />
+          )}
+
+        </>
+      )}
 
     </div>
   );
 };
+
+export default AllOrders;

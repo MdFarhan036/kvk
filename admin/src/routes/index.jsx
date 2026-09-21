@@ -52,6 +52,7 @@ import BlogDetails from '../pages/BlogDetails';
 import BlogList from '../pages/BlogList';
 import CreateBlog from '../pages/CreateBlog';
 import EditBlog from '../pages/EditBlog';
+import DeliveryPersons from '../pages/DeliveryPersons';
 
 const router = createBrowserRouter([
   {
@@ -89,6 +90,10 @@ const router = createBrowserRouter([
               { path: ":id", element: <UserDetails /> },
               { path: "edit/:id", element: <EditUser /> },
             ],
+          },
+          {
+            path: "/delivery-persons",
+            element: <DeliveryPersons />,
           },
           {
             path: "/customers",

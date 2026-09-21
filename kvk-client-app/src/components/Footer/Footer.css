@@ -1,0 +1,228 @@
+.site-footer {
+  width: 100%;
+  margin-top: auto;
+  background: #17231b;
+  color: #ffffff;
+}
+
+/* ============================================
+   MAIN FOOTER
+============================================ */
+
+.footer-main {
+  padding: 60px 0 50px;
+}
+
+.footer-container {
+  width: min(1400px, 94%);
+  margin: 0 auto;
+
+  display: grid;
+  grid-template-columns:
+    2fr
+    1fr
+    1fr
+    1.5fr;
+
+  gap: 50px;
+}
+
+/* ============================================
+   FOOTER COLUMNS
+============================================ */
+
+.footer-column {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.footer-column h3 {
+  margin: 0 0 22px;
+
+  font-size: 17px;
+  font-weight: 600;
+
+  color: #ffffff;
+}
+
+.footer-column > a {
+  margin-bottom: 11px;
+
+  color: #c8d0ca;
+
+  font-size: 14px;
+  line-height: 1.5;
+
+  text-decoration: none;
+
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.footer-column > a:hover {
+  color: #ffffff;
+  transform: translateX(3px);
+}
+
+/* ============================================
+   LOGO
+============================================ */
+
+.footer-logo {
+  display: inline-block;
+
+  margin-bottom: 18px;
+
+  color: #ffffff;
+
+  font-size: 34px;
+  font-weight: 800;
+
+  letter-spacing: -1px;
+
+  text-decoration: none;
+}
+
+/* ============================================
+   ABOUT
+============================================ */
+
+.footer-about > p {
+  max-width: 370px;
+
+  margin: 0;
+
+  color: #c8d0ca;
+
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+/* ============================================
+   CONTACT
+============================================ */
+
+.footer-contact {
+  display: flex;
+  flex-direction: column;
+
+  gap: 12px;
+
+  margin-top: 25px;
+}
+
+.footer-contact div {
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
+  color: #c8d0ca;
+
+  font-size: 14px;
+}
+
+.footer-contact i {
+  width: 18px;
+
+  color: #ffffff;
+
+  text-align: center;
+}
+
+/* ============================================
+   CATEGORIES
+============================================ */
+
+.footer-categories {
+  max-height: 300px;
+}
+
+/* ============================================
+   BOTTOM
+============================================ */
+
+.footer-bottom {
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.footer-bottom-container {
+  width: min(1400px, 94%);
+  min-height: 65px;
+
+  margin: 0 auto;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 20px;
+}
+
+.footer-bottom p {
+  margin: 0;
+
+  color: #aeb8b1;
+
+  font-size: 12px;
+}
+
+.footer-bottom-links {
+  display: flex;
+  align-items: center;
+
+  gap: 22px;
+
+  color: #aeb8b1;
+
+  font-size: 12px;
+}
+
+/* ============================================
+   TABLET
+============================================ */
+
+@media (max-width: 1000px) {
+  .footer-container {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 40px;
+  }
+}
+
+/* ============================================
+   MOBILE
+============================================ */
+
+@media (max-width: 600px) {
+  .footer-main {
+    padding: 45px 0 35px;
+  }
+
+  .footer-container {
+    width: 90%;
+
+    grid-template-columns: 1fr;
+
+    gap: 35px;
+  }
+
+  .footer-bottom-container {
+    width: 90%;
+
+    padding: 18px 0;
+
+    min-height: auto;
+
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .footer-bottom-links {
+    flex-direction: column;
+    align-items: flex-start;
+
+    gap: 8px;
+  }
+}

@@ -1,0 +1,131 @@
+/* =========================================================
+   COMMON KVK FILTER BAR
+========================================================= */
+
+.common-filter-bar {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 14px;
+
+  width: 100%;
+  margin-bottom: 18px;
+  padding: 16px;
+
+  box-sizing: border-box;
+
+  border: 1px solid #e5e5e5;
+  border-radius: 10px;
+
+  background: #fff;
+
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.common-filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  min-width: 180px;
+}
+
+.common-filter-search {
+  min-width: 230px;
+}
+
+.common-filter-group label {
+  color: #444;
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.common-filter-group input,
+.common-filter-group select {
+  width: 100%;
+  height: 40px;
+
+  padding: 0 11px;
+
+  box-sizing: border-box;
+
+  border: 1px solid #d8d8d8;
+  border-radius: 6px;
+
+  background: #fff;
+  color: #333;
+
+  font-family: inherit;
+  font-size: 13px;
+
+  outline: none;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.common-filter-group input:focus,
+.common-filter-group select:focus {
+  border-color: #198754;
+
+  box-shadow:
+    0 0 0 3px
+    rgba(25, 135, 84, 0.08);
+}
+
+
+/* =========================================================
+   CLEAR BUTTON
+========================================================= */
+
+.common-filter-clear {
+  height: 40px;
+
+  padding: 0 14px;
+
+  border: 1px solid #dc3545;
+  border-radius: 6px;
+
+  background: #fff;
+  color: #dc3545;
+
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.common-filter-clear:hover {
+  background: #dc3545;
+  color: #fff;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 768px) {
+
+  .common-filter-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .common-filter-group,
+  .common-filter-search {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .common-filter-clear {
+    width: 100%;
+  }
+}
