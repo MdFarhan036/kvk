@@ -1,5 +1,6 @@
 import "./Topbar.css";
 import { Link } from "react-router-dom";
+import LanguageSwitcher from "../LanguageSwitcher";
 
 export const Topbar = () => {
   return (
@@ -20,6 +21,7 @@ export const Topbar = () => {
 
         {/* RIGHT */}
         <div className="topbar-right">
+          <LanguageSwitcher />
 
           <a href="tel:+919308270123" className="topbar-item">
             <i className="fa-solid fa-phone"></i>
