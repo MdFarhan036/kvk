@@ -11,10 +11,13 @@ import productsimg from "../assets/products.png";
 import logoutimg from "../assets/logout.png";
 import adminlogo from "../assets/kvklogo1.png";
 import toggleimg from "../assets/List_menu_toggle-512.webp";
+import LanguageSwitcher from "../components/LanguageSwitcher";
+import { useTranslation } from "react-i18next";
 
 // API function
 
 export const AdminPanel = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
@@ -89,6 +92,7 @@ export const AdminPanel = () => {
 
             {/* Right: Profile */}
             <div className="admin-header-account">
+              <LanguageSwitcher className="admin-language-switcher" />
               <div
                 className="admin-profile-user"
                 onClick={() => setIsOpenDropdown(!isOpenDropdown)}
@@ -107,13 +111,13 @@ export const AdminPanel = () => {
               {isOpenDropdown && (
                 <ul className="admindropdownMenu">
                   <li>
-                    <button onClick={() => navigate("/account")}>My Account</button>
+                    <button onClick={() => navigate("/account")}>{t("myAccount")}</button>
                   </li>
                   <li>
-                    <button onClick={() => navigate("/settings")}>Settings</button>
+                    <button onClick={() => navigate("/settings")}>{t("settings")}</button>
                   </li>
                   <li>
-                    <button onClick={handleLogout}>Logout</button>
+                    <button onClick={handleLogout}>{t("logout")}</button>
                   </li>
                 </ul>
               )}
@@ -129,20 +133,20 @@ export const AdminPanel = () => {
             <Link to="/dashboard">
               <li className={`admin-box ${activeTab === 0 ? "activetab" : ""}`} onClick={() => handleTabClick(0)}>
                 <img src={dashboardimg} alt="Dashboard" />
-                {!isCollapsed && <p>Dashboard</p>}
+                {!isCollapsed && <p>{t("dashboard")}</p>}
               </li>
             </Link>
 
             {/* Categories */}
             <li className={`admin-box ${activeTab === 8 ? "activetab" : ""}`} onClick={() => handleTabClick(8)}>
               <img src={productsimg} alt="Categories" />
-              {!isCollapsed && <p>Categories</p>}
+              {!isCollapsed && <p>{t("categories")}</p>}
             </li>
             {submenuToggle[8] && (
               <div className="submenu-wrapper opensubmenu">
                 <ul className="admin-submenu">
-                  <Link to="/categories/categoryTable"><li>Category List</li></Link>
-                  <Link to="/categories/uploadCategory"><li>Category Upload</li></Link>
+                  <Link to="/categories/categoryTable"><li>{t("categoryList")}</li></Link>
+                  <Link to="/categories/uploadCategory"><li>{t("categoryUpload")}</li></Link>
                 </ul>
               </div>
             )}
@@ -150,13 +154,13 @@ export const AdminPanel = () => {
             {/* Products */}
             <li className={`admin-box ${activeTab === 1 ? "activetab" : ""}`} onClick={() => handleTabClick(1)}>
               <img src={productsimg} alt="Products" />
-              {!isCollapsed && <p>Products</p>}
+              {!isCollapsed && <p>{t("products")}</p>}
             </li>
             {submenuToggle[1] && (
               <div className="submenu-wrapper opensubmenu">
                 <ul className="admin-submenu">
-                  <Link to="/allproducts/productTable"><li>Products List</li></Link>
-                  <Link to="/allproducts/uploadProduct"><li>Products Upload</li></Link>
+                  <Link to="/allproducts/productTable"><li>{t("productsList")}</li></Link>
+                  <Link to="/allproducts/uploadProduct"><li>{t("productsUpload")}</li></Link>
                 </ul>
               </div>
             )}
@@ -164,32 +168,32 @@ export const AdminPanel = () => {
             <Link to="/allorders">
               <li className={`admin-box ${activeTab === 2 ? "activetab" : ""}`} onClick={() => handleTabClick(2)}>
                 <img src={customerimg} alt="Orders" />
-                {!isCollapsed && <p>Orders</p>}
+                {!isCollapsed && <p>{t("orders")}</p>}
               </li>
             </Link>
             <Link to="/customers/customerTable">
               <li className={`admin-box ${activeTab === 2 ? "activetab" : ""}`} onClick={() => handleTabClick(2)}>
                 <img src={customerimg} alt="Customers" />
-                {!isCollapsed && <p>Customers</p>}
+                {!isCollapsed && <p>{t("customers")}</p>}
               </li>
             </Link>
 
             <Link to="/users/userTable">
               <li className={`admin-box ${activeTab === 3 ? "activetab" : ""}`} onClick={() => handleTabClick(3)}>
                 <img src={checkoutimg} alt="Users" />
-                {!isCollapsed && <p>Users</p>}
+                {!isCollapsed && <p>{t("users")}</p>}
               </li>
             </Link>
             <Link to="/delivery-persons">
               <li className={`admin-box ${activeTab === 3 ? "activetab" : ""}`} onClick={() => handleTabClick(3)}>
                 <img src={checkoutimg} alt="Delivery persons" />
-                {!isCollapsed && <p>Delivery persons</p>}
+                {!isCollapsed && <p>{t("deliveryPersons")}</p>}
               </li>
             </Link>
             <Link to="/brands/brandsTable">
               <li className={`admin-box ${activeTab === 3 ? "activetab" : ""}`}>
                 <img src={checkoutimg} alt="Brands" />
-                {!isCollapsed && <p>Brands</p>}
+                {!isCollapsed && <p>{t("brands")}</p>}
               </li>
             </Link>
                   <Link to="/carousels/carouselsTable">
@@ -201,7 +205,7 @@ export const AdminPanel = () => {
             <Link to="/transactions">
               <li className={`admin-box ${activeTab === 5 ? "activetab" : ""}`} onClick={() => handleTabClick(4)}>
                 <img src={checkoutimg} alt="Transactions" />
-                {!isCollapsed && <p>Transactions</p>}
+                {!isCollapsed && <p>{t("transactions")}</p>}
               </li>
             </Link>
    
@@ -209,13 +213,13 @@ export const AdminPanel = () => {
             <Link to="/settings">
               <li className={`admin-box ${activeTab === 6 ? "activetab" : ""}`} onClick={() => handleTabClick(5)}>
                 <img src={settingimg} alt="Settings" />
-                {!isCollapsed && <p>Settings</p>}
+                {!isCollapsed && <p>{t("settings")}</p>}
               </li>
             </Link>
             <Link to="/blogs">
               <li className={`admin-box ${activeTab === 6 ? "activetab" : ""}`} onClick={() => handleTabClick(6)}>
                 <img src={settingimg} alt="Blogs" />
-                {!isCollapsed && <p>Blogs</p>}
+                {!isCollapsed && <p>{t("blogs")}</p>}
               </li>
             </Link>
 

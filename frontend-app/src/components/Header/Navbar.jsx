@@ -2,8 +2,10 @@ import { useState, useEffect } from "react";
 import "./Navbar.css";
 import { Link } from "react-router-dom";
 import api, { ASSET_BASE_URL } from "../api";
+import { useTranslation } from "react-i18next";
 
 const Navbar = () => {
+  const { t } = useTranslation();
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
 
@@ -295,7 +297,7 @@ const Navbar = () => {
               }
             }}
           >
-            <span>Shop</span>
+            <span>{t("products")}</span>
 
             <div className="mega-dropdown mega-shop-dropdown">
 

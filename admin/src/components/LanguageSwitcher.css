@@ -1,0 +1,34 @@
+.kvk-language-switcher {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  flex-wrap: nowrap;
+  font-size: 13px;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+.kvk-language-switcher .kvk-language-label {
+  color: inherit;
+  opacity: .8;
+}
+.kvk-language-switcher button {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  padding: 4px 2px;
+  border-bottom: 2px solid transparent;
+}
+.kvk-language-switcher button.active {
+  font-weight: 700;
+  border-bottom-color: currentColor;
+}
+.kvk-language-switcher button:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+.kvk-language-divider { opacity: .45; }

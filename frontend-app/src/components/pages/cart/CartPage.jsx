@@ -7,8 +7,10 @@ import "./cart.css";
 
 import { useCart } from "../../../context/CartContext";
 import { ASSET_BASE_URL } from "../../api.js";
+import { useTranslation } from "react-i18next";
 
 export const CartPage = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const {
@@ -42,7 +44,7 @@ export const CartPage = () => {
   ========================================================= */
 
   if (!cartItems.length) {
-    return <p>Your cart is empty.</p>;
+    return <p>{t("emptyCart")}</p>;
   }
 
   /* =========================================================
@@ -84,7 +86,7 @@ export const CartPage = () => {
       <div className="cart-left">
 
         <h1>
-          Your Cart ({cartItems.length})
+          {t("yourCart")} ({cartItems.length})
         </h1>
 
         <button
@@ -101,7 +103,7 @@ export const CartPage = () => {
               <th>Product</th>
               <th>Price</th>
               <th>Qty</th>
-              <th>Subtotal</th>
+              <th>{t("subtotal")}</th>
               <th>Action</th>
             </tr>
           </thead>

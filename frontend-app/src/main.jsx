@@ -1,4 +1,4 @@
-// ✅ /src/main.jsx
+// /src/main.jsx
 import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
@@ -7,6 +7,7 @@ import "@fontsource/inter/500.css";
 import "@fontsource/inter/600.css";
 import "@fontsource/inter/700.css";
 import "@fontsource/inter/800.css";
+import "./i18n";
 import { RouterProvider } from "react-router-dom";
 import router from "./routes/index.jsx";
 
@@ -17,7 +18,6 @@ import { FilterProvider } from "./context/FilterContext.jsx";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    {/* ✅ AUTH PROVIDER MUST BE OUTERMOST */}
     <CustomerProvider>
       <FilterProvider>
         <WishlistProvider>

@@ -6,8 +6,10 @@ import editimg from "../../assets/edit-new-icon-22.png";
 import deleteimg from "../../assets/1214428.png";
 import { ProductContext } from "../../context/ProductContext.jsx";
 import "./ProductTable.css";
+import { useTranslation } from "react-i18next";
 
 export const ProductTable = () => {
+  const { t } = useTranslation();
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [modalProduct, setModalProduct] = useState(null);
@@ -242,7 +244,7 @@ export const ProductTable = () => {
       ================================================= */}
 
       <div className="adminproduct-head">
-        <h2>All Products</h2>
+        <h2>{t("products")}</h2>
 
         <Link to="/allproducts/uploadProduct">
           <button className="upload-btn">
@@ -258,7 +260,7 @@ export const ProductTable = () => {
       <div style={{ marginBottom: "15px" }}>
         <input
           type="text"
-          placeholder="Search by title, brand, or category"
+          placeholder={t("searchProductsAdmin")}
           value={search}
           onChange={(e) =>
             setSearch(e.target.value)
@@ -350,16 +352,16 @@ export const ProductTable = () => {
 
             <thead>
               <tr>
-                <th>Images</th>
-                <th>Name</th>
-                <th>Category</th>
-                <th>Stock</th>
-                <th>Price</th>
-                <th>Status</th>
-                <th>Popular</th>
-                <th>Daily Deal</th>
+                <th>{t("images")}</th>
+                <th>{t("name")}</th>
+                <th>{t("category")}</th>
+                <th>{t("stock")}</th>
+                <th>{t("price")}</th>
+                <th>{t("status")}</th>
+                <th>{t("popular")}</th>
+                <th>{t("dailyDeal")}</th>
                 <th>Daily Deal Price</th>
-                <th>Actions</th>
+                <th>{t("actions")}</th>
               </tr>
             </thead>
 
