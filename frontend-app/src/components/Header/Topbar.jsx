@@ -4,6 +4,7 @@ import LanguageSwitcher from "../LanguageSwitcher";
 import { useTranslation } from "react-i18next";
 
 export const Topbar = () => {
+  const { t } = useTranslation();
   return (
     <div className="topbar">
       <div className="topbar-container">
