@@ -10,8 +10,9 @@ import logonav from "../../assets/img/kvklogo1.png";
 import api, { ASSET_BASE_URL } from "../api.js";
 import { useCustomerAuth } from "../../context/CustomerContext";
 import { Loader } from "../Loader";
+import { useTranslation } from "react-i18next";
 
-export const Header = () => {
+export const Header = () => {\n  const { t } = useTranslation();
   // ============================================
   // STATE
   // ============================================
@@ -749,7 +750,7 @@ export const Header = () => {
   if (loading) {
     return (
       <Loader
-        label="Loading"
+        label={t("loading")}
         inline
       />
     );
@@ -861,7 +862,7 @@ export const Header = () => {
 
             <input
               type="search"
-              placeholder="Search for products..."
+              placeholder={t("searchProducts")}
               value={searchQuery}
               onChange={(event) =>
                 setSearchQuery(
@@ -1338,7 +1339,7 @@ export const Header = () => {
                     }
                   >
                     <i className="fa-regular fa-user"> </i> 
-                     My Account
+                     {t("myAccount")}
                   </Link>
                 </li>
 
@@ -1353,7 +1354,7 @@ export const Header = () => {
                     }
                   >
                     <i className="fa-solid fa-box"></i>
-                    My Orders
+                    {t("myOrders")}
                   </Link>
                 </li>
 
@@ -1383,7 +1384,7 @@ export const Header = () => {
                     }
                   >
                     <i className="fa-solid fa-location-dot"></i>
-                    My Addresses
+                    {t("myAddresses")}
                   </Link>
                 </li>
 
@@ -1396,7 +1397,7 @@ export const Header = () => {
                     onClick={handleLogout}
                   >
                     <i className="fa-solid fa-right-from-bracket"></i>
-                    Logout
+                    {t("logout")}
                   </button>
                 </li>
 
