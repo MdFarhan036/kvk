@@ -12,7 +12,8 @@ import { useCustomerAuth } from "../../context/CustomerContext";
 import { Loader } from "../Loader";
 import { useTranslation } from "react-i18next";
 
-export const Header = () => {\n  const { t } = useTranslation();
+export const Header = () => {
+  const { t } = useTranslation();
   // ============================================
   // STATE
   // ============================================
