@@ -2,8 +2,10 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api, { ASSET_BASE_URL } from "../api";
 import "./AllCategories.css";
+import { useTranslation } from "react-i18next";
 
 export const CategoryTable = () => {
+  const { t } = useTranslation();
   const [categories, setCategories] = useState([]);
   const [message, setMessage] = useState("");
   const [sortConfig, setSortConfig] = useState({
@@ -18,7 +20,7 @@ export const CategoryTable = () => {
       setCategories(res.data ?? []);
     } catch (err) {
       console.error(err);
-      setMessage("❌ Failed to load categories");
+      setMessage("❌ " + t("failedLoadCategories"));
     }
   };
 
@@ -28,15 +30,15 @@ export const CategoryTable = () => {
 
   // ================= DELETE =================
   const handleDelete = async (id) => {
-    if (!window.confirm("Delete this category?")) return;
+    if (!window.confirm(t("confirmDeleteCategory"))) return;
 
     try {
       await api.delete(`/categories/${id}`);
-      setMessage("✅ Deleted successfully");
+      setMessage("✅ " + t("deletedSuccessfully"));
       fetchCategories();
     } catch (err) {
       console.error(err);
-      setMessage("❌ Delete failed");
+      setMessage("❌ " + t("deleteFailed"));
     }
   };
 
@@ -73,13 +75,13 @@ export const CategoryTable = () => {
 
       {/* HEADER */}
       <div className="adminproduct-head">
-        <h1>Categories CMS</h1>
+        <h1>{t("categories")} CMS</h1>
 
         {message && <p>{message}</p>}
 
         <Link to="/categories/uploadCategory">
           <button className="upload-btn">
-            + Create Category
+            + {t("createCategory")}
           </button>
         </Link>
       </div>
@@ -194,7 +196,7 @@ export const CategoryTable = () => {
                 colSpan="6"
                 style={{ textAlign: "center" }}
               >
-                No categories found
+                {t("noCategoriesFound")}
               </td>
             </tr>
           )}
