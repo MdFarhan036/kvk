@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 import "./ContactPage.css";
 
 import api from "../../components/api";
+import { useTranslation } from "react-i18next";
 
 export const ContactPage = () => {
+  const { t } = useTranslation();
   const [categories, setCategories] = useState([]);
 
   const [formData, setFormData] = useState({
@@ -72,7 +74,7 @@ export const ContactPage = () => {
       // await api.post("/contact", formData);
 
       setSuccessMessage(
-        "Thank you! Your message has been sent successfully."
+        "{t("thankYouMessage")}"
       );
 
       setFormData({
@@ -89,7 +91,7 @@ export const ContactPage = () => {
       );
 
       alert(
-        "Failed to send message. Please try again."
+        "{t("failedSendMessage")}"
       );
     } finally {
       setIsSubmitting(false);
@@ -102,7 +104,7 @@ export const ContactPage = () => {
       {/* CONTACT INFORMATION */}
 
       <div className="contact-info">
-        <h2>Contact Us</h2>
+        <h2>{t("contactUs")}</h2>
 
         <div className="contact-details">
 
@@ -154,7 +156,7 @@ export const ContactPage = () => {
       {/* CONTACT FORM */}
 
       <div className="contact-form">
-        <h2>Send Us a Message</h2>
+        <h2>{t("sendMessageTitle")}</h2>
 
         <form onSubmit={handleSubmit}>
 
@@ -168,7 +170,7 @@ export const ContactPage = () => {
             type="text"
             id="name"
             name="name"
-            placeholder="Enter your name"
+            placeholder={t("enterName")}
             value={formData.name}
             onChange={handleChange}
             required
@@ -185,7 +187,7 @@ export const ContactPage = () => {
             type="email"
             id="email"
             name="email"
-            placeholder="Enter your email"
+            placeholder={t("enterEmail")}
             value={formData.email}
             onChange={handleChange}
             required
@@ -202,7 +204,7 @@ export const ContactPage = () => {
             type="tel"
             id="mobile"
             name="mobile"
-            placeholder="Enter your mobile number"
+            placeholder={t("enterMobile")}
             value={formData.mobile}
             onChange={handleChange}
             required
@@ -255,7 +257,7 @@ export const ContactPage = () => {
             id="message"
             name="message"
             rows="5"
-            placeholder="Write your message here..."
+            placeholder={t("writeMessage")}
             value={formData.message}
             onChange={handleChange}
             required
