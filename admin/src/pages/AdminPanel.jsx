@@ -17,6 +17,7 @@ import { useTranslation } from "react-i18next";
 // API function
 
 export const AdminPanel = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
