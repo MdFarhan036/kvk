@@ -11,6 +11,7 @@ import productsimg from "../assets/products.png";
 import logoutimg from "../assets/logout.png";
 import adminlogo from "../assets/kvklogo1.png";
 import toggleimg from "../assets/List_menu_toggle-512.webp";
+import LanguageSwitcher from "../components/LanguageSwitcher";
 
 // API function
 
@@ -89,6 +90,7 @@ export const AdminPanel = () => {
 
             {/* Right: Profile */}
             <div className="admin-header-account">
+              <LanguageSwitcher className="admin-language-switcher" />
               <div
                 className="admin-profile-user"
                 onClick={() => setIsOpenDropdown(!isOpenDropdown)}
