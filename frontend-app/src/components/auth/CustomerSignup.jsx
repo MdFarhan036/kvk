@@ -44,7 +44,7 @@ export const CustomerSignup = () => {
       const res = await api.post("/auth/customer/signup", form);
 
       if (res.data.success) {
-        setSuccess("{t("signupSuccess")}");
+        setSuccess(t("signupSuccess"));
         setTimeout(() => navigate("/login"), 1500);
       } else {
         setError(res.data.message || t("signupFailed"));
