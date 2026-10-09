@@ -74,7 +74,7 @@ export const ContactPage = () => {
       // await api.post("/contact", formData);
 
       setSuccessMessage(
-        "{t("thankYouMessage")}"
+        t("thankYouMessage")
       );
 
       setFormData({
@@ -91,7 +91,7 @@ export const ContactPage = () => {
       );
 
       alert(
-        "{t("failedSendMessage")}"
+        t("failedSendMessage")
       );
     } finally {
       setIsSubmitting(false);
