@@ -5,7 +5,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { useCustomerAuth } from "../../context/CustomerContext.jsx";
 import loginIcons from "../../assets/img/signin.gif";
 import iconpass from "../../assets/img/eyeicon.jpg";
+import { useTranslation } from "react-i18next";
 export const CustomerLogin = () => {
+  const { t } = useTranslation();
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const { customer, login, loading } = useCustomerAuth();
@@ -52,14 +54,14 @@ export const CustomerLogin = () => {
 
 
       <form className="login-form" onSubmit={handleSubmit}>
-        <h1>Customer Login</h1>
+        <h1>{t("customerLogin")}</h1>
         <div className="login-icon">
           <img src={loginIcons} alt="login icon" />
         </div>
 
         {error && <p className="form-error">{error}</p>}
         <div className="txtb">
-          <label>Email</label>
+          <label>{t("email")}</label>
           <input
             type="email"
             value={email}
@@ -69,7 +71,7 @@ export const CustomerLogin = () => {
         </div>
 
         <div className="text-pass">
-          <label>Password</label>
+          <label>{t("password")}</label>
           <span className="txtb-pass">
             <input
               type={showPassword ? "text" : "password"}
@@ -86,14 +88,14 @@ export const CustomerLogin = () => {
           </span>
         </div>
         <div className="forgot-password">
-          <Link to="/forgot-password">Forgot Password?</Link>
+          <Link to="/forgot-password">{t("forgotPassword")}</Link>
         </div>
 
         <button type="submit" className="logbtn" disabled={submitting} >
-          {submitting ? "Logging in..." : "Login"}
+          {submitting ? t("loggingIn") : t("login")}
         </button>
         <p>
-          Don’t have an account? <Link to="/signup">Sign Up</Link>
+          {t("dontHaveAccount")} <Link to="/signup">{t("signUp")}</Link>
         </p>
       </form>
     </div>
