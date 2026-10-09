@@ -1,6 +1,7 @@
 import "./Topbar.css";
 import { Link } from "react-router-dom";
 import LanguageSwitcher from "../LanguageSwitcher";
+import { useTranslation } from "react-i18next";
 
 export const Topbar = () => {
   return (
@@ -10,13 +11,13 @@ export const Topbar = () => {
         {/* LEFT */}
         <div className="topbar-left">
           <i className="fa-solid fa-location-dot"></i>
-          <span>Delivering across India</span>
+          <span>{t("deliveringIndia")}</span>
         </div>
 
         {/* CENTER */}
         <div className="topbar-center">
           <i className="fa-solid fa-truck-fast"></i>
-          <span>Free Shipping on orders above ₹999</span>
+          <span>{t("freeShipping")}</span>
         </div>
 
         {/* RIGHT */}
@@ -40,7 +41,7 @@ export const Topbar = () => {
 
           <Link to="/trackmyorder" className="topbar-item">
             <i className="fa-solid fa-truck"></i>
-            <span>Track Order</span>
+            <span>{t("trackOrder")}</span>
           </Link>
 
         </div>
